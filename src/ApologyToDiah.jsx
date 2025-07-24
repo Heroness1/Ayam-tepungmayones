@@ -9,7 +9,7 @@ export default function ApologyToDiah() {
       {!showMessage ? (
         <div className="text-center max-w-xl animate-fade-in">
           <h1 className="text-5xl font-extrabold text-green-700 mb-4">
-            To Diah Kumala
+            
           </h1>
           <p className="text-xl text-gray-600 mb-8">
             A message from someone who's truly sorry.
@@ -25,7 +25,7 @@ export default function ApologyToDiah() {
         <div className="max-w-2xl text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">🌿 To Diah Kumala</h1>
           <p className="italic text-lg text-gray-500 mb-8">
-            "Sorry isn't just a word — it's a wish to heal."
+            "Sorry isn't just a word, it's a wish to heal."
           </p>
 
           <TypeAnimation
@@ -35,15 +35,14 @@ I know I haven’t been fair to someone who gave me warmth and attention.\n
 Without realizing it, I’ve hurt you with my arrogance, harsh words, and presence that brought pain instead of comfort.\n
 I want you to know… I’m truly sorry.\n
 I’m trying to grow, to become a better version of myself.\n
-But today, more than anything, I just want to say: I'm sorry.\n
-I miss your sweet and warm self.\n
-The way you cared, your calm presence — I miss all of it.\n
+But today, more than anything, I just want to say: I'm sorry!!.\n
+I miss your sweet and warm self😔.\n
+The way you cared, your calm presence.. I miss all of it.\n
 I’m sorry for the wounds I caused.\n
 I’m sorry for the moments you deserved understanding, but I gave judgment instead.\n
 I’m sorry for pulling away when I should’ve stood by your side.\n
 If there’s still space in your heart… please let me try to make things right, even if slowly.\n
-I don’t expect things to go back to the way they were.\n
-But I hope you know — this apology comes from the deepest part of me.`,
+I hope you know, this apology comes from the deepest part of me.`,
             ]}
             wrapper="span"
             speed={40}
