@@ -38,23 +38,21 @@ Thank you, for seeing the good in me, even when I couldn't.\n
         />
 
         <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-4">
-          <a
-            href="/images/pixel-moon-art.png"
-            download="pixel-moon-art.png"
-            className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition hover:scale-105 duration-300"
-          >
-            🌙 Download Hadiah 1
-          </a>
+  <a
+    href="/pixel-moon-art.png"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition"
+  >
+    🌙 Lihat Hadiah 1
+  </a>
 
-          <a
-            href="/images/dear-diah-art.png"
-            download="dear-diah-art.png"
-            className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition hover:scale-105 duration-300"
-          >
-            💌 Download Hadiah 2
-          </a>
-        </div>
-      </div>
-    </div>
-  );
-}
+  <a
+    href="/dear-diah-art.png"
+    target="_blank"
+    rel="noopener noreferrer"
+    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition"
+  >
+    💌 Lihat Hadiah 2
+  </a>
+</div>
