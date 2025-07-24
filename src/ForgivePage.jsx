@@ -54,7 +54,8 @@ Thank you, for seeing the good in me, even when I couldn't.\n
     className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition"
   >
     💌 Lihat Hadiah 2
-  </a>
+ </a>
+        </div>
       </div>
     </div>
   );
