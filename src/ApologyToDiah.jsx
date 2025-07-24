@@ -7,16 +7,12 @@ export default function ApologyToDiah({ onForgive }) {
   return (
     <div
       className="min-h-screen bg-cover bg-center flex items-center justify-center p-6 text-gray-800 font-sans"
-      style={{
-        backgroundImage:
-          "url('https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1950&q=80')",
-      }}
     >
       <div className="backdrop-blur-sm bg-white/70 w-full max-w-2xl p-8 rounded-2xl shadow-xl">
         {!showMessage ? (
           <div className="text-center animate-fade-in">
             <h1 className="text-5xl font-extrabold text-green-700 mb-4">
-              I'm Truly Sorry
+            
             </h1>
             <p className="text-xl text-gray-600 mb-8">
               A message from someone who's deeply regretful.
