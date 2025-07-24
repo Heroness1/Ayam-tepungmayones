@@ -55,4 +55,7 @@ Thank you, for seeing the good in me, even when I couldn't.\n
   >
     💌 Lihat Hadiah 2
   </a>
-</div>
+      </div>
+    </div>
+  );
+}
