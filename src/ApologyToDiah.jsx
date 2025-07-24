@@ -6,8 +6,8 @@ export default function ApologyToDiah({ onForgive }) {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center p-6 text-gray-800 font-sans"
-    >
+  className="min-h-screen bg-gray-100 flex items-center justify-center p-6 text-gray-800 font-sans"
+>
       <div className="backdrop-blur-sm bg-white/70 w-full max-w-2xl p-8 rounded-2xl shadow-xl">
         {!showMessage ? (
           <div className="text-center animate-fade-in">
