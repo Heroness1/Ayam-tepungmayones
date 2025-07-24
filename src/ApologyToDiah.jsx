@@ -48,7 +48,8 @@ I’m trying to grow, to become a better version of myself.\n
 But today, more than anything, I just want to say: I'm sorry.\n
 I miss your sweet and warm self 😔\n
 If there’s still space in your heart… please let me try to make things right, even if slowly.\n
-This apology comes from the deepest part of me.`,
+This apology comes from the deepest part of me.\n
+Tekan Forgive me untuk hadiah menarik.`,
               ]}
               wrapper="span"
               speed={40}
