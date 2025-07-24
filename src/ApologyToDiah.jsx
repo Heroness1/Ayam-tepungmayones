@@ -31,7 +31,7 @@ export default function ApologyToDiah({ onForgive }) {
         ) : (
           <div className="text-center animate-fade-in">
             <h1 className="text-3xl md:text-4xl font-bold mb-4 text-white drop-shadow">
-              🌙 To Diah Kumala
+             ✨To Diah Kumala✨
             </h1>
             <p className="italic text-lg text-purple-200 mb-8">
               "Sorry isn't just a word, it's a wish to heal."
