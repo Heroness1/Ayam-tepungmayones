@@ -40,7 +40,7 @@ I miss your sweet and warm self 😔.\n
 The way you cared, your calm presence.. I miss all of it.\n
 I’m sorry for the wounds I caused.\n
 I’m sorry for the moments you deserved understanding, but I gave judgment instead.\n
-"I'm sorry for the anger and harsh words, you didn't deserve that 😭.\n
+I'm sorry for the anger and harsh words, you didn't deserve that 😭.\n
 If there’s still space in your heart… please let me try to make things right, even if slowly.\n
 I hope you know, this apology comes from the deepest part of me.`,
             ]}
