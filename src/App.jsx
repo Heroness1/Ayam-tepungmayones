@@ -1,14 +1,17 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import ApologyToDiah from "./ApologyToDiah";
 import ForgivePage from "./ForgivePage";
 
 export default function App() {
+  const [isForgiven, setIsForgiven] = useState(false);
+
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<ApologyToDiah />} />
-        <Route path="/forgive" element={<ForgivePage />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+      {!isForgiven ? (
+        <ApologyToDiah onForgive={() => setIsForgiven(true)} />
+      ) : (
+        <ForgivePage />
+      )}
+    </>
   );
 }
