@@ -22,18 +22,17 @@ export default function ApologyToDiah() {
           </button>
         </div>
       ) : (
-        <div className="max-w-2xl text-center">
+        <div className="max-w-2xl text-center animate-fade-in">
           <h1 className="text-3xl md:text-4xl font-bold mb-4">🌿 To Diah Kumala</h1>
           <p className="italic text-lg text-gray-500 mb-8">
-            "Sorry isn't just a word it's a wish to heal."
+            "Sorry isn't just a word, it's a wish to heal."
           </p>
 
           <TypeAnimation
             sequence={[
               "Hi Diah,\n\n",
               500,
-              "I know I haven’t been fair to someone who gave me warmth and attention.
-.\n",
+              "I know I haven’t been fair to someone who gave me warmth and attention.\n\n",
               1000,
               "Without realizing it, I’ve hurt you with my arrogance, harsh words, and presence that brought pain instead of comfort.\n\n",
               2000,
@@ -41,12 +40,12 @@ export default function ApologyToDiah() {
               "I’m trying to grow, to become a better version of myself.\n",
               "But today, more than anything, I just want to say:\nI'm sorry.\n\n",
               "I miss your sweet and warm self.\n",
-              "The way you cared, your calm presence  I miss all of it.\n\n",
+              "The way you cared, your calm presence I miss all of it.\n\n",
               "I’m sorry for the wounds I caused.\n",
               "I’m sorry for the moments you deserved understanding, but I gave judgment instead.\n",
               "I’m sorry for pulling away when I should’ve stood by your side.\n\n",
               "If there’s still space in your heart…\nplease let me try to make things right, even if slowly.\n\n",
-              "I don’t expect things to go back to the way they were.\nBut I hope you know — this apology comes from the deepest part of me.",
+              "I don’t expect things to go back to the way they were.\nBut I hope you know  this apology comes from the deepest part of me.",
             ]}
             wrapper="span"
             speed={50}
