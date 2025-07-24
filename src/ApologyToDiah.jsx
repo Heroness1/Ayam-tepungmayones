@@ -36,11 +36,11 @@ Without realizing it, I’ve hurt you with my arrogance, harsh words, and presen
 I want you to know… I’m truly sorry.\n
 I’m trying to grow, to become a better version of myself.\n
 But today, more than anything, I just want to say: I'm sorry!!.\n
-I miss your sweet and warm self😔.\n
+I miss your sweet and warm self 😔.\n
 The way you cared, your calm presence.. I miss all of it.\n
 I’m sorry for the wounds I caused.\n
 I’m sorry for the moments you deserved understanding, but I gave judgment instead.\n
-I’m sorry for pulling away when I should’ve stood by your side.\n
+"I'm sorry for the anger and harsh words, you didn't deserve that 😭.\n
 If there’s still space in your heart… please let me try to make things right, even if slowly.\n
 I hope you know, this apology comes from the deepest part of me.`,
             ]}
