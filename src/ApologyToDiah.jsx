@@ -16,7 +16,7 @@ export default function ApologyToDiah({ onForgive }) {
         {!showMessage ? (
           <div className="text-center animate-fade-in">
             <h1 className="text-5xl font-extrabold text-purple-200 drop-shadow mb-4">
-              💫 Dear Diah
+              💫⭐✨
             </h1>
             <p className="text-xl text-purple-300 mb-8 italic">
               A message from someone who's deeply regretful.
