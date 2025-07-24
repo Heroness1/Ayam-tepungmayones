@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Font import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:ital,wght@0,600;1,600&display=swap');
+
+body {
+  @apply bg-[#f9f7f4] text-[#333] font-sans;
+  font-family: 'Inter', sans-serif;
+}
+
+/* Typing effect */
+.typing {
+  white-space: pre-line;
+  overflow: hidden;
+  border-right: 0.1em solid #888;
+  animation: typing 4s steps(40, end), blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+  from { width: 0 }
+  to { width: 100% }
+}
+
+@keyframes blink {
+  50% { border-color: transparent }
+}
+
+/* Button aesthetic */
+.btn-glow {
+  @apply px-6 py-2 rounded-full text-white font-semibold transition duration-300;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+}
+
+.btn-glow:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+}
