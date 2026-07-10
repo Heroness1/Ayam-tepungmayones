@@ -11,7 +11,7 @@ export default function ForgivePage() {
     >
       <div className="backdrop-blur-md bg-white/10 border border-white/20 w-full max-w-2xl p-8 rounded-2xl shadow-2xl text-center animate-fade-in">
         <h1 className="text-4xl font-bold text-purple-200 mb-4 drop-shadow">
-          💜 Thank You, Diah
+          💜 Thank You, Hyacinth
         </h1>
 
         <p className="italic text-lg text-purple-300 mb-6">
@@ -20,7 +20,7 @@ export default function ForgivePage() {
 
         <TypeAnimation
           sequence={[
-            `Diah,\n
+            `Hyacinth,\n
 You didn’t have to forgive me, but you did.\n
 That act alone… speaks volumes about your heart.\n
 I feel unworthy, but grateful. Deeply.\n
@@ -29,7 +29,7 @@ I'll be more patient, more present, more gentle.\n
 You're not someone I just want to win back...\n
 You're someone I want to grow alongside.\n
 Thank you, for seeing the good in me, even when I couldn't.\n
-💫 From the bottom of my heart, Angga.`,
+💫 From the bottom of my heart, Lucent.`,
           ]}
           wrapper="span"
           speed={40}
