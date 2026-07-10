@@ -31,7 +31,7 @@ export default function ApologyToDiah({ onForgive }) {
         ) : (
           <div className="text-center animate-fade-in">
             <h1 className="text-3xl md:text-4xl font-bold mb-4 text-white drop-shadow">
-             ✨To Diah Kumala✨
+             ✨To Hyacinth✨
             </h1>
             <p className="italic text-lg text-purple-200 mb-8">
               "Sorry isn't just a word, it's a wish to heal."
@@ -39,17 +39,14 @@ export default function ApologyToDiah({ onForgive }) {
 
             <TypeAnimation
               sequence={[
-                `Hi Diah,\n
+                `Hi Hyacinth,\n
 I know I haven’t been fair to someone who gave me warmth and attention.\n
 Without realizing it, I’ve hurt you with my arrogance, harsh words, and presence that brought pain instead of comfort.\n
 I want you to know… I’m truly sorry.\n
-Aku minta maaf aku suka marah-marah dan kasar 😭\n
 I’m trying to grow, to become a better version of myself.\n
-But today, more than anything, I just want to say: I'm sorry.\n
-I miss your sweet and warm self 😔\n
 If there’s still space in your heart… please let me try to make things right, even if slowly.\n
 This apology comes from the deepest part of me.\n
-Tekan Forgive me untuk hadiah menarik.`,
+Press Forgive me to see something.`,
               ]}
               wrapper="span"
               speed={40}
