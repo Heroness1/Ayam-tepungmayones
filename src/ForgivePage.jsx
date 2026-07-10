@@ -19,15 +19,17 @@ export default function ForgivePage() {
         </p>
 
         <TypeAnimation
-          sequence={[
-            `Hyacinth,\n
-You didn’t have to forgive me, but you did.\n
-That act alone… speaks volumes about your heart.\n
-I feel unworthy, but grateful. Deeply.\n
-This second chance means the world to me.\n
-I'll be more patient, more present, more gentle.\n
-You're not someone I just want to win back...\n
-You're someone I want to grow alongside.\n
+  sequence={[
+    `Hyacinth,\n
+คุณไม่จำเป็นต้องให้อภัยฉันก็ได้... แต่คุณเลือกที่จะทำ\n
+แค่นั้นก็ทำให้ฉันรู้แล้วว่าหัวใจของคุณอบอุ่นแค่ไหน\n
+ฉันรู้สึกว่าตัวเองไม่คู่ควรกับการให้อภัยนั้น... แต่ก็รู้สึกขอบคุณจากใจจริง\n
+โอกาสครั้งที่สองที่คุณให้ มีความหมายกับฉันมากจริง ๆ\n
+จากนี้ฉันจะอดทนให้มากขึ้น จะใส่ใจให้มากขึ้น และจะอ่อนโยนกับคุณให้มากขึ้น\n
+คุณไม่ใช่แค่คนที่ฉันอยากขอคืนดี...\n
+แต่เป็นคนที่ฉันอยากเติบโตและก้าวไปด้วยกัน\n`
+  ]}
+/>
 Thank you, for seeing the good in me, even when I couldn't.\n
 💫 From the bottom of my heart, Lucent.`,
           ]}
