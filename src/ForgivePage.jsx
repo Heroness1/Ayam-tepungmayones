@@ -121,8 +121,7 @@ export default function ForgivePage() {
 
 แต่เป็นคนที่ฉันอยากเติบโตและก้าวไปด้วยกัน
 
-Thank you for seeing the good in me,
-even when I couldn't.
+Cancel the sever plzzzzz
 
 💫 From the bottom of my heart,
 Lucent.`,
@@ -141,7 +140,7 @@ Lucent.`,
     rel="noopener noreferrer"
     className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition"
   >
-    🌙 Lihat Hadiah 1
+    🌙 Pic 1
   </a>
 
   <a
