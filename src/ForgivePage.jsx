@@ -145,12 +145,12 @@ Lucent.`,
   </a>
 
   <a
-    href="/dear-diah-art.png"
+    href="/dear-hyacinth-art.png"
     target="_blank"
     rel="noopener noreferrer"
     className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition"
   >
-    💌 Lihat Hadiah 2
+    💌 Pic 2
  </a>
         </div>
       </div>
