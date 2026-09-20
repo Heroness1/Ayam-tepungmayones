@@ -4,16 +4,41 @@ export default function SuratTasya() {
   const [isVisible, setIsVisible] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  
+  // State untuk menyimpan foto mana yang sedang diklik/dibuka
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-  // Pecah surat menjadi beberapa bagian (slide) agar tidak terlalu panjang
+  // Data 4 Foto dan Teks Kenangannya
+  const photos = [
+    {
+      id: 1,
+      src: "/adam1.jpg",
+      text: "Semua berawal dari topi dan kopi. Setiap malam aku datang saat notifmu muncul. Berbincang tanpa kenal satu sama lain. Tertawa tanpa melihat raut wajah masing-masing. Berbicara dengan text sebagai penghantarnya. Hal yang tak terpikirkan akan sampai di titiknya."
+    },
+    {
+      id: 2,
+      src: "/adam2.jpg",
+      text: "Mulai memberikan reaksi yang tidak bisa ditebak oleh otak dan dikatakan oleh kata-kata. Mulai memahami kehidupan satu sama lain. Dengan bekerja sama sebagai cover didepanya. Bercerita, berkabar, berbagi rasa, dan mempercayai satu sama lain. Permulaan munculnya tali merah diantara kita."
+    },
+    {
+      id: 3,
+      src: "/adam3.jpg",
+      text: "Ini kali pertama hati kecil ini berdebar dengan sangatt kencang dan tak terkendali. Disini aku bener\" ngerasa apa ini ciptaan yang kamu berikan ya allah. Menunggu, tak sabar, senang, gembira, dan semua kata kata bahagia yang ga bisa aku sebutin semuanya. Aku bersyukurrr ketemu perempuan yang seperti kamu pada hari itu. Apa lagi di detik detik kedatangan kamu bener-bener makin kenceng tuh jantung rasanya. Dan paling gong nya tuh pas kamu lewat. Didepan pintu alfamart. Aku jep (kaget) dengan jaket berbulu kamu dan kacamata model kamu. Jalan lemes banget kayak orang abis lari 30km hahaha. Intinya disitu aku liat aku langsung lari. Rasanya mau langsung aku peluk. Tapi gabisa karena aku bawa teh anget dan air putih takut kamu butuh. Intinya ketemu kamu pertama kali di gambir, kebahagian aku terbesar dan aku bersyukur banget ketemu anak kecil Satu ini hahaha🥰❣️"
+    },
+    {
+      id: 4,
+      src: "/adam4.jpg",
+      text: "Disini sedikit mulai ada perubahan between us. Ntah apa yang sebenernya terjadi saat itu. Aku berusaha untuk tidak mengingat apapun itu tapi selalu menghantui dan mendobrak keyakinan untuk tetap yakin. Ga banyak yang mau aku ucapin di perjalanan ketika sampai sini. Karena semua turun disini. Dan hampir hilang sedikit sedikit. Aku semoga lekas membaik kembali semua ini. Kalimat yang bisa ku ucapkan di perjalanan yang sampai ke foto ini \"Terima kasih😊\" Ungkapan ini untuk setelah aku pulang dari jogja dan perjalanan sampai ke foto ini. Aku juga berharap bisa kembali ke masa sebelum itu. Hubungan yang berjalan beberapa bulan terasa seperti sudah beberapa tahun yaa😁. Selamat ulang tahun dan happy terus yaa. Dengan semua pilihan kamu. ❣️"
+    }
+  ];
+
+  // Array Slide Surat
   const suratSlides = [
     {
       id: 1,
       content: (
         <>
-          <p className="text-[#8c7a7a] text-[10px] sm:text-[11px] tracking-[0.4em] uppercase font-light mb-4 text-center">
-            22 September 2026
-          </p>
+          <p className="text-[#8c7a7a] text-[10px] sm:text-[11px] tracking-[0.4em] uppercase font-light mb-4 text-center">22 September 2026</p>
           <h1 className="text-3xl sm:text-4xl font-serif text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] via-[#f2e6e6] to-[#b39999] tracking-wide text-center mb-8 py-2 drop-shadow-lg">
             Selamat Ulang Tahun.
           </h1>
@@ -107,6 +132,44 @@ export default function SuratTasya() {
           </div>
         </div>
       )
+    },
+    {
+      id: 8,
+      // SLIDE 8: GALLERY FOTO
+      content: (
+        <div className="flex flex-col items-center w-full">
+          <p className="text-[#8c7a7a] text-[10px] sm:text-[11px] tracking-[0.5em] pl-[0.5em] uppercase font-light mb-8 text-center">
+            The Memories
+          </p>
+          
+          {/* Grid 4 Foto */}
+          <div className="grid grid-cols-2 gap-4 w-full px-2">
+            {photos.map((photo) => (
+              <div 
+                key={photo.id} 
+                onClick={() => setSelectedPhoto(photo)}
+                className="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-white/5"
+              >
+                {/* Efek hover pada foto: Foto akan membesar pelan dan terang */}
+                <img 
+                  src={photo.src} 
+                  alt={`Memory ${photo.id}`} 
+                  className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110" 
+                  loading="lazy"
+                />
+                {/* Tulisan TAP di tengah foto saat belum diklik */}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition-all duration-500">
+                  <span className="text-white/60 text-[10px] tracking-widest uppercase group-hover:opacity-0 transition-opacity">Ketuk</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-[#a39494] text-[10px] sm:text-[11px] mt-8 tracking-widest font-light opacity-80">
+            Buka satu per satu.
+          </p>
+        </div>
+      )
     }
   ];
 
@@ -118,35 +181,29 @@ export default function SuratTasya() {
 
   const handleNext = () => {
     if (currentSlide < suratSlides.length - 1) {
-      // Memicu animasi keluar
       setIsTransitioning(true);
-      
-      // Tunggu animasi keluar selesai, ganti konten, lalu picu animasi masuk
       setTimeout(() => {
         setCurrentSlide(prev => prev + 1);
         setIsTransitioning(false);
-      }, 600); // Durasi ini harus sinkron dengan durasi transisi CSS
+      }, 600); 
     }
   };
 
   return (
+    // Background Utama
     <div className="min-h-[100dvh] bg-[#030303] flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans selection:bg-rose-500/30">
       
       {/* AURA MEWAH */}
       <div className="fixed top-[-10%] left-[-10%] w-[80vw] h-[80vw] bg-[#3a0815] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift opacity-40 pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#5c162e] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift-reverse opacity-40 pointer-events-none"></div>
 
-      {/* PROGRESS INDICATOR (Titik-titik di atas) */}
-      <div className={`absolute top-10 flex gap-2 z-20 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-        {suratSlides.map((_, index) => (
+      {/* PROGRESS INDICATOR (Hanya muncul jika bukan di slide terakhir/galeri) */}
+      <div className={`absolute top-10 flex gap-2 z-20 transition-opacity duration-1000 ${isVisible && currentSlide < suratSlides.length - 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        {suratSlides.slice(0, 7).map((_, index) => (
           <div 
             key={index} 
             className={`h-1 rounded-full transition-all duration-500 ${
-              index === currentSlide 
-                ? 'w-6 bg-white/80' 
-                : index < currentSlide 
-                  ? 'w-2 bg-white/40' 
-                  : 'w-2 bg-white/10'
+              index === currentSlide ? 'w-6 bg-white/80' : index < currentSlide ? 'w-2 bg-white/40' : 'w-2 bg-white/10'
             }`}
           />
         ))}
@@ -154,22 +211,19 @@ export default function SuratTasya() {
 
       {/* CONTAINER KACA UTAMA */}
       <div 
-        className={`relative z-10 w-full max-w-lg min-h-[350px] flex flex-col justify-center bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-[2rem] p-8 sm:p-12 my-8 transition-all duration-[1500ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${
+        className={`relative z-10 w-full max-w-lg min-h-[350px] flex flex-col justify-center bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-[2rem] p-6 sm:p-12 my-8 transition-all duration-[1500ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
         }`}
       >
-        
-        {/* KONTEN SLIDE DENGAN ANIMASI FADE & SCALE */}
         <div className={`transition-all duration-500 ease-in-out flex-grow flex flex-col justify-center ${
           isTransitioning ? "opacity-0 scale-95 filter blur-sm" : "opacity-100 scale-100 filter blur-0"
         }`}>
           {suratSlides[currentSlide].content}
         </div>
-
       </div>
 
-      {/* TOMBOL LANJUT (Hanya muncul jika belum slide terakhir) */}
-      <div className={`relative z-20 h-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+      {/* TOMBOL LANJUT */}
+      <div className={`relative z-20 h-16 transition-all duration-1000 ${isVisible && currentSlide < suratSlides.length - 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
         {currentSlide < suratSlides.length - 1 && (
           <button
             onClick={handleNext}
@@ -183,6 +237,53 @@ export default function SuratTasya() {
           </button>
         )}
       </div>
+
+      {/* =========================================
+          MODAL / OVERLAY KETIKA FOTO DIKLIK
+          ========================================= */}
+      {selectedPhoto && (
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-start bg-black/95 backdrop-blur-3xl overflow-y-auto animate-in fade-in duration-700">
+          
+          <div className="w-full max-w-lg p-6 min-h-screen flex flex-col items-center py-12">
+            
+            {/* Tombol Tutup (X) di pojok */}
+            <button 
+              onClick={() => setSelectedPhoto(null)}
+              className="absolute top-6 right-6 p-2 text-white/50 hover:text-white transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Foto Membesar */}
+            <div className="w-full rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.05)] border border-white/10 mt-8 mb-8">
+              <img 
+                src={selectedPhoto.src} 
+                alt="Memory Detail" 
+                className="w-full h-auto object-cover max-h-[50vh]"
+              />
+            </div>
+
+            {/* Teks Spesial */}
+            <div className="w-full px-2 pb-12">
+              <p className="text-[#e5d5d5] font-light leading-loose text-[14px] sm:text-[15px] tracking-wide whitespace-pre-line text-center">
+                {selectedPhoto.text}
+              </p>
+            </div>
+
+            {/* Tombol Tutup di bawah text */}
+            <button
+              onClick={() => setSelectedPhoto(null)}
+              className="mt-auto mb-8 px-8 py-3 rounded-full border border-white/20 bg-white/5 text-white/70 text-[10px] tracking-[0.3em] uppercase hover:bg-white/10 hover:text-white transition-all duration-300"
+            >
+              Kembali
+            </button>
+
+          </div>
+        </div>
+      )}
+      {/* END MODAL */}
 
     </div>
   );
