@@ -1,157 +1,58 @@
-import { TypeAnimation } from "react-type-animation";
+import React from "react";
 
-export default function ForgivePage() {
+export default function SuratTasya() {
   return (
-    <div
-      className="min-h-screen bg-cover bg-center flex items-center justify-center p-4 font-sans"
-      style={{
-        backgroundImage: "url('/pixel-moon-bg.jpg')",
-        backgroundColor: "#1e1b2e",
-      }}
-    >
-      <div className="w-full max-w-lg rounded-3xl border border-white/20 bg-black/30 backdrop-blur-xl shadow-2xl p-6 md:p-8">
-
-        <h1 className="text-center text-3xl md:text-4xl font-bold text-purple-200 mb-4">
-          💜 Thank You, Hyacinth
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4 sm:p-8 font-sans">
+      
+      {/* Container utama, dibikin clean seperti kertas putih biasa */}
+      <div className="w-full max-w-2xl bg-white shadow-sm border border-gray-200 rounded-xl p-6 sm:p-10 text-gray-700">
+        
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center mb-8">
+          Selamat Hari Kelahiran 🎉
         </h1>
 
-        <p className="text-center italic text-sm md:text-lg text-purple-300 mb-8">
-          "Forgiveness is the softest light in the darkest sky."
-        </p>
+        <div className="space-y-5 leading-relaxed text-sm sm:text-base">
+          <p>
+            Selamat hari kelahiran Tasya Septiani. Hari ini kamu sudah kepala 2 ternyata.
+          </p>
 
-        <TypeAnimation
-  sequence={[
-`Hyacinth,
+          <p>
+            Di ulang tahun ini.. Aku hanya bisa berdoa yang terbaik untuk kamu, aku berdoa dipeningkatan umur kmu kali ini kamu bisa memperbaiki semua yang kamu ingin perbaiki. Menggapai apa yang ingin kamu capai, mendapatkan apa yang kamu inginkan, menemukan tempat yang bisa membawa kamu ke dalam ke tenangan kamu, mendapatkan kesenangan yang belum pernah kamu dapatkan sebelumnya.
+          </p>
 
-คุณไม่จำเป็นต้องให้อภัยฉันก็ได้...
-แต่คุณเลือกที่จะทำ`,
-1500,
+          <p>
+            Aku juga berdoa kamu bisa bekerja dengan kesenangan yang kamu inginkan. Bertemu teman yang benar peduli denganmu apa adanya. Mendapatkan seseorang yang lebih baik lagi kedepannya(jika memang aku itu orangnya).
+          </p>
 
-`Hyacinth,
+          <p>
+            Jujur sebelumnya memang aku ada rencana datang ke tempatmu untuk membuat sebuah kejutan. Semua terurungkan, sejak aku pernah pergi kesana.. Tapi yeahh, all good until now. Don't mind it.
+          </p>
 
-คุณไม่จำเป็นต้องให้อภัยฉันก็ได้...
-แต่คุณเลือกที่จะทำ
+          <p>
+            Aku yakin disana pasti akan ada yang memberikan kamu kejutan yang lebih special di hari special mu kali ini. Aku juga yakin hari mu akan lebih terasa special dengan kegiatan yang akan kamu jalani nanti.
+          </p>
 
-แค่นั้นก็ทำให้ฉันรู้แล้วว่าหัวใจของคุณอบอุ่นแค่ไหน`,
-1800,
+          <p>
+            Mungkin aku belum bisa menjadi kan kamu seorang princes or thread like a queen👸🏼. Aku sangat yakin akan ada yang melakukannya disana untuk mu. Terlalu banyak kekurangan yang aku punya. Aku sangatt berterima kasih kamu sudah mengisi kekosongan dan mewarnai hidup ku ini(tetap berharap akan tetap seperti itu).
+          </p>
 
-`Hyacinth,
+          <p>
+            But, we look later, we can together or we can't. I pray to god make you always be side me. All time big hope. Day by day.
+          </p>
 
-คุณไม่จำเป็นต้องให้อภัยฉันก็ได้...
-แต่คุณเลือกที่จะทำ
+          <p>
+            Hmm.. Cuma ini yang bisa aku ucapkan. Aku belum bisa memberikan apapun kekamu di hari special kamu kali ini.
+          </p>
 
-แค่นั้นก็ทำให้ฉันรู้แล้วว่าหัวใจของคุณอบอุ่นแค่ไหน
+          <p className="font-medium text-gray-900 pt-4">
+            Hope you always be my great expectation.
+          </p>
 
-ฉันรู้สึกว่าตัวเองไม่คู่ควรกับการให้อภัยนั้น...
-แต่ก็รู้สึกขอบคุณจากใจจริง`,
-1800,
-
-`Hyacinth,
-
-คุณไม่จำเป็นต้องให้อภัยฉันก็ได้...
-แต่คุณเลือกที่จะทำ
-
-แค่นั้นก็ทำให้ฉันรู้แล้วว่าหัวใจของคุณอบอุ่นแค่ไหน
-
-ฉันรู้สึกว่าตัวเองไม่คู่ควรกับการให้อภัยนั้น...
-แต่ก็รู้สึกขอบคุณจากใจจริง
-
-โอกาสครั้งที่สองที่คุณให้
-มีความหมายกับฉันมากจริง ๆ`,
-1800,
-
-`Hyacinth,
-
-คุณไม่จำเป็นต้องให้อภัยฉันก็ได้...
-แต่คุณเลือกที่จะทำ
-
-แค่นั้นก็ทำให้ฉันรู้แล้วว่าหัวใจของคุณอบอุ่นแค่ไหน
-
-ฉันรู้สึกว่าตัวเองไม่คู่ควรกับการให้อภัยนั้น...
-แต่ก็รู้สึกขอบคุณจากใจจริง
-
-โอกาสครั้งที่สองที่คุณให้
-มีความหมายกับฉันมากจริง ๆ
-
-จากนี้ฉันจะอดทนให้มากขึ้น
-จะใส่ใจให้มากขึ้น
-และจะอ่อนโยนกับคุณให้มากขึ้น`,
-1800,
-
-`Hyacinth,
-
-คุณไม่จำเป็นต้องให้อภัยฉันก็ได้...
-แต่คุณเลือกที่จะทำ
-
-แค่นั้นก็ทำให้ฉันรู้แล้วว่าหัวใจของคุณอบอุ่นแค่ไหน
-
-ฉันรู้สึกว่าตัวเองไม่คู่ควรกับการให้อภัยนั้น...
-แต่ก็รู้สึกขอบคุณจากใจจริง
-
-โอกาสครั้งที่สองที่คุณให้
-มีความหมายกับฉันมากจริง ๆ
-
-จากนี้ฉันจะอดทนให้มากขึ้น
-จะใส่ใจให้มากขึ้น
-และจะอ่อนโยนกับคุณให้มากขึ้น
-
-คุณไม่ใช่แค่คนที่ฉันอยากขอคืนดี...
-
-แต่เป็นคนที่ฉันอยากเติบโตและก้าวไปด้วยกัน`,
-2000,
-
-`Hyacinth,
-
-คุณไม่จำเป็นต้องให้อภัยฉันก็ได้...
-แต่คุณเลือกที่จะทำ
-
-แค่นั้นก็ทำให้ฉันรู้แล้วว่าหัวใจของคุณอบอุ่นแค่ไหน
-
-ฉันรู้สึกว่าตัวเองไม่คู่ควรกับการให้อภัยนั้น...
-แต่ก็รู้สึกขอบคุณจากใจจริง
-
-โอกาสครั้งที่สองที่คุณให้
-มีความหมายกับฉันมากจริง ๆ
-
-จากนี้ฉันจะอดทนให้มากขึ้น
-จะใส่ใจให้มากขึ้น
-และจะอ่อนโยนกับคุณให้มากขึ้น
-
-คุณไม่ใช่แค่คนที่ฉันอยากขอคืนดี...
-
-แต่เป็นคนที่ฉันอยากเติบโตและก้าวไปด้วยกัน
-
-Cancel the sever plzzzzz
-
-💫 From the bottom of my heart,
-Lucent.`,
-5000,
-  ]}
-  wrapper="div"
-  speed={55}
-  repeat={0}
-  className="mx-auto max-w-md whitespace-pre-line text-[15px] md:text-lg leading-8 text-purple-100 text-left"
-/>
-
-        <div className="mt-10 flex flex-col md:flex-row items-center justify-center gap-4">
-  <a
-    href="/pixel-moon-art.png"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition"
-  >
-    🌙 Pic 1
-  </a>
-
-  <a
-    href="/dear-hyacinth-art.png"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-full text-lg shadow-md transition"
-  >
-    💌 Pic 2
- </a>
+          <p className="font-bold text-lg text-gray-900">
+            Happy born days Tasya Septiani❣️
+          </p>
         </div>
+
       </div>
     </div>
   );
