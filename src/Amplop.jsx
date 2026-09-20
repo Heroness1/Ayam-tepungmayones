@@ -1,47 +1,72 @@
 import React, { useState } from "react";
-import "./Amplop.css"; // Kita pakai CSS khusus untuk efek 3D amplop
+import "./Amplop.css";
 
 export default function Amplop({ onBukaSurat }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleBuka = () => {
-    // Mencegah double-click
     if (isOpen) return; 
-
     setIsOpen(true);
     
-    // Set delay 1.5 detik untuk memutar animasi amplop terbuka, 
-    // setelah itu baru pindah ke halaman isi surat.
+    // Delay ditambah jadi 2.5 detik agar Tasya bisa melihat 
+    // efek stempel pecah dan hujan love sebelum pindah halaman
     setTimeout(() => {
       onBukaSurat();
-    }, 1500); 
+    }, 2500); 
   };
 
+  // Membuat array 30 item untuk memunculkan 30 emoji love secara acak
+  const hearts = Array.from({ length: 30 });
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4 font-sans">
+    <div className="night-background min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden relative">
       
+      {/* Container Hujan Love (Hanya muncul kalau amplop diklik) */}
+      {isOpen && (
+        <div className="hearts-container">
+          {hearts.map((_, i) => (
+            <div 
+              key={i} 
+              className="heart" 
+              style={{
+                left: `${Math.random() * 100}%`,
+                animationDelay: `${Math.random() * 0.5}s`,
+                animationDuration: `${1.5 + Math.random()}s`
+              }}
+            >
+              ❤️
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Bagian Amplop */}
       <div 
         className={`envelope-wrapper ${isOpen ? "is-open" : ""}`} 
         onClick={handleBuka}
       >
         <div className="envelope">
-          {/* Kertas Surat di dalam amplop */}
+          {/* Kertas Surat */}
           <div className="letter">
-            <p className="text-gray-800 font-semibold text-lg text-center">
+            <p className="text-gray-800 font-serif font-bold text-xl text-center">
               Untuk:<br />Tasya Septiani ❣️
             </p>
           </div>
           
-          {/* Bagian depan amplop (Kiri, Kanan, Bawah) */}
+          {/* Saku Bawah */}
           <div className="pocket"></div>
           
-          {/* Tutup amplop atas */}
-          <div className="flap"></div>
+          {/* Tutup Amplop Atas & Stempel Lilin */}
+          <div className="flap">
+            <div className="wax-seal">
+              <span className="wax-text">T</span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <p className={`mt-16 text-gray-500 font-medium tracking-wide transition-opacity duration-300 ${isOpen ? 'animate-pulse' : ''}`}>
-        {isOpen ? "Membuka surat..." : "Ketuk amplop untuk membuka"}
+      <p className={`mt-16 text-pink-200 font-medium tracking-widest transition-all duration-300 ${isOpen ? 'animate-pulse opacity-50' : 'animate-bounce'}`}>
+        {isOpen ? "Membuka keajaiban..." : "Ketuk surat rahasia ini"}
       </p>
 
     </div>
