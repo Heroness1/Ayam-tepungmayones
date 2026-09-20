@@ -5,10 +5,8 @@ export default function SuratTasya() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
   
-  // State untuk menyimpan foto mana yang sedang diklik/dibuka
   const [selectedPhoto, setSelectedPhoto] = useState(null);
 
-  // Data 4 Foto dan Teks Kenangannya
   const photos = [
     {
       id: 1,
@@ -32,7 +30,6 @@ export default function SuratTasya() {
     }
   ];
 
-  // Array Slide Surat
   const suratSlides = [
     {
       id: 1,
@@ -135,14 +132,12 @@ export default function SuratTasya() {
     },
     {
       id: 8,
-      // SLIDE 8: GALLERY FOTO
       content: (
         <div className="flex flex-col items-center w-full">
           <p className="text-[#8c7a7a] text-[10px] sm:text-[11px] tracking-[0.5em] pl-[0.5em] uppercase font-light mb-8 text-center">
             The Memories
           </p>
           
-          {/* Grid 4 Foto */}
           <div className="grid grid-cols-2 gap-4 w-full px-2">
             {photos.map((photo) => (
               <div 
@@ -150,14 +145,12 @@ export default function SuratTasya() {
                 onClick={() => setSelectedPhoto(photo)}
                 className="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-white/5"
               >
-                {/* Efek hover pada foto: Foto akan membesar pelan dan terang */}
                 <img 
                   src={photo.src} 
                   alt={`Memory ${photo.id}`} 
                   className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-all duration-700 group-hover:scale-110" 
                   loading="lazy"
                 />
-                {/* Tulisan TAP di tengah foto saat belum diklik */}
                 <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition-all duration-500">
                   <span className="text-white/60 text-[10px] tracking-widest uppercase group-hover:opacity-0 transition-opacity">Ketuk</span>
                 </div>
@@ -189,15 +182,23 @@ export default function SuratTasya() {
     }
   };
 
+  // FUNGSI BARU: Mundur ke slide sebelumnya
+  const handlePrev = () => {
+    if (currentSlide > 0) {
+      setIsTransitioning(true);
+      setTimeout(() => {
+        setCurrentSlide(prev => prev - 1);
+        setIsTransitioning(false);
+      }, 600); 
+    }
+  };
+
   return (
-    // Background Utama
     <div className="min-h-[100dvh] bg-[#030303] flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans selection:bg-rose-500/30">
       
-      {/* AURA MEWAH */}
       <div className="fixed top-[-10%] left-[-10%] w-[80vw] h-[80vw] bg-[#3a0815] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift opacity-40 pointer-events-none"></div>
       <div className="fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#5c162e] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift-reverse opacity-40 pointer-events-none"></div>
 
-      {/* PROGRESS INDICATOR (Hanya muncul jika bukan di slide terakhir/galeri) */}
       <div className={`absolute top-10 flex gap-2 z-20 transition-opacity duration-1000 ${isVisible && currentSlide < suratSlides.length - 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         {suratSlides.slice(0, 7).map((_, index) => (
           <div 
@@ -209,7 +210,6 @@ export default function SuratTasya() {
         ))}
       </div>
 
-      {/* CONTAINER KACA UTAMA */}
       <div 
         className={`relative z-10 w-full max-w-lg min-h-[350px] flex flex-col justify-center bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-[2rem] p-6 sm:p-12 my-8 transition-all duration-[1500ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${
           isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
@@ -222,8 +222,24 @@ export default function SuratTasya() {
         </div>
       </div>
 
-      {/* TOMBOL LANJUT */}
-      <div className={`relative z-20 h-16 transition-all duration-1000 ${isVisible && currentSlide < suratSlides.length - 1 ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10 pointer-events-none'}`}>
+      {/* NAVIGASI TOMBOL (KEMBALI & LANJUTKAN) */}
+      <div className={`relative z-20 flex gap-4 h-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        
+        {/* Tombol Kembali (Muncul kalau bukan di slide 1) */}
+        {currentSlide > 0 && (
+          <button
+            onClick={handlePrev}
+            disabled={isTransitioning}
+            className="group flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-transparent text-[#a39494] text-[10px] tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white/5 hover:border-white/30 hover:text-white"
+          >
+            <svg className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali
+          </button>
+        )}
+
+        {/* Tombol Lanjutkan (Sembunyi di slide foto terakhir) */}
         {currentSlide < suratSlides.length - 1 && (
           <button
             onClick={handleNext}
@@ -244,46 +260,41 @@ export default function SuratTasya() {
       {selectedPhoto && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-start bg-black/95 backdrop-blur-3xl overflow-y-auto animate-in fade-in duration-700">
           
-          <div className="w-full max-w-lg p-6 min-h-screen flex flex-col items-center py-12">
+          <div className="w-full max-w-lg min-h-screen flex flex-col items-center py-12 px-4 relative">
             
-            {/* Tombol Tutup (X) di pojok */}
             <button 
               onClick={() => setSelectedPhoto(null)}
-              className="absolute top-6 right-6 p-2 text-white/50 hover:text-white transition-colors"
+              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-white/50 hover:text-white transition-colors bg-black/20 rounded-full z-10"
             >
               <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
 
-            {/* Foto Membesar */}
-            <div className="w-full rounded-2xl overflow-hidden shadow-[0_0_40px_rgba(255,255,255,0.05)] border border-white/10 mt-8 mb-8">
+            <div className="w-full flex justify-center mt-8 mb-8">
               <img 
                 src={selectedPhoto.src} 
                 alt="Memory Detail" 
-                className="w-full h-auto object-cover max-h-[50vh]"
+                className="max-w-full max-h-[45vh] object-contain rounded-xl shadow-[0_0_40px_rgba(255,255,255,0.05)] border border-white/10"
               />
             </div>
 
-            {/* Teks Spesial */}
-            <div className="w-full px-2 pb-12">
+            <div className="w-full px-2 pb-8">
               <p className="text-[#e5d5d5] font-light leading-loose text-[14px] sm:text-[15px] tracking-wide whitespace-pre-line text-center">
                 {selectedPhoto.text}
               </p>
             </div>
 
-            {/* Tombol Tutup di bawah text */}
             <button
               onClick={() => setSelectedPhoto(null)}
               className="mt-auto mb-8 px-8 py-3 rounded-full border border-white/20 bg-white/5 text-white/70 text-[10px] tracking-[0.3em] uppercase hover:bg-white/10 hover:text-white transition-all duration-300"
             >
-              Kembali
+              Tutup Foto
             </button>
 
           </div>
         </div>
       )}
-      {/* END MODAL */}
 
     </div>
   );
