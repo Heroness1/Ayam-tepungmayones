@@ -25,16 +25,16 @@ export default function Amplop({ onBukaSurat }) {
         isRevealing ? "opacity-0 scale-125 blur-2xl" : "opacity-100 scale-100 blur-0"
       }`}>
         
-        <p className="text-[#c9baba] text-[11px] sm:text-xs tracking-[0.6em] uppercase font-light mb-5 opacity-90 drop-shadow-md">
+        <p className="text-[#c9baba] text-[11px] sm:text-xs tracking-[0.6em] pl-[0.6em] uppercase font-light mb-5 opacity-90 drop-shadow-md text-center">
           Happy Birthday
         </p>
 
-        {/* PERBAIKAN: Ditambahkan 'py-4' dan 'leading-relaxed' agar ekor huruf y dan p tidak terpotong bg-clip-text */}
         <h1 className="text-5xl sm:text-7xl font-serif text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] via-[#f2e6e6] to-[#b39999] tracking-wide text-center mb-10 px-4 py-4 leading-relaxed drop-shadow-lg">
           Tasya Septiani.
         </h1>
 
-        <div className="flex flex-col items-center">
+        {/* CONTAINER TOMBOL & TEKS */}
+        <div className="flex flex-col items-center justify-center w-full">
           <button
             onClick={handleReveal}
             className="group relative flex items-center justify-center w-20 h-20 sm:w-24 sm:h-24 rounded-full border border-white/30 bg-white/10 backdrop-blur-xl shadow-[0_0_25px_rgba(255,255,255,0.05)] transition-all duration-700 hover:scale-105 hover:bg-white/20 hover:border-white/50 hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] overflow-hidden cursor-pointer active:scale-95"
@@ -46,7 +46,8 @@ export default function Amplop({ onBukaSurat }) {
             </svg>
           </button>
           
-          <p className="mt-5 text-[#e5d5d5] text-[10px] sm:text-[11px] tracking-[0.4em] uppercase font-medium drop-shadow-md transition-colors duration-500">
+          {/* PERBAIKAN: Jarak diturunkan jadi mt-8, ditambah pl-[0.4em] untuk penyeimbang tracking, dan text-center */}
+          <p className="mt-8 text-[#e5d5d5] text-[10px] sm:text-[11px] tracking-[0.4em] pl-[0.4em] text-center uppercase font-medium drop-shadow-md transition-colors duration-500">
             {isRevealing ? "Unlocking..." : "Tap to Unlock"}
           </p>
         </div>
