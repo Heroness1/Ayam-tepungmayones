@@ -1,16 +1,20 @@
 import { useState } from "react";
-import ApologyToDiah from "./ApologyToDiah";
-import ForgivePage from "./ForgivePage";
+import Surat from "./components/Surat";
+import HalamanBalasan from "./components/HalamanBalasan";
 
 export default function App() {
-  const [isForgiven, setIsForgiven] = useState(false);
+
+  const [isSelesaiBaca, setIsSelesaiBaca] = useState(false);
 
   return (
     <>
-      {!isForgiven ? (
-        <ApologyToDiah onForgive={() => setIsForgiven(true)} />
+      {!isSelesaiBaca ? (
+        // Menampilkan komponen Surat yang sudah kita buat sebelumnya
+        // Props onSelesai dikirim agar bisa dipanggil dari dalam Surat.jsx
+        <Surat onSelesai={() => setIsSelesaiBaca(true)} />
       ) : (
-        <ForgivePage />
+        // Menampilkan halaman baru setelah surat selesai dibaca
+        <HalamanBalasan />
       )}
     </>
   );
