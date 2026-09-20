@@ -1,25 +1,43 @@
-/* Container pembungkus yang bisa diklik */
+/* --- TEMA MALAM (NIGHT BACKGROUND) --- */
+.night-background {
+  /* Gradien gelap dengan sedikit cahaya bintang */
+  background: radial-gradient(circle at 15% 50%, rgba(255,255,255,0.06), transparent 25%),
+              radial-gradient(circle at 85% 30%, rgba(255,255,255,0.04), transparent 25%),
+              linear-gradient(to bottom, #0f0c29, #302b63, #24243e);
+}
+
+/* --- ANIMASI MELAYANG (FLOATING) --- */
 .envelope-wrapper {
   position: relative;
   cursor: pointer;
-  transition: transform 0.3s ease;
+  z-index: 10;
+  /* Animasi melayang naik-turun tanpa henti */
+  animation: floating 3s ease-in-out infinite; 
+  transition: transform 0.4s ease;
 }
 
-.envelope-wrapper:hover {
-  transform: translateY(-10px); /* Efek melayang saat di-hover */
+@keyframes floating {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
 }
 
-/* Bentuk dasar amplop (Background bagian dalam/belakang) */
+/* Menghentikan efek melayang saat amplop diklik & di-zoom sedikit */
+.envelope-wrapper.is-open {
+  animation: none;
+  transform: scale(1.05);
+}
+
+/* --- DESAIN AMPLOP --- */
 .envelope {
   position: relative;
   width: 320px;
   height: 220px;
-  background: #cbd5e1; /* Warna abu-abu bagian dalam amplop */
+  background: #c2c9d6; /* Bagian dalam amplop */
   border-radius: 8px 8px 12px 12px;
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+  /* Glow keunguan elegan */
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5), 0 0 30px rgba(236, 72, 153, 0.2);
 }
 
-/* Kertas Surat */
 .letter {
   position: absolute;
   width: 280px;
@@ -28,61 +46,110 @@
   top: 15px;
   left: 20px;
   border-radius: 6px;
-  z-index: 2; /* Berada di antara background dan saku depan */
+  z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
   border: 1px solid #f1f5f9;
   
-  /* Animasi delay supaya nunggu tutupnya kebuka dulu baru kertas naik */
-  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+  /* Animasi kertas ditarik (delay 0.5 detik biar penutupnya naik dulu) */
+  transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1) 0.5s;
 }
 
-/* Saku Amplop (Tiga segitiga yang membentuk bagian depan) */
 .pocket {
   position: absolute;
   bottom: 0;
   width: 0;
   height: 0;
-  
-  /* Trik CSS membuat bentuk lipatan amplop menggunakan border */
   border-left: 160px solid #e2e8f0;
   border-right: 160px solid #e2e8f0;
-  border-bottom: 110px solid #f1f5f9;
+  border-bottom: 110px solid #f8fafc; 
   border-top: 110px solid transparent;
-  
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
-  z-index: 3; /* Menutupi kertas surat dari depan */
+  z-index: 3;
 }
 
-/* Tutup Amplop Atas (Flap) */
 .flap {
   position: absolute;
   top: 0;
   width: 0;
   height: 0;
-  
   border-left: 160px solid transparent;
   border-right: 160px solid transparent;
-  border-top: 120px solid #e2e8f0; /* Warna penutup */
-  
-  transform-origin: top; /* Titik putar ada di paling atas */
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.1s 0.3s;
-  z-index: 4; /* Paling depan saat tertutup */
+  border-top: 120px solid #cbd5e1;
+  transform-origin: top;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.1s 0.3s;
+  z-index: 4;
 }
 
-/* ========== AKSI KETIKA DIKLIK (CLASS .is-open) ========== */
+/* --- STEMPEL LILIN (WAX SEAL) --- */
+.wax-seal {
+  position: absolute;
+  bottom: 0px; 
+  left: -25px; /* Berada tepat di titik tengah segitiga flap */
+  width: 50px;
+  height: 50px;
+  /* Warna merah maroon elegan ala kerajaan */
+  background: radial-gradient(circle, #b71c1c, #880e4f);
+  border-radius: 50%;
+  border: 2px solid #ffc107; /* Pinggiran emas */
+  box-shadow: 0 5px 10px rgba(0,0,0,0.4), inset 0 2px 5px rgba(255,255,255,0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  transition: opacity 0.3s ease, transform 0.5s ease;
+}
 
-/* 1. Putar tutup ke atas */
+.wax-text {
+  color: #ffc107;
+  font-family: serif;
+  font-size: 26px;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+  margin-top: -30px; /* Adjust letak huruf supaya pas di tengah stempel */
+}
+
+/* --- AKSI KETIKA DIKLIK --- */
 .envelope-wrapper.is-open .flap {
   transform: rotateX(180deg);
-  z-index: 1; /* Pindahkan tutup ke belakang kertas surat */
+  z-index: 1;
 }
 
-/* 2. Tarik kertas surat sedikit ke atas */
 .envelope-wrapper.is-open .letter {
-  transform: translateY(-60px);
-  z-index: 4; /* Biar kertasnya tidak nyangkut di dalam pas ditarik */
+  transform: translateY(-80px); /* Ditarik lebih tinggi */
+  z-index: 4;
+}
+
+/* Stempel lilin menghilang (seakan-akan dipecahkan) */
+.envelope-wrapper.is-open .wax-seal {
+  opacity: 0;
+  transform: scale(1.5);
+}
+
+/* --- HUJAN LOVE (CONFETTI ANIMATION) --- */
+.hearts-container {
+  position: absolute;
+  top: -50px;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 20;
+}
+
+.heart {
+  position: absolute;
+  font-size: 20px;
+  animation-name: fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  filter: drop-shadow(0 0 5px rgba(255, 0, 100, 0.5));
+}
+
+@keyframes fall {
+  0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
