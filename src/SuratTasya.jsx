@@ -6,6 +6,8 @@ export default function SuratTasya() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   
   const [selectedPhoto, setSelectedPhoto] = useState(null);
+  // STATE BARU: Untuk mengontrol apakah foto sedang dibalik (teks) atau di depan (foto)
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const photos = [
     {
@@ -142,7 +144,10 @@ export default function SuratTasya() {
             {photos.map((photo) => (
               <div 
                 key={photo.id} 
-                onClick={() => setSelectedPhoto(photo)}
+                onClick={() => {
+                  setSelectedPhoto(photo);
+                  setIsFlipped(false); // Pastikan foto selalu menghadap depan saat pertama kali dibuka
+                }}
                 className="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-white/5"
               >
                 <img 
@@ -182,7 +187,6 @@ export default function SuratTasya() {
     }
   };
 
-  // FUNGSI BARU: Mundur ke slide sebelumnya
   const handlePrev = () => {
     if (currentSlide > 0) {
       setIsTransitioning(true);
@@ -222,10 +226,8 @@ export default function SuratTasya() {
         </div>
       </div>
 
-      {/* NAVIGASI TOMBOL (KEMBALI & LANJUTKAN) */}
       <div className={`relative z-20 flex gap-4 h-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
         
-        {/* Tombol Kembali (Muncul kalau bukan di slide 1) */}
         {currentSlide > 0 && (
           <button
             onClick={handlePrev}
@@ -239,7 +241,6 @@ export default function SuratTasya() {
           </button>
         )}
 
-        {/* Tombol Lanjutkan (Sembunyi di slide foto terakhir) */}
         {currentSlide < suratSlides.length - 1 && (
           <button
             onClick={handleNext}
@@ -255,44 +256,73 @@ export default function SuratTasya() {
       </div>
 
       {/* =========================================
-          MODAL / OVERLAY KETIKA FOTO DIKLIK
+          MODAL 3D FLIP CARD
           ========================================= */}
       {selectedPhoto && (
-        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-start bg-black/95 backdrop-blur-3xl overflow-y-auto animate-in fade-in duration-700">
+        <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 backdrop-blur-3xl p-4 sm:p-8 animate-in fade-in duration-700">
           
-          <div className="w-full max-w-lg min-h-screen flex flex-col items-center py-12 px-4 relative">
+          {/* Tombol Tutup (Tetap di luar kartu biar gampang dipencet) */}
+          <button 
+            onClick={() => {
+              setSelectedPhoto(null);
+              setIsFlipped(false); // Reset posisi flip saat ditutup
+            }}
+            className="absolute top-6 right-6 p-3 text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full z-[110]"
+          >
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          {/* CONTAINER PERSPEKTIF 3D */}
+          <div className="group relative w-full max-w-md h-[75vh] [perspective:1500px]">
             
-            <button 
-              onClick={() => setSelectedPhoto(null)}
-              className="absolute top-4 right-4 sm:top-6 sm:right-6 p-2 text-white/50 hover:text-white transition-colors bg-black/20 rounded-full z-10"
+            {/* INNER CARD YANG BERPUTAR */}
+            <div 
+              className={`w-full h-full relative transition-all duration-[800ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] [transform-style:preserve-3d] shadow-[0_0_50px_rgba(255,255,255,0.05)] rounded-2xl ${
+                isFlipped ? '[transform:rotateY(180deg)]' : ''
+              }`}
             >
-              <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+              
+              {/* === SISI DEPAN: FOTO === */}
+              <div 
+                className="absolute inset-0 w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden cursor-pointer bg-[#111] border border-white/10"
+                onClick={() => setIsFlipped(true)}
+              >
+                <img 
+                  src={selectedPhoto.src} 
+                  alt="Memory" 
+                  className="w-full h-full object-contain p-2"
+                />
+                
+                {/* Instruksi Ketuk */}
+                <div className="absolute bottom-6 left-0 w-full flex justify-center animate-pulse">
+                  <span className="bg-black/60 backdrop-blur-md px-6 py-2 rounded-full text-white/80 text-[10px] tracking-widest uppercase border border-white/10">
+                    Ketuk untuk membalik
+                  </span>
+                </div>
+              </div>
 
-            <div className="w-full flex justify-center mt-8 mb-8">
-              <img 
-                src={selectedPhoto.src} 
-                alt="Memory Detail" 
-                className="max-w-full max-h-[45vh] object-contain rounded-xl shadow-[0_0_40px_rgba(255,255,255,0.05)] border border-white/10"
-              />
+              {/* === SISI BELAKANG: TEKS === */}
+              <div 
+                className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-[#0d0d0d] rounded-2xl border border-white/10 p-6 sm:p-8 overflow-y-auto cursor-pointer custom-scrollbar flex flex-col justify-center"
+                onClick={() => setIsFlipped(false)}
+              >
+                <p className="text-[#e5d5d5] font-light leading-relaxed text-[14px] sm:text-[15px] tracking-wide whitespace-pre-line text-center my-auto">
+                  {selectedPhoto.text}
+                </p>
+
+                {/* Instruksi Kembali */}
+                <div className="mt-8 pt-6 border-t border-white/10 text-center flex-shrink-0">
+                  <span className="text-white/40 text-[9px] tracking-[0.3em] uppercase">
+                    Ketuk untuk melihat foto
+                  </span>
+                </div>
+              </div>
+
             </div>
-
-            <div className="w-full px-2 pb-8">
-              <p className="text-[#e5d5d5] font-light leading-loose text-[14px] sm:text-[15px] tracking-wide whitespace-pre-line text-center">
-                {selectedPhoto.text}
-              </p>
-            </div>
-
-            <button
-              onClick={() => setSelectedPhoto(null)}
-              className="mt-auto mb-8 px-8 py-3 rounded-full border border-white/20 bg-white/5 text-white/70 text-[10px] tracking-[0.3em] uppercase hover:bg-white/10 hover:text-white transition-all duration-300"
-            >
-              Tutup Foto
-            </button>
-
           </div>
+          
         </div>
       )}
 
