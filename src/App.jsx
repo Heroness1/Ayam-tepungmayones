@@ -1,20 +1,19 @@
-import { useState } from "react";
-import Surat from "./components/Surat";
-import HalamanBalasan from "./components/HalamanBalasan";
+import React, { useState } from "react";
+import Amplop from "./Amplop"; // Komponen Landing Page Amplop
+import SuratTasya from "./SuratTasya"; // Ini halaman isi surat yg template putih tadi
+// import ForgivePage from "./ForgivePage"; // Atau pakai nama komponen yang kamu mau
 
 export default function App() {
-
-  const [isSelesaiBaca, setIsSelesaiBaca] = useState(false);
+  const [isAmplopTerbuka, setIsAmplopTerbuka] = useState(false);
 
   return (
     <>
-      {!isSelesaiBaca ? (
-        // Menampilkan komponen Surat yang sudah kita buat sebelumnya
-        // Props onSelesai dikirim agar bisa dipanggil dari dalam Surat.jsx
-        <Surat onSelesai={() => setIsSelesaiBaca(true)} />
+      {!isAmplopTerbuka ? (
+        // Tampilkan landing page amplop
+        <Amplop onBukaSurat={() => setIsAmplopTerbuka(true)} />
       ) : (
-        // Menampilkan halaman baru setelah surat selesai dibaca
-        <HalamanBalasan />
+        // Jika amplop sudah diklik dan animasi selesai, tampilkan isi suratnya
+        <SuratTasya /> 
       )}
     </>
   );
