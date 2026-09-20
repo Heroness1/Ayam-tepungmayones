@@ -1,0 +1,88 @@
+/* Container pembungkus yang bisa diklik */
+.envelope-wrapper {
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.envelope-wrapper:hover {
+  transform: translateY(-10px); /* Efek melayang saat di-hover */
+}
+
+/* Bentuk dasar amplop (Background bagian dalam/belakang) */
+.envelope {
+  position: relative;
+  width: 320px;
+  height: 220px;
+  background: #cbd5e1; /* Warna abu-abu bagian dalam amplop */
+  border-radius: 8px 8px 12px 12px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+/* Kertas Surat */
+.letter {
+  position: absolute;
+  width: 280px;
+  height: 190px;
+  background: #ffffff;
+  top: 15px;
+  left: 20px;
+  border-radius: 6px;
+  z-index: 2; /* Berada di antara background dan saku depan */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: 1px solid #f1f5f9;
+  
+  /* Animasi delay supaya nunggu tutupnya kebuka dulu baru kertas naik */
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1) 0.3s;
+}
+
+/* Saku Amplop (Tiga segitiga yang membentuk bagian depan) */
+.pocket {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 0;
+  
+  /* Trik CSS membuat bentuk lipatan amplop menggunakan border */
+  border-left: 160px solid #e2e8f0;
+  border-right: 160px solid #e2e8f0;
+  border-bottom: 110px solid #f1f5f9;
+  border-top: 110px solid transparent;
+  
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  z-index: 3; /* Menutupi kertas surat dari depan */
+}
+
+/* Tutup Amplop Atas (Flap) */
+.flap {
+  position: absolute;
+  top: 0;
+  width: 0;
+  height: 0;
+  
+  border-left: 160px solid transparent;
+  border-right: 160px solid transparent;
+  border-top: 120px solid #e2e8f0; /* Warna penutup */
+  
+  transform-origin: top; /* Titik putar ada di paling atas */
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), z-index 0.1s 0.3s;
+  z-index: 4; /* Paling depan saat tertutup */
+}
+
+/* ========== AKSI KETIKA DIKLIK (CLASS .is-open) ========== */
+
+/* 1. Putar tutup ke atas */
+.envelope-wrapper.is-open .flap {
+  transform: rotateX(180deg);
+  z-index: 1; /* Pindahkan tutup ke belakang kertas surat */
+}
+
+/* 2. Tarik kertas surat sedikit ke atas */
+.envelope-wrapper.is-open .letter {
+  transform: translateY(-60px);
+  z-index: 4; /* Biar kertasnya tidak nyangkut di dalam pas ditarik */
+}
