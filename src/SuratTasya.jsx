@@ -7,8 +7,6 @@ export default function SuratTasya() {
   
   const [selectedPhoto, setSelectedPhoto] = useState(null);
   const [isFlipped, setIsFlipped] = useState(false);
-
-  // STATE BARU: Untuk trigger animasi penutupan "Lock"
   const [isLocked, setIsLocked] = useState(false);
 
   const photos = [
@@ -171,7 +169,6 @@ export default function SuratTasya() {
         </div>
       )
     },
-    // SLIDE 9: THE CLOSING (TANTANGAN FINAL)
     {
       id: 9,
       content: (
@@ -188,7 +185,6 @@ export default function SuratTasya() {
             className="group relative flex flex-col items-center gap-3 transition-transform duration-500 hover:scale-105"
           >
             <div className="w-16 h-16 rounded-full border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] transition-all duration-500">
-              {/* Ikon Gembok (Lock) */}
               <svg className="w-6 h-6 text-[#e5d5d5] group-hover:text-white transition-colors duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
               </svg>
@@ -229,14 +225,11 @@ export default function SuratTasya() {
   };
 
   return (
-    // Background Utama. Jika dilock, layarnya benar-benar dipaksa hitam pekat
     <div className={`min-h-[100dvh] flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans selection:bg-rose-500/30 transition-colors duration-[2000ms] ease-in-out ${isLocked ? 'bg-[#000000]' : 'bg-[#030303]'}`}>
       
-      {/* AURA MEWAH (Hilang saat dikunci) */}
       <div className={`fixed top-[-10%] left-[-10%] w-[80vw] h-[80vw] bg-[#3a0815] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift opacity-40 pointer-events-none transition-opacity duration-[2000ms] ${isLocked ? 'opacity-0' : 'opacity-40'}`}></div>
       <div className={`fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#5c162e] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift-reverse opacity-40 pointer-events-none transition-opacity duration-[2000ms] ${isLocked ? 'opacity-0' : 'opacity-40'}`}></div>
 
-      {/* Konten Surat (Menghilang dan mengecil saat dikunci) */}
       <div className={`w-full max-w-lg flex flex-col items-center transition-all duration-[2000ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${isLocked ? 'scale-75 opacity-0 blur-xl pointer-events-none' : 'scale-100 opacity-100 blur-0'}`}>
         
         <div className={`absolute top-0 flex gap-2 z-20 transition-opacity duration-1000 ${isVisible && currentSlide < suratSlides.length - 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -292,27 +285,24 @@ export default function SuratTasya() {
       </div>
 
       {/* =========================================
-          THE FINAL POST-CREDIT SCENE (Muncul setelah dikunci)
+          THE FINAL POST-CREDIT SCENE (Tombol Kembali ke Awal)
           ========================================= */}
       <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center p-8 transition-all duration-[3000ms] delay-1000 ${isLocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <p className="font-serif text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#e5d5d5] to-[#b39999] tracking-widest text-center mb-16 drop-shadow-lg">
           Jaga dirimu baik-baik di sana.
         </p>
 
-        {/* Tautan WhatsApp Rahasia. GANTI NOMORNYA DENGAN NOMOR LU BRO! */}
-        <a 
-          href="https://wa.me/6281234567890?text=Hai%20Adam,%20aku%20udah%20baca%20semuanya...%20Makasih%20ya" 
-          target="_blank" 
-          rel="noopener noreferrer"
-          className="text-[#594d4d] text-[10px] tracking-[0.4em] uppercase hover:text-[#c9baba] transition-colors duration-700 flex items-center gap-2 border-b border-transparent hover:border-[#c9baba] pb-1"
+        {/* Tombol Restart / Balik ke halaman "Tap to Unlock" */}
+        <button 
+          onClick={() => window.location.reload()}
+          className="text-[#594d4d] text-[10px] tracking-[0.4em] uppercase hover:text-[#c9baba] transition-colors duration-700 flex items-center gap-2 border-b border-transparent hover:border-[#c9baba] pb-1 cursor-pointer"
         >
-          Sapa Adam
           <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
           </svg>
-        </a>
+          Kembali ke Awal
+        </button>
       </div>
-
 
       {/* =========================================
           MODAL 3D FLIP CARD
