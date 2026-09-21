@@ -6,8 +6,10 @@ export default function SuratTasya() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   
   const [selectedPhoto, setSelectedPhoto] = useState(null);
-  // STATE BARU: Untuk mengontrol apakah foto sedang dibalik (teks) atau di depan (foto)
   const [isFlipped, setIsFlipped] = useState(false);
+
+  // STATE BARU: Untuk trigger animasi penutupan "Lock"
+  const [isLocked, setIsLocked] = useState(false);
 
   const photos = [
     {
@@ -146,7 +148,7 @@ export default function SuratTasya() {
                 key={photo.id} 
                 onClick={() => {
                   setSelectedPhoto(photo);
-                  setIsFlipped(false); // Pastikan foto selalu menghadap depan saat pertama kali dibuka
+                  setIsFlipped(false);
                 }}
                 className="group cursor-pointer relative aspect-square rounded-2xl overflow-hidden border border-white/10 shadow-lg bg-white/5"
               >
@@ -166,6 +168,35 @@ export default function SuratTasya() {
           <p className="text-[#a39494] text-[10px] sm:text-[11px] mt-8 tracking-widest font-light opacity-80">
             Buka satu per satu.
           </p>
+        </div>
+      )
+    },
+    // SLIDE 9: THE CLOSING (TANTANGAN FINAL)
+    {
+      id: 9,
+      content: (
+        <div className="flex flex-col items-center justify-center w-full min-h-[300px]">
+          <p className="text-[#d1c5c5] text-[14px] sm:text-[15px] font-light leading-relaxed tracking-wide text-center mb-6">
+            Setiap cerita memiliki babnya masing-masing.
+          </p>
+          <p className="text-[#c9baba] text-[14px] sm:text-[15px] font-light leading-relaxed tracking-wide text-center mb-16">
+            Apapun pilihanmu ke depannya, memori ini akan selalu tersimpan aman di sini.
+          </p>
+          
+          <button
+            onClick={() => setIsLocked(true)}
+            className="group relative flex flex-col items-center gap-3 transition-transform duration-500 hover:scale-105"
+          >
+            <div className="w-16 h-16 rounded-full border border-white/20 bg-white/5 backdrop-blur-md flex items-center justify-center shadow-[0_0_30px_rgba(255,255,255,0.05)] group-hover:shadow-[0_0_40px_rgba(255,255,255,0.15)] transition-all duration-500">
+              {/* Ikon Gembok (Lock) */}
+              <svg className="w-6 h-6 text-[#e5d5d5] group-hover:text-white transition-colors duration-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+            </div>
+            <span className="text-[#a39494] text-[9px] sm:text-[10px] tracking-[0.3em] uppercase group-hover:text-[#e5d5d5] transition-colors duration-500">
+              Kunci Kembali
+            </span>
+          </button>
         </div>
       )
     }
@@ -198,74 +229,100 @@ export default function SuratTasya() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-[#030303] flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans selection:bg-rose-500/30">
+    // Background Utama. Jika dilock, layarnya benar-benar dipaksa hitam pekat
+    <div className={`min-h-[100dvh] flex flex-col items-center justify-center p-4 sm:p-8 relative overflow-hidden font-sans selection:bg-rose-500/30 transition-colors duration-[2000ms] ease-in-out ${isLocked ? 'bg-[#000000]' : 'bg-[#030303]'}`}>
       
-      <div className="fixed top-[-10%] left-[-10%] w-[80vw] h-[80vw] bg-[#3a0815] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift opacity-40 pointer-events-none"></div>
-      <div className="fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#5c162e] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift-reverse opacity-40 pointer-events-none"></div>
+      {/* AURA MEWAH (Hilang saat dikunci) */}
+      <div className={`fixed top-[-10%] left-[-10%] w-[80vw] h-[80vw] bg-[#3a0815] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift opacity-40 pointer-events-none transition-opacity duration-[2000ms] ${isLocked ? 'opacity-0' : 'opacity-40'}`}></div>
+      <div className={`fixed bottom-[-10%] right-[-10%] w-[70vw] h-[70vw] bg-[#5c162e] rounded-full mix-blend-screen filter blur-[150px] animate-slow-drift-reverse opacity-40 pointer-events-none transition-opacity duration-[2000ms] ${isLocked ? 'opacity-0' : 'opacity-40'}`}></div>
 
-      <div className={`absolute top-10 flex gap-2 z-20 transition-opacity duration-1000 ${isVisible && currentSlide < suratSlides.length - 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-        {suratSlides.slice(0, 7).map((_, index) => (
-          <div 
-            key={index} 
-            className={`h-1 rounded-full transition-all duration-500 ${
-              index === currentSlide ? 'w-6 bg-white/80' : index < currentSlide ? 'w-2 bg-white/40' : 'w-2 bg-white/10'
-            }`}
-          />
-        ))}
-      </div>
+      {/* Konten Surat (Menghilang dan mengecil saat dikunci) */}
+      <div className={`w-full max-w-lg flex flex-col items-center transition-all duration-[2000ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${isLocked ? 'scale-75 opacity-0 blur-xl pointer-events-none' : 'scale-100 opacity-100 blur-0'}`}>
+        
+        <div className={`absolute top-0 flex gap-2 z-20 transition-opacity duration-1000 ${isVisible && currentSlide < suratSlides.length - 1 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+          {suratSlides.slice(0, 7).map((_, index) => (
+            <div 
+              key={index} 
+              className={`h-1 rounded-full transition-all duration-500 ${
+                index === currentSlide ? 'w-6 bg-white/80' : index < currentSlide ? 'w-2 bg-white/40' : 'w-2 bg-white/10'
+              }`}
+            />
+          ))}
+        </div>
 
-      <div 
-        className={`relative z-10 w-full max-w-lg min-h-[350px] flex flex-col justify-center bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-[2rem] p-6 sm:p-12 my-8 transition-all duration-[1500ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${
-          isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
-        }`}
-      >
-        <div className={`transition-all duration-500 ease-in-out flex-grow flex flex-col justify-center ${
-          isTransitioning ? "opacity-0 scale-95 filter blur-sm" : "opacity-100 scale-100 filter blur-0"
-        }`}>
-          {suratSlides[currentSlide].content}
+        <div 
+          className={`relative z-10 w-full min-h-[350px] flex flex-col justify-center bg-white/[0.03] backdrop-blur-2xl border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.5)] rounded-[2rem] p-6 sm:p-12 my-8 transition-all duration-[1500ms] ease-[cubic-bezier(0.25,1,0.5,1)] ${
+            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-12"
+          }`}
+        >
+          <div className={`transition-all duration-500 ease-in-out flex-grow flex flex-col justify-center ${
+            isTransitioning ? "opacity-0 scale-95 filter blur-sm" : "opacity-100 scale-100 filter blur-0"
+          }`}>
+            {suratSlides[currentSlide].content}
+          </div>
+        </div>
+
+        <div className={`relative z-20 flex gap-4 h-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+          {currentSlide > 0 && (
+            <button
+              onClick={handlePrev}
+              disabled={isTransitioning}
+              className="group flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-transparent text-[#a39494] text-[10px] tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white/5 hover:border-white/30 hover:text-white"
+            >
+              <svg className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Kembali
+            </button>
+          )}
+
+          {currentSlide < suratSlides.length - 1 && (
+            <button
+              onClick={handleNext}
+              disabled={isTransitioning}
+              className="group flex items-center gap-2 px-8 py-3 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-[#d1c5c5] text-xs tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:text-white"
+            >
+              Lanjutkan
+              <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          )}
         </div>
       </div>
 
-      <div className={`relative z-20 flex gap-4 h-16 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
-        
-        {currentSlide > 0 && (
-          <button
-            onClick={handlePrev}
-            disabled={isTransitioning}
-            className="group flex items-center gap-2 px-6 py-3 rounded-full border border-white/10 bg-transparent text-[#a39494] text-[10px] tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white/5 hover:border-white/30 hover:text-white"
-          >
-            <svg className="w-3.5 h-3.5 transition-transform duration-500 group-hover:-translate-x-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Kembali
-          </button>
-        )}
+      {/* =========================================
+          THE FINAL POST-CREDIT SCENE (Muncul setelah dikunci)
+          ========================================= */}
+      <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center p-8 transition-all duration-[3000ms] delay-1000 ${isLocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+        <p className="font-serif text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#e5d5d5] to-[#b39999] tracking-widest text-center mb-16 drop-shadow-lg">
+          Jaga dirimu baik-baik di sana.
+        </p>
 
-        {currentSlide < suratSlides.length - 1 && (
-          <button
-            onClick={handleNext}
-            disabled={isTransitioning}
-            className="group flex items-center gap-2 px-8 py-3 rounded-full border border-white/20 bg-white/5 backdrop-blur-md text-[#d1c5c5] text-xs tracking-[0.2em] uppercase transition-all duration-500 hover:bg-white/10 hover:border-white/40 hover:text-white"
-          >
-            Lanjutkan
-            <svg className="w-4 h-4 transition-transform duration-500 group-hover:translate-x-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
-          </button>
-        )}
+        {/* Tautan WhatsApp Rahasia. GANTI NOMORNYA DENGAN NOMOR LU BRO! */}
+        <a 
+          href="https://wa.me/6281234567890?text=Hai%20Adam,%20aku%20udah%20baca%20semuanya...%20Makasih%20ya" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="text-[#594d4d] text-[10px] tracking-[0.4em] uppercase hover:text-[#c9baba] transition-colors duration-700 flex items-center gap-2 border-b border-transparent hover:border-[#c9baba] pb-1"
+        >
+          Sapa Adam
+          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </a>
       </div>
+
 
       {/* =========================================
           MODAL 3D FLIP CARD
           ========================================= */}
       {selectedPhoto && (
         <div className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-black/95 backdrop-blur-3xl p-4 sm:p-8 animate-in fade-in duration-700">
-          
-          {/* Tombol Tutup (Tetap di luar kartu biar gampang dipencet) */}
           <button 
             onClick={() => {
               setSelectedPhoto(null);
-              setIsFlipped(false); // Reset posisi flip saat ditutup
+              setIsFlipped(false);
             }}
             className="absolute top-6 right-6 p-3 text-white/50 hover:text-white transition-colors bg-white/5 hover:bg-white/10 rounded-full z-[110]"
           >
@@ -274,58 +331,30 @@ export default function SuratTasya() {
             </svg>
           </button>
 
-          {/* CONTAINER PERSPEKTIF 3D */}
           <div className="group relative w-full max-w-md h-[75vh] [perspective:1500px]">
-            
-            {/* INNER CARD YANG BERPUTAR */}
-            <div 
-              className={`w-full h-full relative transition-all duration-[800ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] [transform-style:preserve-3d] shadow-[0_0_50px_rgba(255,255,255,0.05)] rounded-2xl ${
-                isFlipped ? '[transform:rotateY(180deg)]' : ''
-              }`}
-            >
-              
-              {/* === SISI DEPAN: FOTO === */}
+            <div className={`w-full h-full relative transition-all duration-[800ms] ease-[cubic-bezier(0.175,0.885,0.32,1.275)] [transform-style:preserve-3d] shadow-[0_0_50px_rgba(255,255,255,0.05)] rounded-2xl ${isFlipped ? '[transform:rotateY(180deg)]' : ''}`}>
               <div 
                 className="absolute inset-0 w-full h-full [backface-visibility:hidden] rounded-2xl overflow-hidden cursor-pointer bg-[#111] border border-white/10"
                 onClick={() => setIsFlipped(true)}
               >
-                <img 
-                  src={selectedPhoto.src} 
-                  alt="Memory" 
-                  className="w-full h-full object-contain p-2"
-                />
-                
-                {/* Instruksi Ketuk */}
+                <img src={selectedPhoto.src} alt="Memory" className="w-full h-full object-contain p-2"/>
                 <div className="absolute bottom-6 left-0 w-full flex justify-center animate-pulse">
-                  <span className="bg-black/60 backdrop-blur-md px-6 py-2 rounded-full text-white/80 text-[10px] tracking-widest uppercase border border-white/10">
-                    Ketuk untuk membalik
-                  </span>
+                  <span className="bg-black/60 backdrop-blur-md px-6 py-2 rounded-full text-white/80 text-[10px] tracking-widest uppercase border border-white/10">Ketuk untuk membalik</span>
                 </div>
               </div>
-
-              {/* === SISI BELAKANG: TEKS === */}
               <div 
                 className="absolute inset-0 w-full h-full [backface-visibility:hidden] [transform:rotateY(180deg)] bg-[#0d0d0d] rounded-2xl border border-white/10 p-6 sm:p-8 overflow-y-auto cursor-pointer custom-scrollbar flex flex-col justify-center"
                 onClick={() => setIsFlipped(false)}
               >
-                <p className="text-[#e5d5d5] font-light leading-relaxed text-[14px] sm:text-[15px] tracking-wide whitespace-pre-line text-center my-auto">
-                  {selectedPhoto.text}
-                </p>
-
-                {/* Instruksi Kembali */}
+                <p className="text-[#e5d5d5] font-light leading-relaxed text-[14px] sm:text-[15px] tracking-wide whitespace-pre-line text-center my-auto">{selectedPhoto.text}</p>
                 <div className="mt-8 pt-6 border-t border-white/10 text-center flex-shrink-0">
-                  <span className="text-white/40 text-[9px] tracking-[0.3em] uppercase">
-                    Ketuk untuk melihat foto
-                  </span>
+                  <span className="text-white/40 text-[9px] tracking-[0.3em] uppercase">Ketuk untuk melihat foto</span>
                 </div>
               </div>
-
             </div>
           </div>
-          
         </div>
       )}
-
     </div>
   );
 }
