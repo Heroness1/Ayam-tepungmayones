@@ -114,7 +114,7 @@ export default function SuratTasya() {
         </>
       )
     },
-            {
+                {
       id: 7,
       content: (
         <div className="flex flex-col items-center">
@@ -126,25 +126,20 @@ export default function SuratTasya() {
               Hope you always be my great expectation.
             </p>
             
-            {/* =========================================
-                MARQUEE CONTAINER DENGAN EFEK FADE DI UJUNG
-                ========================================= */}
             <div 
-              className="w-full relative flex overflow-hidden"
+              className="w-full relative flex overflow-hidden mb-3"
               style={{
-                // Trik Masking: Bikin kiri 15% transparan, kanan 15% transparan, tengah solid
                 WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
                 maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)'
               }}
             >
-              {/* Animasi berjalan ke kiri (12 detik per putaran) */}
-              <div className="flex w-max animate-[tasyaMarquee_12s_linear_infinite]">
+              <div className="flex w-max animate-[tasyaMarquee_10s_linear_infinite]">
                 
-                {/* Teks diulang 4 kali secara berjejer supaya efek loopingnya nggak putus */}
-                {[1, 2, 3, 4].map((item) => (
-                  <div key={item} className="flex-shrink-0 px-8 flex flex-col justify-center items-center">
-                    <p className="font-serif text-3xl sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#ffffff] via-[#f2e6e6] to-[#b39999] py-2 text-center leading-tight">
-                      Happy born day,<br/>Tasya ❣️
+                {/* Teks "Happy born day" tanpa koma */}
+                {[1, 2, 3, 4, 5, 6].map((item) => (
+                  <div key={item} className="flex-shrink-0 px-6 flex flex-col justify-center items-center">
+                    <p className="font-serif text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-r from-[#ffffff] via-[#f2e6e6] to-[#b39999] py-1 text-center italic opacity-80">
+                      Happy born day
                     </p>
                   </div>
                 ))}
@@ -152,11 +147,13 @@ export default function SuratTasya() {
               </div>
             </div>
 
-            {/* Injeksi Keyframes CSS khusus untuk animasi berjalannya */}
+            <p className="font-serif text-4xl sm:text-5xl text-transparent bg-clip-text bg-gradient-to-r from-[#ffffff] via-[#f2e6e6] to-[#b39999] py-2 drop-shadow-xl relative z-10">
+              Tasya ❣️
+            </p>
+
             <style>{`
               @keyframes tasyaMarquee {
                 0% { transform: translateX(0%); }
-                /* Karena ada 4 item, geser 50% akan membuat item ke-3 menggantikan posisi item ke-1 dengan sempurna (Seamless Loop) */
                 100% { transform: translateX(-50%); } 
               }
             `}</style>
@@ -164,6 +161,7 @@ export default function SuratTasya() {
         </div>
       )
     },
+
 
 
     {
