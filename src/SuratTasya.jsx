@@ -209,7 +209,7 @@ export default function SuratTasya() {
             Setiap cerita memiliki babnya masing-masing.
           </p>
           <p className="text-[#c9baba] text-[14px] sm:text-[15px] font-light leading-relaxed tracking-wide text-center mb-16">
-            Apapun pilihanmu ke depannya, memori ini akan selalu tersimpan aman di sini.
+            Aku selalu dukung apapun pilihan kamu.. Aku yakin kamu bisa menentukan yang terbaik buat kamu❣️
           </p>
           
           <button
@@ -321,7 +321,7 @@ export default function SuratTasya() {
           ========================================= */}
       <div className={`absolute inset-0 z-50 flex flex-col items-center justify-center p-8 transition-all duration-[3000ms] delay-1000 ${isLocked ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
         <p className="font-serif text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#e5d5d5] to-[#b39999] tracking-widest text-center mb-16 drop-shadow-lg">
-          Jaga dirimu baik-baik di sana.
+          Aku akan selalu ada buat kamu loving u all time.
         </p>
 
         {/* Tombol Restart / Balik ke halaman "Tap to Unlock" */}
