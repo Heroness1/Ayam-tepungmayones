@@ -114,42 +114,57 @@ export default function SuratTasya() {
         </>
       )
     },
-        {
+            {
       id: 7,
       content: (
-        <div className="flex flex-col items-center justify-center">
-          <p className="text-[#d1c5c5] text-[14px] sm:text-[15px] font-light leading-relaxed tracking-wide text-center mb-16">
+        <div className="flex flex-col items-center">
+          <p className="text-[#d1c5c5] text-[14px] sm:text-[15px] font-light leading-relaxed tracking-wide text-center mb-10">
             Hmm.. Cuma ini yang bisa aku ucapkan. Aku belum bisa memberikan apapun ke kamu di hari spesial kamu kali ini.
           </p>
-          
-          {/* =========================================
-              CINEMATIC TITLE CARD VIBES
-              ========================================= */}
-          <div className="w-full text-center flex flex-col items-center justify-center mt-2">
-            
-            {/* Ornamen vertikal pudar ala lensa/frame film */}
-            <div className="w-[1px] h-10 bg-gradient-to-b from-transparent to-white/30 mb-6"></div>
-            
-            {/* Subtitle ala "A FILM BY" (Kecil, jarak huruf sangat jauh) */}
-            <p className="font-sans font-light text-[#a39494] tracking-[0.5em] sm:tracking-[0.7em] pl-[0.7em] text-[8px] sm:text-[9px] uppercase mb-8 opacity-80">
+          <div className="pt-8 pb-4 border-t border-white/10 w-full text-center flex flex-col items-center overflow-hidden">
+            <p className="font-medium text-[#e5d5d5] tracking-[0.3em] text-[10px] sm:text-xs uppercase mb-8 opacity-80">
               Hope you always be my great expectation.
             </p>
             
-            {/* Main Title (Dramatis, pecah 2 baris dengan ukuran berbeda) */}
-            <p className="font-serif text-2xl sm:text-3xl text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] via-[#e5d5d5] to-[#8c7a7a] tracking-[0.2em] pl-[0.2em] py-1 drop-shadow-2xl">
-              Happy born day,
-            </p>
-            <p className="font-serif text-5xl sm:text-6xl text-transparent bg-clip-text bg-gradient-to-r from-[#ffffff] to-[#b39999] tracking-widest mt-3 drop-shadow-2xl">
-              Tasya ❣️
-            </p>
+            {/* =========================================
+                MARQUEE CONTAINER DENGAN EFEK FADE DI UJUNG
+                ========================================= */}
+            <div 
+              className="w-full relative flex overflow-hidden"
+              style={{
+                // Trik Masking: Bikin kiri 15% transparan, kanan 15% transparan, tengah solid
+                WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)',
+                maskImage: 'linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%)'
+              }}
+            >
+              {/* Animasi berjalan ke kiri (12 detik per putaran) */}
+              <div className="flex w-max animate-[tasyaMarquee_12s_linear_infinite]">
+                
+                {/* Teks diulang 4 kali secara berjejer supaya efek loopingnya nggak putus */}
+                {[1, 2, 3, 4].map((item) => (
+                  <div key={item} className="flex-shrink-0 px-8 flex flex-col justify-center items-center">
+                    <p className="font-serif text-3xl sm:text-4xl text-transparent bg-clip-text bg-gradient-to-r from-[#ffffff] via-[#f2e6e6] to-[#b39999] py-2 text-center leading-tight">
+                      Happy born day,<br/>Tasya ❣️
+                    </p>
+                  </div>
+                ))}
 
-            {/* Ornamen vertikal bawah */}
-            <div className="w-[1px] h-10 bg-gradient-to-t from-transparent to-white/30 mt-10"></div>
-            
+              </div>
+            </div>
+
+            {/* Injeksi Keyframes CSS khusus untuk animasi berjalannya */}
+            <style>{`
+              @keyframes tasyaMarquee {
+                0% { transform: translateX(0%); }
+                /* Karena ada 4 item, geser 50% akan membuat item ke-3 menggantikan posisi item ke-1 dengan sempurna (Seamless Loop) */
+                100% { transform: translateX(-50%); } 
+              }
+            `}</style>
           </div>
         </div>
       )
     },
+
 
     {
       id: 8,
