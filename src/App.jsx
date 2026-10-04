@@ -1,10 +1,9 @@
-import React, { useState, useRef } from "react";
+import React, { useRef, useState } from "react";
 import Amplop from "./Amplop";
 import SuratAnnabey from "./SuratAnnabey";
 
 export default function App() {
   const [isAmplopTerbuka, setIsAmplopTerbuka] = useState(false);
-
   const audioRef = useRef(null);
 
   const handleBukaSurat = () => {
@@ -14,7 +13,7 @@ export default function App() {
       audioRef.current.volume = 0.5;
 
       audioRef.current.play().catch((err) => {
-        console.log("Audio autoplay dicegah oleh browser:", err);
+        console.log("Audio autoplay dicegah browser:", err);
       });
     }
   };
