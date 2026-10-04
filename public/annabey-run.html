@@ -2,4197 +2,771 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-
-<meta
-  name="viewport"
-  content="
-    width=device-width,
-    initial-scale=1,
-    maximum-scale=1,
-    user-scalable=no,
-    viewport-fit=cover
-  "
->
-
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#05030d">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta
-  name="apple-mobile-web-app-status-bar-style"
-  content="black-translucent"
->
-
-<title>Annabey Run</title>
-
+<title>Annabey Run - 3D Dimensions</title>
 <style>
-
 /* =========================================================
-   RESET
+   RESET & UI STYLES (Tetap sama seperti versi aslimu)
 ========================================================= */
-
-*{
-  box-sizing:border-box;
-  -webkit-tap-highlight-color:transparent;
-}
-
-html,
-body{
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:0;
-
-  overflow:hidden;
-
-  background:#05030d;
-  color:#fff;
-
-  font-family:
-    Inter,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-
-  touch-action:none;
-
-  user-select:none;
-  -webkit-user-select:none;
-
-  overscroll-behavior:none;
-}
-
-body{
-  position:fixed;
-  inset:0;
-}
-
-button{
-  font:inherit;
-  border:0;
-  outline:0;
-}
-
-
-/* =========================================================
-   GAME
-========================================================= */
-
-.game{
-  position:fixed;
-  inset:0;
-
-  width:100%;
-  height:100%;
-
-  overflow:hidden;
-
-  background:#05030d;
-}
-
-canvas{
-  position:absolute;
-  inset:0;
-
-  width:100%;
-  height:100%;
-
-  display:block;
-}
-
-
-/* =========================================================
-   ATMOSPHERE
-========================================================= */
-
-.ambient{
-  position:absolute;
-  inset:0;
-
-  pointer-events:none;
-
-  background:
-    radial-gradient(
-      ellipse at 50% 35%,
-      rgba(72,76,190,.10),
-      transparent 55%
-    ),
-    radial-gradient(
-      ellipse at 50% 100%,
-      rgba(255,0,190,.07),
-      transparent 45%
-    );
-
-  mix-blend-mode:screen;
-
-  z-index:2;
-}
-
-.vignette{
-  position:absolute;
-  inset:0;
-
-  pointer-events:none;
-
-  background:
-    radial-gradient(
-      ellipse at center,
-      transparent 45%,
-      rgba(0,0,0,.35) 100%
-    );
-
-  z-index:8;
-}
-
-.grain{
-  position:absolute;
-  inset:-50%;
-
-  pointer-events:none;
-
-  opacity:.035;
-
-  background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-
-  animation:
-    grain .22s steps(2) infinite;
-
-  z-index:9;
-}
-
-
-/* =========================================================
-   NEON LOGO
-========================================================= */
-
-.logo-wrap{
-  position:absolute;
-
-  top:
-    max(
-      52px,
-      env(safe-area-inset-top)
-    );
-
-  left:50%;
-
-  transform:
-    translateX(-50%);
-
-  z-index:12;
-
-  pointer-events:none;
-
-  text-align:center;
-
-  animation:
-    logoFloat 4s ease-in-out infinite;
-}
-
-.logo{
-  position:relative;
-
-  display:inline-block;
-
-  font-family:
-    Georgia,
-    "Times New Roman",
-    serif;
-
-  font-size:
-    clamp(
-      37px,
-      11vw,
-      68px
-    );
-
-  font-weight:700;
-
-  font-style:italic;
-
-  letter-spacing:-.08em;
-
-  line-height:.8;
-
-  color:#fff;
-
-  transform:skewX(-6deg);
-
-  text-shadow:
-    0 0 4px #fff,
-    0 0 10px #b8a2ff,
-    0 0 22px #8c5cff,
-    0 0 42px #713bff,
-    0 0 70px rgba(255,0,214,.65);
-
-  animation:
-    logoGlow 2.6s ease-in-out infinite;
-}
-
-.logo::before{
-  content:"✦";
-
-  position:absolute;
-
-  top:-23px;
-  left:50%;
-
-  transform:
-    translateX(-50%)
-    rotate(-8deg);
-
-  font-size:18px;
-
-  color:#fff;
-
-  text-shadow:
-    0 0 8px #fff,
-    0 0 20px #7d5cff,
-    0 0 35px #ff39dd;
-
-  animation:
-    crownPulse 1.8s ease-in-out infinite;
-}
-
-.logo::after{
-  content:"";
-
-  position:absolute;
-
-  left:-12%;
-  right:-12%;
-
-  bottom:-9px;
-
-  height:3px;
-
-  border-radius:100%;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      #35e7ff,
-      #fff,
-      #ff35df,
-      transparent
-    );
-
-  box-shadow:
-    0 0 8px #35e7ff,
-    0 0 18px #ff35df;
-
-  transform:rotate(-3deg);
-
-  opacity:.8;
-}
-
-
-/* =========================================================
-   SCORE
-========================================================= */
-
-.top-ui{
-  position:absolute;
-
-  top:
-    max(
-      10px,
-      env(safe-area-inset-top)
-    );
-
-  left:0;
-  right:0;
-
-  padding:
-    10px
-    max(18px,env(safe-area-inset-right))
-    0
-    max(18px,env(safe-area-inset-left));
-
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-
-  z-index:13;
-
-  pointer-events:none;
-}
-
-.back{
-  width:42px;
-  height:42px;
-
-  border-radius:50%;
-
-  color:#fff;
-
-  background:
-    rgba(8,6,20,.45);
-
-  border:
-    1px solid
-    rgba(145,110,255,.28);
-
-  box-shadow:
-    0 0 20px rgba(110,60,255,.15),
-    inset 0 0 15px rgba(255,255,255,.04);
-
-  backdrop-filter:blur(14px);
-
-  pointer-events:auto;
-
-  font-size:21px;
-
-  display:grid;
-  place-items:center;
-
-  transition:
-    transform .18s ease;
-}
-
-.back:active{
-  transform:scale(.86);
-}
-
-.score{
-  text-align:right;
-}
-
-.score-label{
-  display:block;
-
-  font-size:7px;
-
-  letter-spacing:.35em;
-
-  color:
-    rgba(255,255,255,.38);
-}
-
-.score-value{
-  display:block;
-
-  margin-top:3px;
-
-  font-family:monospace;
-
-  font-size:16px;
-
-  font-weight:600;
-
-  letter-spacing:.12em;
-
-  color:#fff;
-
-  text-shadow:
-    0 0 12px rgba(122,214,255,.5);
-}
-
-.best{
-  margin-top:4px;
-
-  font-family:monospace;
-
-  font-size:7px;
-
-  letter-spacing:.15em;
-
-  color:
-    rgba(255,255,255,.28);
-}
-
-
-/* =========================================================
-   START / GAME OVER
-========================================================= */
-
-.screen{
-  position:absolute;
-  inset:0;
-
-  display:grid;
-  place-items:center;
-
-  padding:
-    130px
-    24px
-    110px;
-
-  text-align:center;
-
-  z-index:11;
-
-  pointer-events:none;
-
-  transition:
-    opacity .45s ease,
-    transform .45s cubic-bezier(.16,1,.3,1);
-}
-
-.screen.hidden{
-  opacity:0;
-
-  transform:
-    scale(1.07);
-
-  pointer-events:none;
-}
-
-.panel{
-  width:min(390px,100%);
-
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-}
-
-
-/* =========================================================
-   START TITLE
-========================================================= */
-
-.start-title{
-  font-family:
-    Georgia,
-    serif;
-
-  font-size:
-    clamp(
-      40px,
-      13vw,
-      65px
-    );
-
-  line-height:.9;
-
-  font-style:italic;
-
-  color:#fff;
-
-  text-shadow:
-    0 0 12px #765cff,
-    0 0 30px #8a42ff,
-    0 0 55px rgba(255,0,214,.45);
-}
-
-.subtitle{
-  margin-top:17px;
-
-  font-size:8px;
-
-  letter-spacing:.38em;
-
-  text-transform:uppercase;
-
-  color:
-    rgba(255,255,255,.42);
-}
-
-
-/* =========================================================
-   BUTTON
-========================================================= */
-
-.start-button{
-  position:relative;
-
-  margin-top:30px;
-
-  min-width:165px;
-  min-height:52px;
-
-  padding:0 26px;
-
-  border-radius:999px;
-
-  color:#fff;
-
-  background:
-    linear-gradient(
-      135deg,
-      rgba(112,75,255,.32),
-      rgba(255,30,205,.14)
-    );
-
-  border:
-    1px solid
-    rgba(180,150,255,.4);
-
-  box-shadow:
-    0 0 15px rgba(103,65,255,.25),
-    0 0 35px rgba(255,0,212,.12),
-    inset 0 1px rgba(255,255,255,.12);
-
-  backdrop-filter:blur(15px);
-
-  font-size:9px;
-
-  letter-spacing:.28em;
-
-  text-transform:uppercase;
-
-  pointer-events:auto;
-
-  overflow:hidden;
-
-  transition:
-    transform .18s ease;
-}
-
-.start-button::before{
-  content:"";
-
-  position:absolute;
-
-  top:0;
-  bottom:0;
-
-  width:35%;
-
-  left:-45%;
-
-  background:
-    linear-gradient(
-      90deg,
-      transparent,
-      rgba(255,255,255,.35),
-      transparent
-    );
-
-  transform:skewX(-20deg);
-
-  animation:
-    buttonShine 3s ease-in-out infinite;
-}
-
-.start-button:active{
-  transform:scale(.93);
-}
-
-.hint{
-  margin-top:15px;
-
-  font-size:7px;
-
-  letter-spacing:.16em;
-
-  color:
-    rgba(255,255,255,.24);
-}
-
-
-/* =========================================================
-   GAME OVER
-========================================================= */
-
-.over-label{
-  font-size:8px;
-
-  letter-spacing:.38em;
-
-  color:
-    rgba(255,255,255,.35);
-}
-
-.final-score{
-  margin-top:13px;
-
-  font-family:
-    Georgia,
-    serif;
-
-  font-size:
-    clamp(
-      58px,
-      18vw,
-      90px
-    );
-
-  line-height:.85;
-
-  color:#fff;
-
-  text-shadow:
-    0 0 20px #765cff,
-    0 0 45px rgba(255,0,220,.35);
-}
-
-.new-best{
-  margin-top:10px;
-
-  font-size:8px;
-
-  letter-spacing:.3em;
-
-  color:#f4dcff;
-
-  text-shadow:
-    0 0 10px #c452ff;
-}
-
-
-/* =========================================================
-   TOUCH HINT
-========================================================= */
-
-.touch-hint{
-  position:absolute;
-
-  left:50%;
-
-  bottom:
-    max(
-      22px,
-      env(safe-area-inset-bottom)
-    );
-
-  transform:
-    translateX(-50%);
-
-  z-index:12;
-
-  color:
-    rgba(255,255,255,.25);
-
-  font-size:7px;
-
-  letter-spacing:.25em;
-
-  white-space:nowrap;
-
-  pointer-events:none;
-
-  transition:
-    opacity .45s ease,
-    transform .45s ease;
-}
-
-.touch-hint.hidden{
-  opacity:0;
-
-  transform:
-    translateX(-50%)
-    translateY(8px);
-}
-
-
-/* =========================================================
-   LANDSCAPE BLOCK
-========================================================= */
-
-@media (orientation:landscape){
-
-  .game::after{
-    content:"ROTATE YOUR PHONE";
-
-    position:absolute;
-    inset:0;
-
-    display:grid;
-    place-items:center;
-
-    z-index:999;
-
-    background:#05030d;
-
-    color:#fff;
-
-    font-size:10px;
-
-    letter-spacing:.3em;
-  }
-
-}
-
-
-/* =========================================================
-   ANIMATIONS
-========================================================= */
-
-@keyframes logoFloat{
-
-  0%,
-  100%{
-    transform:
-      translateX(-50%)
-      translateY(0);
-  }
-
-  50%{
-    transform:
-      translateX(-50%)
-      translateY(-4px);
-  }
-
-}
-
-@keyframes logoGlow{
-
-  0%,
-  100%{
-    filter:
-      brightness(1)
-      saturate(1);
-  }
-
-  50%{
-    filter:
-      brightness(1.22)
-      saturate(1.25);
-  }
-
-}
-
-@keyframes crownPulse{
-
-  0%,
-  100%{
-    transform:
-      translateX(-50%)
-      scale(.9);
-    opacity:.7;
-  }
-
-  50%{
-    transform:
-      translateX(-50%)
-      scale(1.15);
-    opacity:1;
-  }
-
-}
-
-@keyframes buttonShine{
-
-  0%{
-    left:-45%;
-  }
-
-  55%,
-  100%{
-    left:125%;
-  }
-
-}
-
-@keyframes grain{
-
-  0%{
-    transform:translate(0,0);
-  }
-
-  25%{
-    transform:translate(2%,-1%);
-  }
-
-  50%{
-    transform:translate(-1%,2%);
-  }
-
-  75%{
-    transform:translate(1%,1%);
-  }
-
-  100%{
-    transform:translate(-2%,-1%);
-  }
-
-}
-
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html, body{ width:100%; height:100%; margin:0; padding:0; overflow:hidden; background:#05030d; color:#fff; font-family: Inter, system-ui, sans-serif; touch-action:none; user-select:none; -webkit-user-select:none; overscroll-behavior:none; }
+body{ position:fixed; inset:0; }
+button{ font:inherit; border:0; outline:0; }
+
+.game{ position:fixed; inset:0; width:100%; height:100%; overflow:hidden; background:#05030d; }
+canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
+
+.ambient{ position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse at 50% 35%, rgba(72,76,190,.10), transparent 55%), radial-gradient(ellipse at 50% 100%, rgba(255,0,190,.07), transparent 45%); mix-blend-mode:screen; z-index:2; }
+.vignette{ position:absolute; inset:0; pointer-events:none; background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.35) 100%); z-index:8; }
+.grain{ position:absolute; inset:-50%; pointer-events:none; opacity:.035; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); animation: grain .22s steps(2) infinite; z-index:9; }
+
+.logo-wrap{ position:absolute; top: max(52px, env(safe-area-inset-top)); left:50%; transform: translateX(-50%); z-index:12; pointer-events:none; text-align:center; animation: logoFloat 4s ease-in-out infinite; }
+.logo{ position:relative; display:inline-block; font-family: Georgia, serif; font-size: clamp(37px, 11vw, 68px); font-weight:700; font-style:italic; letter-spacing:-.08em; line-height:.8; color:#fff; transform:skewX(-6deg); text-shadow: 0 0 4px #fff, 0 0 10px #b8a2ff, 0 0 22px #8c5cff, 0 0 42px #713bff, 0 0 70px rgba(255,0,214,.65); animation: logoGlow 2.6s ease-in-out infinite; }
+.logo::before{ content:"✦"; position:absolute; top:-23px; left:50%; transform: translateX(-50%) rotate(-8deg); font-size:18px; color:#fff; text-shadow: 0 0 8px #fff, 0 0 20px #7d5cff, 0 0 35px #ff39dd; animation: crownPulse 1.8s ease-in-out infinite; }
+.logo::after{ content:""; position:absolute; left:-12%; right:-12%; bottom:-9px; height:3px; border-radius:100%; background: linear-gradient(90deg, transparent, #35e7ff, #fff, #ff35df, transparent); box-shadow: 0 0 8px #35e7ff, 0 0 18px #ff35df; transform:rotate(-3deg); opacity:.8; }
+
+.top-ui{ position:absolute; top: max(10px, env(safe-area-inset-top)); left:0; right:0; padding: 10px max(18px,env(safe-area-inset-right)) 0 max(18px,env(safe-area-inset-left)); display:flex; justify-content:space-between; align-items:flex-start; z-index:13; pointer-events:none; }
+.back{ width:42px; height:42px; border-radius:50%; color:#fff; background: rgba(8,6,20,.45); border: 1px solid rgba(145,110,255,.28); box-shadow: 0 0 20px rgba(110,60,255,.15), inset 0 0 15px rgba(255,255,255,.04); backdrop-filter:blur(14px); pointer-events:auto; font-size:21px; display:grid; place-items:center; transition: transform .18s ease; }
+.back:active{ transform:scale(.86); }
+.score{ text-align:right; }
+.score-label{ display:block; font-size:7px; letter-spacing:.35em; color: rgba(255,255,255,.38); }
+.score-value{ display:block; margin-top:3px; font-family:monospace; font-size:16px; font-weight:600; letter-spacing:.12em; color:#fff; text-shadow: 0 0 12px rgba(122,214,255,.5); }
+.best{ margin-top:4px; font-family:monospace; font-size:7px; letter-spacing:.15em; color: rgba(255,255,255,.28); }
+
+.screen{ position:absolute; inset:0; display:grid; place-items:center; padding: 130px 24px 110px; text-align:center; z-index:11; pointer-events:none; transition: opacity .45s ease, transform .45s cubic-bezier(.16,1,.3,1); }
+.screen.hidden{ opacity:0; transform: scale(1.07); pointer-events:none; }
+.panel{ width:min(390px,100%); display:flex; flex-direction:column; align-items:center; }
+.start-title{ font-family: Georgia, serif; font-size: clamp(40px, 13vw, 65px); line-height:.9; font-style:italic; color:#fff; text-shadow: 0 0 12px #765cff, 0 0 30px #8a42ff, 0 0 55px rgba(255,0,214,.45); }
+.subtitle{ margin-top:17px; font-size:8px; letter-spacing:.38em; text-transform:uppercase; color: rgba(255,255,255,.42); }
+
+.start-button{ position:relative; margin-top:30px; min-width:165px; min-height:52px; padding:0 26px; border-radius:999px; color:#fff; background: linear-gradient(135deg, rgba(112,75,255,.32), rgba(255,30,205,.14)); border: 1px solid rgba(180,150,255,.4); box-shadow: 0 0 15px rgba(103,65,255,.25), 0 0 35px rgba(255,0,212,.12), inset 0 1px rgba(255,255,255,.12); backdrop-filter:blur(15px); font-size:9px; letter-spacing:.28em; text-transform:uppercase; pointer-events:auto; overflow:hidden; transition: transform .18s ease; }
+.start-button::before{ content:""; position:absolute; top:0; bottom:0; width:35%; left:-45%; background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); transform:skewX(-20deg); animation: buttonShine 3s ease-in-out infinite; }
+.start-button:active{ transform:scale(.93); }
+.hint{ margin-top:15px; font-size:7px; letter-spacing:.16em; color: rgba(255,255,255,.24); }
+
+.over-label{ font-size:8px; letter-spacing:.38em; color: rgba(255,255,255,.35); }
+.final-score{ margin-top:13px; font-family: Georgia, serif; font-size: clamp(58px, 18vw, 90px); line-height:.85; color:#fff; text-shadow: 0 0 20px #765cff, 0 0 45px rgba(255,0,220,.35); }
+.new-best{ margin-top:10px; font-size:8px; letter-spacing:.3em; color:#f4dcff; text-shadow: 0 0 10px #c452ff; }
+
+.touch-hint{ position:absolute; left:50%; bottom: max(22px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index:12; color: rgba(255,255,255,.25); font-size:7px; letter-spacing:.25em; white-space:nowrap; pointer-events:none; transition: opacity .45s ease, transform .45s ease; text-shadow: 0 0 8px rgba(255,0,255,0.8); }
+.touch-hint.hidden{ opacity:0; transform: translateX(-50%) translateY(8px); }
+
+@media (orientation:landscape){ .game::after{ content:"ROTATE YOUR PHONE"; position:absolute; inset:0; display:grid; place-items:center; z-index:999; background:#05030d; color:#fff; font-size:10px; letter-spacing:.3em; } }
+
+@keyframes logoFloat{ 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-4px);} }
+@keyframes logoGlow{ 0%,100%{filter:brightness(1) saturate(1);} 50%{filter:brightness(1.22) saturate(1.25);} }
+@keyframes crownPulse{ 0%,100%{transform:translateX(-50%) scale(.9);opacity:.7;} 50%{transform:translateX(-50%) scale(1.15);opacity:1;} }
+@keyframes buttonShine{ 0%{left:-45%;} 55%,100%{left:125%;} }
+@keyframes grain{ 0%{transform:translate(0,0);} 25%{transform:translate(2%,-1%);} 50%{transform:translate(-1%,2%);} 75%{transform:translate(1%,1%);} 100%{transform:translate(-2%,-1%);} }
 </style>
 </head>
-
 <body>
 
 <div class="game">
-
-<canvas id="gameCanvas"></canvas>
-
-<div class="ambient"></div>
-<div class="vignette"></div>
-<div class="grain"></div>
-
-
-<!-- =====================================================
-     NEON ANNABEY LOGO
-===================================================== -->
-
-<div class="logo-wrap">
-
-  <div class="logo">
-    Annabey
+  <canvas id="gameCanvas"></canvas>
+  <div class="ambient"></div>
+  <div class="vignette"></div>
+  <div class="grain"></div>
+  
+  <div class="logo-wrap">
+    <div class="logo">Annabey</div>
   </div>
 
-</div>
-
-
-<!-- =====================================================
-     TOP UI
-===================================================== -->
-
-<div class="top-ui">
-
-  <button
-    id="backButton"
-    class="back"
-    aria-label="Kembali"
-  >
-    ←
-  </button>
-
-  <div class="score">
-
-    <span class="score-label">
-      SCORE
-    </span>
-
-    <span
-      id="score"
-      class="score-value"
-    >
-      000000
-    </span>
-
-    <div class="best">
-      BEST
-      <span id="best">
-        000000
-      </span>
+  <div class="top-ui">
+    <button id="backButton" class="back" aria-label="Kembali">←</button>
+    <div class="score">
+      <span class="score-label">SCORE</span>
+      <span id="score" class="score-value">000000</span>
+      <div class="best">BEST <span id="best">000000</span></div>
     </div>
-
   </div>
 
-</div>
-
-
-<!-- =====================================================
-     START
-===================================================== -->
-
-<div
-  id="startScreen"
-  class="screen"
->
-
-  <div class="panel">
-
-    <div class="start-title">
-      RUN
+  <div id="startScreen" class="screen">
+    <div class="panel">
+      <div class="start-title">RUN</div>
+      <div class="subtitle">enter the neon night</div>
+      <button id="startButton" class="start-button">Tap to Run</button>
+      <div class="hint">TAP = JUMP&nbsp;&nbsp; · &nbsp;&nbsp;DOUBLE TAP = DASH</div>
     </div>
-
-    <div class="subtitle">
-      enter the neon night
-    </div>
-
-    <button
-      id="startButton"
-      class="start-button"
-    >
-      Tap to Run
-    </button>
-
-    <div class="hint">
-      TAP = JUMP&nbsp;&nbsp; · &nbsp;&nbsp;
-      DOUBLE TAP = DASH
-    </div>
-
   </div>
 
-</div>
-
-
-<!-- =====================================================
-     GAME OVER
-===================================================== -->
-
-<div
-  id="gameOver"
-  class="screen hidden"
->
-
-  <div class="panel">
-
-    <div class="over-label">
-      RUN ENDED
+  <div id="gameOver" class="screen hidden">
+    <div class="panel">
+      <div class="over-label">RUN ENDED</div>
+      <div id="finalScore" class="final-score">000000</div>
+      <div id="newBest" class="new-best" style="display:none">NEW BEST ✦</div>
+      <button id="againButton" class="start-button">Run Again</button>
     </div>
-
-    <div
-      id="finalScore"
-      class="final-score"
-    >
-      000000
-    </div>
-
-    <div
-      id="newBest"
-      class="new-best"
-      style="display:none"
-    >
-      NEW BEST ✦
-    </div>
-
-    <button
-      id="againButton"
-      class="start-button"
-    >
-      Run Again
-    </button>
-
   </div>
 
+  <div id="touchHint" class="touch-hint">TAP TO JUMP · DOUBLE TAP TO DASH</div>
 </div>
-
-
-<div
-  id="touchHint"
-  class="touch-hint"
->
-  TAP TO JUMP · DOUBLE TAP TO DASH
-</div>
-
-</div>
-
 
 <script>
+/* =========================================================
+   DOM & SYSTEM
+========================================================= */
+const canvas = document.getElementById("gameCanvas");
+const ctx = canvas.getContext("2d");
+const startScreen = document.getElementById("startScreen");
+const gameOver = document.getElementById("gameOver");
+const startButton = document.getElementById("startButton");
+const againButton = document.getElementById("againButton");
+const backButton = document.getElementById("backButton");
+const scoreEl = document.getElementById("score");
+const bestEl = document.getElementById("best");
+const finalEl = document.getElementById("finalScore");
+const newBestEl = document.getElementById("newBest");
+const touchHint = document.getElementById("touchHint");
+
+let W = 0, H = 0, DPR = 1, ground = 0;
+let running = false, score = 0;
+let best = Number(localStorage.getItem("annabeyRunBest")) || 0;
+let speed = 5.0, worldTime = 0, lastTime = 0;
+
+// Entities
+let obstacles = [], stars = [], particles = [], trails = [], speedLines = [];
+let buildings = [], petals = [], meteors = [], jets = [], warnings = [];
+
+// Timers
+let obstacleTimer = 0, starTimer = 0, meteorTimer = 0, jetTimer = 0;
+let cameraShake = 0, flash = 0;
+
+// Moon System
+let nextMilestone = 500, moonPhase = 0, moonAnimTimer = 0, moonScale = 1;
+let moonDynX = 0, moonDynY = 0;
 
 /* =========================================================
-   DOM
+   3D SYSTEM GLOBALS
 ========================================================= */
-
-const canvas =
-  document.getElementById("gameCanvas");
-
-const ctx =
-  canvas.getContext("2d");
-
-const startScreen =
-  document.getElementById("startScreen");
-
-const gameOver =
-  document.getElementById("gameOver");
-
-const startButton =
-  document.getElementById("startButton");
-
-const againButton =
-  document.getElementById("againButton");
-
-const backButton =
-  document.getElementById("backButton");
-
-const scoreEl =
-  document.getElementById("score");
-
-const bestEl =
-  document.getElementById("best");
-
-const finalEl =
-  document.getElementById("finalScore");
-
-const newBestEl =
-  document.getElementById("newBest");
-
-const touchHint =
-  document.getElementById("touchHint");
-
-
-/* =========================================================
-   WORLD
-========================================================= */
-
-let W = 0;
-let H = 0;
-let DPR = 1;
-
-let ground = 0;
-
-let running = false;
-
-let score = 0;
-
-let best =
-  Number(
-    localStorage.getItem(
-      "annabeyRunBest"
-    )
-  ) || 0;
-
-
-/*
- * SENGAJA PELAN
- */
-
-let speed = 5.0;
-
-let worldTime = 0;
-
-let lastTime = 0;
-
-let obstacleTimer = 0;
-let starTimer = 0;
-let meteorTimer = 0;
-let jetTimer = 0;
-
-let cameraShake = 0;
-let flash = 0;
-
-let obstacles = [];
-let stars = [];
-let particles = [];
-let trails = [];
-let speedLines = [];
-let buildings = [];
-let petals = [];
-let meteors = [];
-let jets = [];
-let warnings = [];
-
-/*
- * MOON & MILESTONE SYSTEM
- */
-let nextMilestone = 500;
-let moonPhase = 0; 
-let moonAnimTimer = 0;
-let moonDynX = 0;
-let moonDynY = 0;
-let moonScale = 1;
-
+let is3D = false;
+const focalLength = 350;
+const cameraZ = -500;
+const LANE_WIDTH = 130; 
+let transitionPhase = 0; // 0 = 2D, 1 = 3D
 
 /* =========================================================
    PLAYER
 ========================================================= */
-
 const player = {
-
-  x:0,
-
-  y:0,
-
-  width:34,
-
-  height:46,
-
-  velocityY:0,
-
-  grounded:true,
-
-  dash:0,
-
-  dashCooldown:0,
-
-  jumpTime:0,
-
-  squashX:1,
-
-  squashY:1,
-
-  stretch:1,
-
-  rotation:0,
-
-  runPhase:0,
-
-  landing:0,
-
-  dashPhase:0
-
+  x: 0, y: 0, width: 34, height: 46,
+  velocityY: 0, grounded: true, dash: 0, dashCooldown: 0,
+  jumpTime: 0, squashX: 1, squashY: 1, stretch: 1, rotation: 0,
+  runPhase: 0, landing: 0, dashPhase: 0,
+  // 3D Props
+  targetLane: 0, // -1 (Left), 0 (Center), 1 (Right)
+  x3D: 0,
+  z: 0
 };
-
 
 /* =========================================================
    RESIZE
 ========================================================= */
-
 function resize(){
-
-  DPR =
-    Math.min(
-      window.devicePixelRatio || 1,
-      2
-    );
-
-  W =
-    window.innerWidth;
-
-  H =
-    window.innerHeight;
-
-  canvas.width =
-    Math.floor(W * DPR);
-
-  canvas.height =
-    Math.floor(H * DPR);
-
-  canvas.style.width =
-    W + "px";
-
-  canvas.style.height =
-    H + "px";
-
-  ctx.setTransform(
-    DPR,
-    0,
-    0,
-    DPR,
-    0,
-    0
-  );
-
-  ground =
-    H * .79;
-
-  player.x =
-    Math.max(
-      38,
-      W * .15
-    );
-
-  if(!running){
-
-    player.y =
-      ground -
-      player.height;
-
-  }
-
-  if (moonPhase === 0) {
-    moonDynX = W * .78;
-    moonDynY = H * .20;
-  }
-
+  DPR = Math.min(window.devicePixelRatio || 1, 2);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.floor(W * DPR); canvas.height = Math.floor(H * DPR);
+  canvas.style.width = W + "px"; canvas.style.height = H + "px";
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ground = H * .79;
+  player.x = Math.max(38, W * .15);
+  if(!running) player.y = ground - player.height;
+  if (moonPhase === 0) { moonDynX = W * .78; moonDynY = H * .20; }
   createBuildings();
-
 }
-
-window.addEventListener(
-  "resize",
-  resize
-);
-
-window.addEventListener(
-  "orientationchange",
-  () => {
-
-    setTimeout(
-      resize,
-      100
-    );
-
-  }
-);
-
-
-/* =========================================================
-   BUILDINGS
-========================================================= */
+window.addEventListener("resize", resize);
+window.addEventListener("orientationchange", () => setTimeout(resize, 100));
 
 function createBuildings(){
-
   buildings = [];
-
   let x = -20;
-
   while(x < W + 300){
-
-    const width =
-      25 +
-      Math.random() * 45;
-
-    const height =
-      80 +
-      Math.random() * 170;
-
     buildings.push({
-
-      x,
-
-      width,
-
-      height,
-
-      layer:
-        Math.random() < .5
-        ? .35
-        : .55,
-
-      lights:
-        2 +
-        Math.floor(
-          Math.random() * 5
-        )
-
+      x, width: 25 + Math.random() * 45, height: 80 + Math.random() * 170,
+      layer: Math.random() < .5 ? .35 : .55,
+      lights: 2 + Math.floor(Math.random() * 5)
     });
-
-    x +=
-      width +
-      8 +
-      Math.random() * 18;
-
+    x += buildings[buildings.length-1].width + 8 + Math.random() * 18;
   }
-
 }
-
-
-/* =========================================================
-   INITIAL
-========================================================= */
-
 resize();
 
+function formatScore(v){ return String(Math.floor(v)).padStart(6, "0"); }
+bestEl.textContent = formatScore(best);
 
 /* =========================================================
-   SCORE
+   GAME CONTROL
 ========================================================= */
-
-function formatScore(v){
-
-  return String(
-    Math.floor(v)
-  ).padStart(
-    6,
-    "0"
-  );
-
-}
-
-bestEl.textContent =
-  formatScore(best);
-
-
-/* =========================================================
-   START GAME
-========================================================= */
-
 function startGame(){
+  score = 0; speed = 5.0; worldTime = 0; cameraShake = 0; flash = 0;
+  is3D = false; transitionPhase = 0;
+  
+  obstacleTimer = .95; starTimer = .75; meteorTimer = 4.0; jetTimer = 7.0;
+  obstacles = []; stars = []; particles = []; trails = []; speedLines = [];
+  petals = []; meteors = []; jets = []; warnings = [];
 
-  score = 0;
+  nextMilestone = 500; moonPhase = 0; moonAnimTimer = 0; moonScale = 1;
+  moonDynX = W * .78; moonDynY = H * .20;
 
-  speed = 5.0;
-
-  obstacleTimer = .95;
-  starTimer = .75;
-  meteorTimer = 4.0;
-  jetTimer = 7.0;
-
-  worldTime = 0;
-
-  cameraShake = 0;
-
-  flash = 0;
-
-  obstacles = [];
-  stars = [];
-  particles = [];
-  trails = [];
-  speedLines = [];
-  petals = [];
-  meteors = [];
-  jets = [];
-  warnings = [];
-
-  // Reset Moon System
-  nextMilestone = 500;
-  moonPhase = 0;
-  moonAnimTimer = 0;
-  moonScale = 1;
-  moonDynX = W * .78;
-  moonDynY = H * .20;
-
-  player.y =
-    ground -
-    player.height;
-
-  player.velocityY = 0;
-
-  player.grounded = true;
-
-  player.dash = 0;
-
-  player.dashCooldown = 0;
-
-  player.jumpTime = 0;
-
-  player.squashX = 1;
-  player.squashY = 1;
-
-  player.stretch = 1;
-
-  player.rotation = 0;
-
-  player.runPhase = 0;
-
-  player.landing = 0;
-
-  player.dashPhase = 0;
+  player.y = ground - player.height; player.velocityY = 0; player.grounded = true;
+  player.dash = 0; player.dashCooldown = 0; player.jumpTime = 0;
+  player.squashX = 1; player.squashY = 1; player.stretch = 1;
+  player.rotation = 0; player.runPhase = 0; player.landing = 0; player.dashPhase = 0;
+  player.targetLane = 0; player.x3D = 0; player.z = 0; player.x = Math.max(38, W * .15);
 
   running = true;
-
-  startScreen.classList.add(
-    "hidden"
-  );
-
-  gameOver.classList.add(
-    "hidden"
-  );
-
-  touchHint.classList.remove(
-    "hidden"
-  );
-
-  scoreEl.textContent =
-    formatScore(0);
-
-  lastTime =
-    performance.now();
-
+  startScreen.classList.add("hidden"); gameOver.classList.add("hidden");
+  touchHint.textContent = "TAP TO JUMP · DOUBLE TAP TO DASH";
+  touchHint.classList.remove("hidden");
+  scoreEl.textContent = formatScore(0);
+  
+  lastTime = performance.now();
   requestAnimationFrame(loop);
-
   vibrate(10);
-
 }
 
+function endGame(){
+  running = false;
+  const final = Math.floor(score); const oldBest = best;
+  if(final > best){ best = final; localStorage.setItem("annabeyRunBest", best); }
+  finalEl.textContent = formatScore(final); bestEl.textContent = formatScore(best);
+  newBestEl.style.display = final > oldBest ? "block" : "none";
+  gameOver.classList.remove("hidden"); touchHint.classList.add("hidden");
+  cameraShake = 9; flash = .12; vibrate([40, 50, 80]);
+}
 
 /* =========================================================
-   INPUT
+   INPUT (SWIPE & TAP)
 ========================================================= */
+let lastTap = 0, dashLock = false;
+let touchStartX = 0, touchStartY = 0;
 
-let lastTap = 0;
+window.addEventListener("touchstart", (e) => {
+  if (e.target.closest("button")) return;
+  touchStartX = e.touches[0].clientX;
+  touchStartY = e.touches[0].clientY;
+}, { passive: true });
 
-let dashLock = false;
+window.addEventListener("touchend", (e) => {
+  if (!running || e.target.closest("button")) return;
+  
+  const deltaX = e.changedTouches[0].clientX - touchStartX;
+  const deltaY = e.changedTouches[0].clientY - touchStartY;
+  const now = performance.now();
+  const doubleTap = now - lastTap < 320;
 
-
-function action(){
-
-  if(!running)
-    return;
-
-  const now =
-    performance.now();
-
-  const doubleTap =
-    now - lastTap < 320;
-
-
-  /* =====================================================
-     DOUBLE TAP = DASH
-  ===================================================== */
-
-  if(
-    doubleTap &&
-    !dashLock
-  ){
-
-    performDash();
-
-    lastTap = 0;
-
-    return;
-
+  if (is3D) {
+    // 3D Mode Input (Swipe to change lane)
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0 && player.targetLane < 1) player.targetLane++;
+      else if (deltaX < 0 && player.targetLane > -1) player.targetLane--;
+      vibrate(5);
+    } else {
+      // Tap (Jump/Dash)
+      if (doubleTap && !dashLock) performDash();
+      else if (player.grounded && player.dash <= 0) jump();
+    }
+  } else {
+    // 2D Mode Input
+    if (doubleTap && !dashLock) performDash();
+    else if (player.grounded && player.dash <= 0) jump();
   }
-
-
-  /* =====================================================
-     SINGLE TAP = JUMP
-  ===================================================== */
-
-  if(
-    player.grounded &&
-    player.dash <= 0
-  ){
-
-    jump();
-
-  }
-
-
+  
   lastTap = now;
-
-}
-
+});
 
 /* =========================================================
-   JUMP
+   ACTIONS & PARTICLES
 ========================================================= */
-
 function jump(){
-
-  /*
-   * ANTICIPATION
-   */
-
-  player.squashX = 1.16;
-
-  player.squashY = .80;
-
-  player.stretch = 1.18;
-
-  /*
-   * PHYSICS
-   */
-
-  player.velocityY =
-    -13.5;
-
-  player.grounded =
-    false;
-
-  player.jumpTime =
-    0;
-
-  player.rotation =
-    -.08;
-
-  /*
-   * TAKEOFF PARTICLES
-   */
-
-  burst(
-    player.x + 17,
-    ground,
-    12
-  );
-
-  /*
-   * Small shockwave
-   */
-
-  shockwave(
-    player.x + 17,
-    ground,
-    20
-  );
-
+  player.squashX = 1.16; player.squashY = .80; player.stretch = 1.18;
+  player.velocityY = -13.5; player.grounded = false; player.jumpTime = 0; player.rotation = -.08;
+  const drawX = is3D ? (W/2 + player.x3D) : player.x + 17;
+  burst(drawX, ground, 12); shockwave(drawX, ground, 20);
   vibrate(10);
-
 }
-
-
-/* =========================================================
-   DASH
-========================================================= */
 
 function performDash(){
-
-  if(
-    player.dashCooldown > 0
-  ){
-    return;
-  }
-
-  player.dash =
-    28;
-
-  player.dashPhase =
-    1;
-
-  player.dashCooldown =
-    .55;
-
-  player.squashX =
-    1.32;
-
-  player.squashY =
-    .72;
-
-  player.stretch =
-    1.30;
-
-  player.rotation =
-    -.05;
-
-  cameraShake =
-    7;
-
-  flash =
-    .13;
-
-  dashLock = true;
-
-
-  /*
-   * Main energy burst
-   */
-
-  burst(
-    player.x,
-    player.y + 23,
-    30
-  );
-
-
-  /*
-   * Directional speed lines
-   */
-
-  for(
-    let i = 0;
-    i < 14;
-    i++
-  ){
-
-    speedLines.push({
-
-      x:
-        player.x -
-        Math.random() * 25,
-
-      y:
-        player.y +
-        Math.random() *
-        player.height,
-
-      length:
-        15 +
-        Math.random() * 45,
-
-      alpha:
-        .35 +
-        Math.random() * .35,
-
-      life:1,
-
-      width:
-        1 +
-        Math.random() * 2
-
-    });
-
-  }
-
-
-  /*
-   * Afterimages immediately
-   */
-
-  for(
-    let i = 0;
-    i < 5;
-    i++
-  ){
-
-    trails.push({
-
-      x:
-        player.x -
-        i * 8,
-
-      y:
-        player.y,
-
-      alpha:
-        .40 -
-        i * .055,
-
-      scale:
-        1 -
-        i * .025,
-
-      rotation:
-        player.rotation
-
-    });
-
-  }
-
-
-  vibrate([
-    12,
-    22,
-    18
-  ]);
-
-
-  /*
-   * Unlock after dash
-   */
-
-  setTimeout(
-    () => {
-
-      dashLock = false;
-
-    },
-    350
-  );
-
-}
-
-
-/* =========================================================
-   PARTICLES
-========================================================= */
-
-function burst(
-  x,
-  y,
-  count
-){
-
-  for(
-    let i = 0;
-    i < count;
-    i++
-  ){
-
-    const angle =
-      Math.random() *
-      Math.PI * 2;
-
-    const force =
-      1.5 +
-      Math.random() * 4.5;
-
-    const isSpark = Math.random() < .25;
-
-    particles.push({
-
-      x,
-
-      y,
-
-      vx:
-        Math.cos(angle) *
-        force,
-
-      vy:
-        Math.sin(angle) *
-        force -
-
-        Math.random() * 1.5,
-
-      life:1,
-
-      size:
-        1.5 +
-        Math.random() * 3.5,
-
-      type: isSpark ? "spark" : "dot",
-
-      color: isSpark ? "#bda3ff" : "#eee7ff"
-
-    });
-
-  }
-
-}
-
-
-/* =========================================================
-   SHOCKWAVE
-========================================================= */
-
-function shockwave(
-  x,
-  y,
-  size
-){
-
-  particles.push({
-
-    x,
-    y,
-
-    vx:0,
-    vy:0,
-
-    life:1,
-
-    size,
-
-    type:"shock"
-
-  });
-
-}
-
-
-/* =========================================================
-   MOON EXPLOSION (MILESTONE)
-========================================================= */
-
-function spawnMoonExplosion(x, y) {
+  if(player.dashCooldown > 0) return;
+  player.dash = 28; player.dashPhase = 1; player.dashCooldown = .55;
+  player.squashX = 1.32; player.squashY = .72; player.stretch = 1.30; player.rotation = -.05;
+  cameraShake = 7; flash = .13; dashLock = true;
   
-  // Concentric shockwaves
-  shockwave(x, y, 40);
-  setTimeout(() => shockwave(x, y, 70), 100);
-  setTimeout(() => shockwave(x, y, 100), 220);
+  const drawX = is3D ? (W/2 + player.x3D) : player.x;
+  burst(drawX, player.y + 23, 30);
+  
+  // Add trails immediately
+  for(let i=0; i<5; i++) {
+    trails.push({ x: drawX - (is3D? 0: i*8), y: player.y, z: player.z + (is3D? i*20 : 0), alpha: .40 - i*.055, scale: 1 - i*.025, rotation: player.rotation });
+  }
+  vibrate([12, 22, 18]);
+  setTimeout(() => { dashLock = false; }, 350);
+}
 
-  // Massive particle blast
-  for (let i = 0; i < 220; i++) {
+function burst(x, y, count){
+  for(let i=0; i<count; i++){
     const angle = Math.random() * Math.PI * 2;
-    const force = 4 + Math.random() * 22;
-    
-    // Mix of bright neon colors
-    let color = "#ffffff";
-    const rand = Math.random();
-    if (rand < 0.3) color = "#35e7ff";
-    else if (rand < 0.6) color = "#ff35df";
-    else if (rand < 0.8) color = "#bda3ff";
-
-    particles.push({
-      x: x,
-      y: y,
-      vx: Math.cos(angle) * force,
-      vy: Math.sin(angle) * force - 3,
-      life: 1.5 + Math.random() * 1.8,
-      size: 2.5 + Math.random() * 6.5,
-      type: "moon_debris",
-      color: color
-    });
+    const force = 1.5 + Math.random() * 4.5;
+    const isSpark = Math.random() < .25;
+    particles.push({ x, y, z: is3D ? player.z : 0, vx: Math.cos(angle) * force, vy: Math.sin(angle) * force - Math.random() * 1.5, life: 1, size: 1.5 + Math.random() * 3.5, type: isSpark ? "spark" : "dot", color: isSpark ? "#bda3ff" : "#eee7ff" });
   }
 }
 
-
-/* =========================================================
-   LOOP
-========================================================= */
-
-function loop(time){
-
-  if(!running)
-    return;
-
-  const dt =
-    Math.min(
-      .032,
-      Math.max(
-        0,
-        (time - lastTime) / 1000
-      )
-    );
-
-  lastTime =
-    time;
-
-  update(dt);
-
-  draw();
-
-  requestAnimationFrame(
-    loop
-  );
-
+function shockwave(x, y, size){
+  particles.push({ x, y, z: is3D ? player.z : 0, vx: 0, vy: 0, life: 1, size, type: "shock" });
 }
 
+function vibrate(pattern){
+  if("vibrate" in navigator){ try{ navigator.vibrate(pattern); }catch(_){} }
+}
 
 /* =========================================================
-   UPDATE
+   3D PROJECTION UTILITY
 ========================================================= */
+function project3D(x, y, z) {
+  const relZ = Math.max(1, z - cameraZ);
+  const scale = focalLength / relZ;
+  const screenX = (W / 2) + x * scale;
+  const screenY = ground + (y - ground) * scale;
+  return { x: screenX, y: screenY, scale: scale };
+}
+
+/* =========================================================
+   UPDATE LOOP
+========================================================= */
+function loop(time){
+  if(!running) return;
+  const dt = Math.min(.032, Math.max(0, (time - lastTime) / 1000));
+  lastTime = time;
+  update(dt);
+  draw();
+  requestAnimationFrame(loop);
+}
 
 function update(dt){
+  score += dt * speed * 8;
+  worldTime += dt;
+  speed = Math.min(11.0, speed + dt * .045);
 
-  /* =====================================================
-     SCORE
-  ===================================================== */
+  /* ================= DIMENSION TRANSITION ================= */
+  if (score >= 2200 && !is3D) {
+    is3D = true;
+    flash = 1.0;
+    cameraShake = 30;
+    // Clear 2D specific entities
+    obstacles = []; meteors = []; jets = []; warnings = []; trails = [];
+    
+    // UI Hint Update
+    touchHint.textContent = "3D ENGAGED: SWIPE TO SWITCH LANES";
+    touchHint.classList.remove("hidden");
+    touchHint.style.color = "#ff35df";
+    setTimeout(() => touchHint.classList.add("hidden"), 3000);
+    vibrate([100, 50, 100, 50, 200]);
+  }
 
-  score +=
-    dt *
-    speed *
-    8;
-
-  /* =====================================================
-     MILESTONE CHECK (500, 1000, 1500, dst)
-  ===================================================== */
-  
+  // Moon milestones (Works in both 2D and 3D skies)
   if (score >= nextMilestone) {
     nextMilestone += 500;
-    moonPhase = 1;
-    moonAnimTimer = 0;
+    moonPhase = 1; moonAnimTimer = 0;
+  }
+  
+  if (score > 180 && !is3D) touchHint.classList.add("hidden");
+
+  // Physics Update
+  player.dashCooldown = Math.max(0, player.dashCooldown - dt);
+  player.jumpTime += dt;
+  player.velocityY += 31 * dt;
+  player.y += player.velocityY;
+
+  if(!player.grounded && player.dash <= 0) {
+    player.rotation = Math.max(-.22, Math.min(.22, player.velocityY * .018));
   }
 
-
-  /* =====================================================
-     MOON ANIMATION STATE MACHINE
-  ===================================================== */
-
-  const centerX = W / 2;
-  const centerY = H / 3.5;
-  const baseMoonX = W * .78;
-  const baseMoonY = H * .20;
-
-  if (moonPhase === 0) {
-    moonDynX = baseMoonX;
-    moonDynY = baseMoonY;
-    moonScale = 1;
-  } 
-  else if (moonPhase === 1) {
-    // Phase 1: Moving to center and wobbling
-    moonAnimTimer += dt;
-    const duration = 1.8;
-    const progress = Math.min(1, moonAnimTimer / duration);
-    
-    // EaseInOutCubic
-    const ease = progress < 0.5 
-      ? 4 * progress * progress * progress 
-      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-    moonDynX = baseMoonX + (centerX - baseMoonX) * ease;
-    moonDynY = baseMoonY + (centerY - baseMoonY) * ease;
-
-    // Building up unstable energy (wobble)
-    moonScale = 1 + (Math.sin(moonAnimTimer * 45) * 0.18 * progress);
-
-    if (progress >= 1) {
-      // BOOM!
-      moonPhase = 2;
-      moonAnimTimer = 0;
-      cameraShake = 28;
-      flash = 0.75;
-      spawnMoonExplosion(moonDynX, moonDynY);
-      vibrate([60, 50, 120, 50, 200]); 
+  // Landing
+  if(player.y + player.height >= ground) {
+    if(!player.grounded) {
+      player.landing = 1; player.squashX = 1.27; player.squashY = .70; cameraShake = 4;
+      burst(is3D ? W/2 + player.x3D : player.x + 17, ground, 14);
+      shockwave(is3D ? W/2 + player.x3D : player.x + 17, ground, 17);
+      vibrate(8);
     }
-  } 
-  else if (moonPhase === 2) {
-    // Phase 2: Exploded / Hidden
-    moonAnimTimer += dt;
-    moonScale = 0;
-    if (moonAnimTimer > 4.5) { // Hide for a few seconds
-      moonPhase = 3;
-      moonAnimTimer = 0;
-    }
-  } 
-  else if (moonPhase === 3) {
-    // Phase 3: Returning / Scaling back up
-    moonAnimTimer += dt;
-    const progress = Math.min(1, moonAnimTimer / 2.5);
-    
-    moonDynX = baseMoonX;
-    moonDynY = baseMoonY;
-    
-    // EaseOutElastic for a bouncy return
-    const c4 = (2 * Math.PI) / 3;
-    const easeBounce = progress === 0 ? 0 : progress === 1 ? 1 : Math.pow(2, -10 * progress) * Math.sin((progress * 10 - 0.75) * c4) + 1;
-    
-    moonScale = Math.max(0, easeBounce);
-
-    if (progress >= 1) {
-      moonPhase = 0;
-    }
+    player.y = ground - player.height; player.velocityY = 0;
+    player.grounded = true; player.rotation = 0;
   }
 
+  if(player.grounded) player.runPhase += dt * speed * 2.6;
 
-  /* =====================================================
-     SLOW SPEED PROGRESSION
-  ===================================================== */
+  // Squashes
+  player.squashX += (1 - player.squashX) * Math.min(1, dt * 11);
+  player.squashY += (1 - player.squashY) * Math.min(1, dt * 11);
+  player.stretch += (1 - player.stretch) * Math.min(1, dt * 8);
+  player.landing = Math.max(0, player.landing - dt * 5);
 
-  speed =
-    Math.min(
-      9.2,
-      speed +
-      dt * .045
-    );
+  let multiplier = 1;
+  if(player.dash > 0) {
+    player.dash -= dt * 60; player.dashPhase += dt * 12; multiplier = 1.9;
+    const drawX = is3D ? (W/2 + player.x3D) : player.x;
+    trails.push({ x: drawX - (is3D? 0:4), y: player.y, z: player.z + (is3D? 40:0), alpha: .28, scale: .92 + Math.random()*.1, rotation: player.rotation });
+  }
 
+  // Camera Shake & Flash decay
+  cameraShake = Math.max(0, cameraShake - dt * 18);
+  flash = Math.max(0, flash - dt);
 
-  worldTime += dt;
+  // Entities Spawning & Movement based on Dimension
+  if (is3D) {
+    update3D(dt, multiplier);
+  } else {
+    update2D(dt, multiplier);
+  }
 
+  updateCommonParticles(dt);
+}
 
-  /* =====================================================
-     DASH COOLDOWN
-  ===================================================== */
-
-  player.dashCooldown =
-    Math.max(
-      0,
-      player.dashCooldown - dt
-    );
-
-
-  /* =====================================================
-     OBSTACLE SPAWN
-  ===================================================== */
-
+/* =========================================================
+   2D MODE LOGIC
+========================================================= */
+function update2D(dt, multiplier){
+  const movement = speed * 60 * dt * multiplier;
+  
+  // Spawners
   obstacleTimer -= dt;
-
-  if(
-    obstacleTimer <= 0
-  ){
-
-    const h =
-      28 +
-      Math.random() * 27;
-
-    const w =
-      18 +
-      Math.random() * 19;
-
-    obstacles.push({
-
-      x:
-        W + 45,
-
-      y:
-        ground - h,
-
-      width:w,
-
-      height:h,
-
-      phase:
-        Math.random() *
-        Math.PI * 2
-
-    });
-
-
-    obstacleTimer =
-      .95 +
-      Math.random() * .8;
-
+  if(obstacleTimer <= 0){
+    obstacles.push({ x: W + 45, y: ground - (28 + Math.random()*27), width: 18 + Math.random()*19, height: 28 + Math.random()*27, phase: Math.random() * Math.PI*2 });
+    obstacleTimer = .95 + Math.random() * .8;
   }
-
-
-  /* =====================================================
-     STAR SPAWN
-  ===================================================== */
-
-  starTimer -= dt;
-
-  if(
-    starTimer <= 0
-  ){
-
-    stars.push({
-
-      x:
-        W + 30,
-
-      y:
-        ground -
-        85 -
-        Math.random() *
-        145,
-
-      phase:
-        Math.random() *
-        Math.PI * 2
-
-    });
-
-    starTimer =
-      .7 +
-      Math.random() *
-      .75;
-
-  }
-
-
-  /* =====================================================
-     METEOR SPAWN
-  ===================================================== */
 
   meteorTimer -= dt;
-
   if (meteorTimer <= 0) {
-    meteors.push({
-      x: W * 0.4 + Math.random() * (W * 0.8),
-      y: -50,
-      size: 14 + Math.random() * 6,
-      vx: 180 + Math.random() * 100, // Kecepatan mendatar
-      vy: 320 + Math.random() * 120  // Kecepatan vertikal jatuh
-    });
-
+    meteors.push({ x: W * 0.4 + Math.random() * (W * 0.8), y: -50, size: 14 + Math.random() * 6, vx: 180 + Math.random() * 100, vy: 320 + Math.random() * 120 });
     meteorTimer = 2.5 + Math.random() * 3.5;
   }
 
-
-  /* =====================================================
-     JET SPAWN & WARNING
-  ===================================================== */
-
-  jetTimer -= dt;
-
-  if (jetTimer <= 1.0 && jetTimer > 0 && warnings.length === 0) {
-    // Munculkan warning 1 detik sebelum jet lewat
-    const jetHeight = ground - 45 - Math.random() * 40; 
-    warnings.push({
-      x: W - 40,
-      y: jetHeight,
-      life: 1.0
-    });
-  }
-
-  if (jetTimer <= 0) {
-    // Spawn Jet!
-    const warning = warnings.pop();
-    const startY = warning ? warning.y : ground - 45 - Math.random() * 40;
-
-    jets.push({
-      x: W + 50,
-      y: startY,
-      width: 48,
-      height: 20,
-      speed: 450 + Math.random() * 250 // Super cepat!
-    });
-
-    jetTimer = 5.0 + Math.random() * 4.0;
-  }
-
-
-  /* =====================================================
-     WARNING UPDATE
-  ===================================================== */
-  
-  warnings.forEach(w => {
-    w.life -= dt;
-  });
-  warnings = warnings.filter(w => w.life > 0);
-
-
-  /* =====================================================
-     PETALS
-  ===================================================== */
-
-  if(
-    Math.random() < .12
-  ){
-
-    petals.push({
-
-      x:
-        W + 10,
-
-      y:
-        Math.random() *
-        ground,
-
-      vx:
-        -0.3 -
-        Math.random() * .6,
-
-      vy:
-        .15 +
-        Math.random() * .45,
-
-      rotation:
-        Math.random() *
-        Math.PI,
-
-      spin:
-        (Math.random()-.5) *
-        .04,
-
-      size:
-        2 +
-        Math.random() * 3,
-
-      alpha:
-        .2 +
-        Math.random() * .3
-
-    });
-
-  }
-
-
-  /* =====================================================
-     PLAYER PHYSICS
-  ===================================================== */
-
-  player.jumpTime += dt;
-
-
-  /*
-   * GRAVITY
-   */
-
-  player.velocityY +=
-    31 * dt;
-
-  player.y +=
-    player.velocityY; 
-
-
-  /* =====================================================
-     AIR ROTATION
-  ===================================================== */
-
-  if(
-    !player.grounded &&
-    player.dash <= 0
-  ){
-
-    player.rotation =
-      Math.max(
-        -.22,
-        Math.min(
-          .22,
-          player.velocityY *
-          .018
-        )
-      );
-
-  }
-
-
-  /* =====================================================
-     LANDING
-  ===================================================== */
-
-  if(
-    player.y +
-    player.height >=
-    ground
-  ){
-
-    if(
-      !player.grounded
-    ){
-
-      player.landing =
-        1;
-
-      player.squashX =
-        1.27;
-
-      player.squashY =
-        .70;
-
-      cameraShake =
-        4;
-
-      burst(
-        player.x + 17,
-        ground,
-        14
-      );
-
-      shockwave(
-        player.x + 17,
-        ground,
-        17
-      );
-
-      vibrate(8);
-
-    }
-
-
-    player.y =
-      ground -
-      player.height;
-
-    player.velocityY =
-      0;
-
-    player.grounded =
-      true;
-
-    player.rotation =
-      0;
-
-  }
-
-
-  /* =====================================================
-     RUN ANIMATION
-  ===================================================== */
-
-  if(
-    player.grounded
-  ){
-
-    player.runPhase +=
-      dt *
-      speed *
-      2.6;
-
-  }
-
-
-  /* =====================================================
-     SQUASH / STRETCH RECOVERY
-  ===================================================== */
-
-  player.squashX +=
-    (1 - player.squashX) *
-    Math.min(
-      1,
-      dt * 11
-    );
-
-  player.squashY +=
-    (1 - player.squashY) *
-    Math.min(
-      1,
-      dt * 11
-    );
-
-  player.stretch +=
-    (1 - player.stretch) *
-    Math.min(
-      1,
-      dt * 8
-    );
-
-  player.landing =
-    Math.max(
-      0,
-      player.landing -
-      dt * 5
-    );
-
-
-  /* =====================================================
-     DASH STATE
-  ===================================================== */
-
-  let multiplier = 1;
-
-  if(
-    player.dash > 0
-  ){
-
-    player.dash -=
-      dt * 60;
-
-    player.dashPhase +=
-      dt * 12;
-
-    multiplier =
-      1.9;
-
-
-    /*
-     * Continuous afterimages
-     */
-
-    trails.push({
-
-      x:
-        player.x -
-        4,
-
-      y:
-        player.y,
-
-      alpha:.28,
-
-      scale:
-        .92 +
-        Math.random() * .1,
-
-      rotation:
-        player.rotation
-
-    });
-
-
-    /*
-     * Continuous speed lines
-     */
-
-    if(
-      Math.random() < .7
-    ){
-
-      speedLines.push({
-
-        x:
-          player.x -
-          Math.random() * 20,
-
-        y:
-          player.y +
-          Math.random() *
-          player.height,
-
-        length:
-          20 +
-          Math.random() * 50,
-
-        alpha:
-          .25 +
-          Math.random() * .3,
-
-        life:1,
-
-        width:
-          1 +
-          Math.random() * 2
-
-      });
-
-    }
-
-  }
-
-
-  /* =====================================================
-     WORLD MOVEMENT
-  ===================================================== */
-
-  const movement =
-    speed *
-    60 *
-    dt *
-    multiplier;
-
-
-  obstacles.forEach(
-    o => {
-      o.x -= movement;
-    }
-  );
-
-  stars.forEach(
-    s => {
-      s.x -= movement;
-    }
-  );
-
-
-  buildings.forEach(
-    b => {
-
-      b.x -=
-        movement *
-        .18;
-
-      if(
-        b.x +
-        b.width <
-        -50
-      ){
-
-        b.x =
-          W +
-          Math.random() *
-          120;
-
-      }
-
-    }
-  );
-
-
-  /* =====================================================
-     METEOR & JET MOVEMENT
-  ===================================================== */
-
+  // Moving
+  obstacles.forEach(o => o.x -= movement);
   meteors.forEach(m => {
-    // Bergerak ke kiri dan bawah
-    m.x -= (movement + m.vx * dt);
-    m.y += m.vy * dt;
-
-    // Tambah partikel ekor meteor
-    if (Math.random() < 0.6) {
-      particles.push({
-        x: m.x + (Math.random() - 0.5) * m.size,
-        y: m.y + (Math.random() - 0.5) * m.size,
-        vx: m.vx * 0.05,
-        vy: -m.vy * 0.05,
-        life: 0.5 + Math.random() * 0.5,
-        size: 1.5 + Math.random() * 2.5,
-        type: "meteor_trail",
-        color: Math.random() < 0.5 ? "#ff35df" : "#ff9e5e"
-      });
-    }
+    m.x -= (movement + m.vx * dt); m.y += m.vy * dt;
+    if (Math.random() < 0.6) particles.push({ x: m.x + (Math.random() - 0.5)*m.size, y: m.y, z:0, vx: m.vx*0.05, vy: -m.vy*0.05, life: 0.8, size: 2, type: "meteor_trail", color: "#ff35df" });
   });
+  
+  buildings.forEach(b => { b.x -= movement * .18; if(b.x + b.width < -50) b.x = W + Math.random() * 120; });
 
-  jets.forEach(j => {
-    j.x -= (movement + j.speed * dt);
-
-    // Ekor jet
-    if (Math.random() < 0.8) {
-      speedLines.push({
-        x: j.x + j.width,
-        y: j.y + j.height / 2 + (Math.random() - 0.5) * 8,
-        length: 20 + Math.random() * 40,
-        alpha: 0.5 + Math.random() * 0.5,
-        life: 0.8,
-        width: 1 + Math.random() * 2
-      });
-    }
-  });
-
-
-  /* =====================================================
-     PETALS UPDATE
-  ===================================================== */
-
-  petals.forEach(
-    p => {
-
-      p.x +=
-        p.vx *
-        movement;
-
-      p.y +=
-        p.vy *
-        movement;
-
-      p.rotation +=
-        p.spin;
-
-    }
-  );
-
-
-  /* =====================================================
-     CLEAN
-  ===================================================== */
-
+  // Cleanup
   obstacles = obstacles.filter(o => o.x + o.width > -60);
-  stars = stars.filter(s => s.x > -60);
-  petals = petals.filter(p => p.x > -30 && p.y < H + 30);
   meteors = meteors.filter(m => m.y < H + 60 && m.x > -60);
-  jets = jets.filter(j => j.x + j.width > -100);
 
-
-  /* =====================================================
-     COLLISION CHECKER UTILITY
-  ===================================================== */
-
-  function checkCollision(objHitbox) {
-    return (
-      player.x + 7 < objHitbox.right &&
-      player.x + player.width - 7 > objHitbox.left &&
-      player.y + 8 < objHitbox.bottom &&
-      player.y + player.height - 5 > objHitbox.top
-    );
-  }
-
-  function handleImpact(obj, centerX, centerY, scoreBonus, isJet = false) {
+  // Collision
+  function handleImpact2D(objX, objY, bonus) {
     if (player.dash > 0) {
-      burst(centerX, centerY, isJet ? 35 : 25);
-      shockwave(centerX, centerY, isJet ? 40 : 25);
-      cameraShake = isJet ? 10 : 7;
-      flash = 0.08;
-      obj.x = -9999; 
-      score += scoreBonus;
-      vibrate([15, 20]);
-      return false; // Not game over
-    } else {
-      endGame();
-      return true; // Game over
-    }
+      burst(objX, objY, 25); shockwave(objX, objY, 25); cameraShake = 7; flash = 0.08;
+      score += bonus; vibrate([15, 20]); return false;
+    } else { endGame(); return true; }
   }
 
-
-  /* =====================================================
-     OBSTACLE COLLISION
-  ===================================================== */
-
-  for (const o of obstacles) {
-    const box = {
-      left: o.x, right: o.x + o.width,
-      top: o.y, bottom: o.y + o.height
-    };
-    
-    if (checkCollision(box)) {
-      if (handleImpact(o, o.x + o.width / 2, o.y + o.height / 2, 50)) return;
+  for (let i=0; i<obstacles.length; i++) {
+    const o = obstacles[i];
+    if (player.x + 7 < o.x + o.width && player.x + player.width - 7 > o.x && player.y + 8 < o.y + o.height && player.y + player.height - 5 > o.y) {
+      if (handleImpact2D(o.x, o.y, 50)) return; else o.x = -999;
     }
   }
-
-  /* =====================================================
-     METEOR COLLISION
-  ===================================================== */
-
-  for (const m of meteors) {
-    const box = {
-      left: m.x - m.size/2, right: m.x + m.size/2,
-      top: m.y - m.size/2, bottom: m.y + m.size/2
-    };
-    
-    if (checkCollision(box)) {
-      if (handleImpact(m, m.x, m.y, 50)) return;
-    }
-  }
-
-  /* =====================================================
-     JET COLLISION
-  ===================================================== */
-
-  for (const j of jets) {
-    const box = {
-      left: j.x, right: j.x + j.width,
-      top: j.y, bottom: j.y + j.height
-    };
-    
-    if (checkCollision(box)) {
-      if (handleImpact(j, j.x + j.width/2, j.y + j.height/2, 100, true)) return;
-    }
-  }
-
-
-  /* =====================================================
-     STAR COLLECTION
-  ===================================================== */
-
-  for(
-    let i =
-      stars.length - 1;
-
-    i >= 0;
-
-    i--
-  ){
-
-    const s =
-      stars[i];
-
-    const dx =
-      player.x +
-      17 -
-      s.x;
-
-    const dy =
-      player.y +
-      23 -
-      s.y;
-
-    if(
-      dx * dx +
-      dy * dy <
-      900
-    ){
-
-      score +=
-        100;
-
-      burst(
-        s.x,
-        s.y,
-        20
-      );
-
-      shockwave(
-        s.x,
-        s.y,
-        12
-      );
-
-      cameraShake =
-        2;
-
-      stars.splice(
-        i,
-        1
-      );
-
-      vibrate(7);
-
-    }
-
-  }
-
-
-  /* =====================================================
-     PARTICLES
-  ===================================================== */
-
-  particles.forEach(
-    p => {
-
-      if(
-        p.type === "shock"
-      ){
-
-        p.size +=
-          180 * dt;
-
-        p.life -=
-          dt * 3;
-
-      }else{
-
-        p.x +=
-          p.vx;
-
-        p.y +=
-          p.vy;
-
-        p.vy +=
-          8 * dt;
-
-        p.life -=
-          dt * 2.4;
-
-        if (p.type === "moon_debris" || p.type === "meteor_trail") {
-           p.life -= dt * 0.4; 
-           p.size *= 0.96;
-        }
-
-      }
-
-    }
-  );
-
-  particles =
-    particles.filter(
-      p =>
-        p.life > 0
-    );
-
-
-  /* =====================================================
-     TRAILS
-  ===================================================== */
-
-  trails.forEach(
-    t => {
-
-      t.alpha -=
-        dt * 3.5;
-
-    }
-  );
-
-  trails =
-    trails.filter(
-      t =>
-        t.alpha > 0
-    );
-
-
-  /* =====================================================
-     SPEED LINES
-  ===================================================== */
-
-  speedLines.forEach(
-    s => {
-
-      s.x -=
-        speed *
-        80 *
-        dt;
-
-      s.life -=
-        dt * 3;
-
-      s.alpha *=
-        .985;
-
-    }
-  );
-
-  speedLines =
-    speedLines.filter(
-      s =>
-        s.life > 0
-    );
-
-
-  /* =====================================================
-     CAMERA
-  ===================================================== */
-
-  cameraShake =
-    Math.max(
-      0,
-      cameraShake -
-      dt * 18
-    );
-
-  flash =
-    Math.max(
-      0,
-      flash -
-      dt
-    );
-
-
-  /* =====================================================
-     SCORE UI
-  ===================================================== */
-
-  scoreEl.textContent =
-    formatScore(score);
-
-
-  if(
-    score > 180
-  ){
-
-    touchHint.classList.add(
-      "hidden"
-    );
-
-  }
-
 }
 
-
 /* =========================================================
-   DRAW
+   3D MODE LOGIC
 ========================================================= */
+function update3D(dt, multiplier){
+  // LERP Player to Lane
+  const targetX3D = player.targetLane * LANE_WIDTH;
+  player.x3D += (targetX3D - player.x3D) * Math.min(1, dt * 15);
 
-function draw(){
+  const movementZ = speed * 180 * dt * multiplier;
 
-  const shake =
-    cameraShake > 0
-    ? (
-        Math.random() -
-        .5
-      ) *
-      cameraShake
-    : 0;
-
-
-  ctx.save();
-
-  ctx.translate(
-    shake,
-    shake
-  );
-
-
-  /* =====================================================
-     SKY
-  ===================================================== */
-
-  const progress =
-    Math.min(
-      1,
-      score / 12000
-    );
-
-
-  const sky =
-    ctx.createLinearGradient(
-      0,
-      0,
-      0,
-      H
-    );
-
-  sky.addColorStop(
-    0,
-    `rgb(
-      ${7 + 16 * progress},
-      ${6 + 10 * progress},
-      ${31 + 38 * progress}
-    )`
-  );
-
-  sky.addColorStop(
-    .5,
-    `rgb(
-      ${13 + 14 * progress},
-      ${8 + 8 * progress},
-      ${43 + 30 * progress}
-    )`
-  );
-
-  sky.addColorStop(
-    1,
-    `rgb(
-      ${3 + 5 * progress},
-      ${3 + 5 * progress},
-      ${12 + 18 * progress}
-    )`
-  );
-
-  ctx.fillStyle =
-    sky;
-
-  ctx.fillRect(
-    0,
-    0,
-    W,
-    H
-  );
-
-
-  /* =====================================================
-     MOON
-  ===================================================== */
-
-  drawMoon();
-
-
-  /* =====================================================
-     PARALLAX STARS
-  ===================================================== */
-
-  drawSkyStars();
-
-
-  /* =====================================================
-     CITY
-  ===================================================== */
-
-  drawBuildings();
-
-
-  /* =====================================================
-     GROUND GLOW
-  ===================================================== */
-
-  drawGround();
-
-
-  /* =====================================================
-     COLLECTIBLES
-  ===================================================== */
-
-  drawCollectibles();
-
-
-  /* =====================================================
-     OBSTACLES & NEW ENEMIES
-  ===================================================== */
-
-  drawObstacles();
-  drawMeteors();
-  drawJets();
-
-
-  /* =====================================================
-     DASH SPEED LINES
-  ===================================================== */
-
-  drawSpeedLines();
-
-
-  /* =====================================================
-     DASH AFTERIMAGES
-  ===================================================== */
-
-  drawTrails();
-
-
-  /* =====================================================
-     PLAYER
-  ===================================================== */
-
-  drawPlayer();
-
-
-  /* =====================================================
-     PETALS
-  ===================================================== */
-
-  drawPetals();
-
-
-  /* =====================================================
-     PARTICLES
-  ===================================================== */
-
-  drawParticles();
-
-
-  /* =====================================================
-     UI WARNINGS
-  ===================================================== */
-  
-  drawWarnings();
-
-
-  ctx.restore();
-
-
-  /* =====================================================
-     FLASH
-  ===================================================== */
-
-  if(
-    flash > 0
-  ){
-
-    ctx.fillStyle =
-      `rgba(
-        220,
-        200,
-        255,
-        ${flash}
-      )`;
-
-    ctx.fillRect(
-      0,
-      0,
-      W,
-      H
-    );
-
+  // 3D Spawners
+  obstacleTimer -= dt;
+  if(obstacleTimer <= 0){
+    const lane = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+    const isTall = Math.random() > 0.5;
+    obstacles.push({
+      x3D: lane * LANE_WIDTH,
+      y: ground, // anchor bottom
+      z: 3500,
+      width: 40,
+      height: isTall ? 65 : 40,
+      color: isTall ? "#35e7ff" : "#ff35df"
+    });
+    obstacleTimer = 0.6 + Math.random() * 0.4;
   }
 
-}
-
-
-/* =========================================================
-   MOON
-========================================================= */
-
-function drawMoon(){
-
-  if (moonScale <= 0) return;
-
-  const x = moonDynX;
-  const y = moonDynY;
-
-  ctx.save();
-  ctx.translate(x, y);
-  ctx.scale(moonScale, moonScale);
-
-  const glow =
-    ctx.createRadialGradient(
-      0,
-      0,
-      0,
-      0,
-      0,
-      115
-    );
-
-  glow.addColorStop(
-    0,
-    "rgba(150,180,255,.16)"
-  );
-
-  glow.addColorStop(
-    .45,
-    "rgba(110,100,255,.06)"
-  );
-
-  glow.addColorStop(
-    1,
-    "rgba(80,50,255,0)"
-  );
-
-  ctx.fillStyle =
-    glow;
-
-  ctx.fillRect(
-    -115,
-    -115,
-    230,
-    230
-  );
-
-  ctx.shadowBlur =
-    25;
-
-  ctx.shadowColor =
-    "rgba(190,205,255,.7)";
-
-  ctx.fillStyle =
-    "rgba(210,220,255,.72)";
-
-  ctx.beginPath();
-
-  ctx.arc(
-    0,
-    0,
-    30,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-  ctx.restore();
-
-}
-
-
-/* =========================================================
-   SKY STARS
-========================================================= */
-
-function drawSkyStars(){
-
-  for(
-    let i = 0;
-    i < 65;
-    i++
-  ){
-
-    const x =
-      (
-        i * 117 +
-        score * .012
-      ) % W;
-
-    const y =
-      (
-        i * 61
-      ) %
-      (ground * .68);
-
-    const twinkle =
-      (
-        Math.sin(
-          worldTime * 2 +
-          i
-        ) + 1
-      ) * .10 +
-      .04;
-
-    ctx.fillStyle =
-      `rgba(
-        190,
-        210,
-        255,
-        ${twinkle}
-      )`;
-
-    ctx.fillRect(
-      x,
-      y,
-      1.2,
-      1.2
-    );
-
+  meteorTimer -= dt;
+  if (meteorTimer <= 0) {
+    const lane = Math.floor(Math.random() * 3) - 1;
+    meteors.push({ x3D: lane * LANE_WIDTH, y: ground - 500, z: 4000, size: 25, vy: 500 });
+    meteorTimer = 1.5 + Math.random() * 2.0;
   }
 
-}
-
-
-/* =========================================================
-   BUILDINGS
-========================================================= */
-
-function drawBuildings(){
-
-  buildings.forEach(
-    b => {
-
-      const base =
-        ground + 5;
-
-      const top =
-        base -
-        b.height;
-
-      ctx.fillStyle =
-        "rgba(8,8,24,.78)";
-
-      ctx.fillRect(
-        b.x,
-        top,
-        b.width,
-        b.height
-      );
-
-
-      /*
-       * Neon edge
-       */
-
-      ctx.fillStyle =
-        "rgba(75,90,190,.12)";
-
-      ctx.fillRect(
-        b.x,
-        top,
-        1,
-        b.height
-      );
-
-
-      /*
-       * Windows
-       */
-
-      for(
-        let row = 0;
-        row < b.lights;
-        row++
-      ){
-
-        const wy =
-          top +
-          13 +
-          row * 19;
-
-        if(
-          wy >
-          ground - 8
-        ){
-          continue;
-        }
-
-        const wx =
-          b.x +
-          7 +
-          (
-            row % 2
-          ) *
-          5;
-
-        ctx.fillStyle =
-          row % 3 === 0
-          ? "rgba(80,180,255,.35)"
-          : "rgba(255,70,220,.18)";
-
-        ctx.fillRect(
-          wx,
-          wy,
-          3,
-          2
-        );
-
-      }
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   GROUND
-========================================================= */
-
-function drawGround(){
-
-  /*
-   * Main line
-   */
-
-  ctx.shadowBlur =
-    12;
-
-  ctx.shadowColor =
-    "rgba(120,90,255,.7)";
-
-  ctx.fillStyle =
-    "rgba(155,125,255,.42)";
-
-  ctx.fillRect(
-    0,
-    ground,
-    W,
-    2
-  );
-
-  ctx.shadowBlur =
-    0;
-
-
-  /*
-   * Ground gradient
-   */
-
-  const g =
-    ctx.createLinearGradient(
-      0,
-      ground,
-      0,
-      ground + 70
-    );
-
-  g.addColorStop(
-    0,
-    "rgba(100,70,255,.10)"
-  );
-
-  g.addColorStop(
-    1,
-    "rgba(0,0,0,0)"
-  );
-
-  ctx.fillStyle =
-    g;
-
-  ctx.fillRect(
-    0,
-    ground,
-    W,
-    70
-  );
-
-
-  /*
-   * Moving neon marks
-   */
-
-  for(
-    let i = 0;
-    i < 12;
-    i++
-  ){
-
-    const x =
-      (
-        i * 100 -
-        score * .8
-      ) %
-      (W + 100);
-
-    ctx.fillStyle =
-      "rgba(110,85,255,.14)";
-
-    ctx.fillRect(
-      x,
-      ground + 17,
-      40,
-      1
-    );
-
-  }
-
-}
-
-
-/* =========================================================
-   COLLECTIBLES
-========================================================= */
-
-function drawCollectibles(){
-
-  stars.forEach(
-    s => {
-
-      const pulse =
-        1 +
-        Math.sin(
-          worldTime * 5 +
-          s.phase
-        ) * .18;
-
-      ctx.save();
-
-      ctx.translate(
-        s.x,
-        s.y
-      );
-
-      ctx.rotate(
-        worldTime * 2 +
-        s.phase
-      );
-
-      ctx.scale(
-        pulse,
-        pulse
-      );
-
-      ctx.shadowBlur =
-        22;
-
-      ctx.shadowColor =
-        "#9c6cff";
-
-      ctx.fillStyle =
-        "#e8dcff";
-
-      ctx.beginPath();
-
-      ctx.moveTo(
-        0,
-        -7
-      );
-
-      ctx.lineTo(
-        4,
-        0
-      );
-
-      ctx.lineTo(
-        0,
-        7
-      );
-
-      ctx.lineTo(
-        -4,
-        0
-      );
-
-      ctx.closePath();
-
-      ctx.fill();
-
-      ctx.restore();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   OBSTACLES
-========================================================= */
-
-function drawObstacles(){
-
-  obstacles.forEach(
-    o => {
-
-      const bob =
-        Math.sin(
-          worldTime * 2 +
-          o.phase
-        ) * .8;
-
-      ctx.save();
-
-      ctx.translate(
-        o.x,
-        o.y + bob
-      );
-
-
-      /*
-       * Shadow
-       */
-
-      ctx.fillStyle =
-        "rgba(0,0,0,.3)";
-
-      ctx.beginPath();
-
-      ctx.ellipse(
-        o.width / 2,
-        o.height + 7,
-        o.width * .7,
-        4,
-        0,
-        0,
-        Math.PI * 2
-      );
-
-      ctx.fill();
-
-
-      /*
-       * Neon outline
-       */
-
-      ctx.shadowBlur =
-        10;
-
-      ctx.shadowColor =
-        "rgba(105,75,255,.3)";
-
-      const grad =
-        ctx.createLinearGradient(
-          0,
-          0,
-          0,
-          o.height
-        );
-
-      grad.addColorStop(
-        0,
-        "#44485d"
-      );
-
-      grad.addColorStop(
-        1,
-        "#171925"
-      );
-
-      ctx.fillStyle =
-        grad;
-
-      ctx.beginPath();
-
-      ctx.roundRect(
-        0,
-        0,
-        o.width,
-        o.height,
-        7
-      );
-
-      ctx.fill();
-
-      ctx.shadowBlur =
-        0;
-
-      ctx.strokeStyle =
-        "rgba(180,160,255,.2)";
-
-      ctx.stroke();
-
-      ctx.restore();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   METEORS
-========================================================= */
-
-function drawMeteors(){
-
+  // Move Entities Towards Camera (Decrease Z)
+  obstacles.forEach(o => o.z -= movementZ);
   meteors.forEach(m => {
-    ctx.save();
-    ctx.translate(m.x, m.y);
-    
-    // Core
-    ctx.fillStyle = "#fff";
-    ctx.shadowBlur = 20;
-    ctx.shadowColor = "#ff35df";
-    
-    ctx.beginPath();
-    ctx.arc(0, 0, m.size, 0, Math.PI * 2);
-    ctx.fill();
-
-    // Inner glow
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "#ff9e5e";
-    ctx.fillStyle = "#ffb085";
-    ctx.beginPath();
-    ctx.arc(0, 0, m.size * 0.6, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
+    m.z -= movementZ; m.y += m.vy * dt;
+    if (Math.random() < 0.6) particles.push({ x: m.x3D + W/2, y: m.y, z: m.z, vx: (Math.random()-0.5)*2, vy: -5, life: 0.8, size: 3, type: "meteor_trail", color: "#ff9e5e" });
   });
 
+  // Cleanup
+  obstacles = obstacles.filter(o => o.z > cameraZ - 100);
+  meteors = meteors.filter(m => m.z > cameraZ - 100 && m.y < ground + 50);
+  
+  buildings.forEach(b => { b.x -= (movementZ * 0.05); if(b.x + b.width < -50) b.x = W + Math.random() * 120; });
+
+  // 3D Collision Detection
+  function checkCollision3D(obj) {
+    const xDist = Math.abs(player.x3D - obj.x3D);
+    const zDist = Math.abs(player.z - obj.z); // player z is 0
+    const yHit = (player.y + player.height > obj.y - (obj.height || obj.size));
+    // Hitbox tolerance
+    return (xDist < (LANE_WIDTH/2) - 10) && (zDist < 80) && yHit;
+  }
+
+  for (let i=0; i<obstacles.length; i++) {
+    const o = obstacles[i];
+    if (checkCollision3D(o)) {
+      if (player.dash > 0) {
+        burst(W/2 + o.x3D, o.y - 20, 25); shockwave(W/2 + o.x3D, o.y, 25);
+        cameraShake = 7; flash = 0.08; score += 50; vibrate([15, 20]); o.z = -999;
+      } else { endGame(); return; }
+    }
+  }
 }
 
-
 /* =========================================================
-   JETS (INTERCEPTORS)
+   COMMON PARTICLES UPDATE
 ========================================================= */
-
-function drawJets(){
-
-  jets.forEach(j => {
-    ctx.save();
-    ctx.translate(j.x, j.y);
-
-    // Jet body shape (hadap kiri)
-    ctx.beginPath();
-    ctx.moveTo(0, j.height / 2); // Moncong (kiri)
-    ctx.lineTo(j.width, 0); // Sayap atas kanan
-    ctx.lineTo(j.width - 12, j.height / 2); // Belakang tengah
-    ctx.lineTo(j.width, j.height); // Sayap bawah kanan
-    ctx.closePath();
-
-    ctx.fillStyle = "#1b1433";
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = "#35e7ff";
-    ctx.fill();
-
-    ctx.strokeStyle = "#75edff";
-    ctx.lineWidth = 2;
-    ctx.stroke();
-
-    // Engine glow
-    ctx.fillStyle = "#ff35df";
-    ctx.shadowBlur = 10;
-    ctx.shadowColor = "#ff35df";
-    ctx.beginPath();
-    ctx.arc(j.width - 10, j.height / 2, 4, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.restore();
+function updateCommonParticles(dt) {
+  particles.forEach(p => {
+    if(p.type === "shock") { p.size += 180 * dt; p.life -= dt * 3; }
+    else { p.x += p.vx; p.y += p.vy; p.vy += 8 * dt; p.life -= dt * 2.4; if (is3D) p.z -= speed * 150 * dt; }
   });
+  particles = particles.filter(p => p.life > 0 && (!is3D || p.z > cameraZ));
 
+  trails.forEach(t => { t.alpha -= dt * 3.5; if(is3D) t.z -= speed * 180 * dt; });
+  trails = trails.filter(t => t.alpha > 0);
 }
 
-
 /* =========================================================
-   WARNING INDICATORS
+   MAIN DRAW
 ========================================================= */
+function draw(){
+  const shake = cameraShake > 0 ? (Math.random() - .5) * cameraShake : 0;
+  ctx.save(); ctx.translate(shake, shake);
 
-function drawWarnings() {
-  warnings.forEach(w => {
-    // Blinking effect
-    if (Math.floor(worldTime * 12) % 2 === 0) {
-      ctx.save();
-      ctx.translate(w.x, w.y);
-      
-      ctx.font = "bold 18px Arial";
-      ctx.fillStyle = "#ff35df";
-      ctx.shadowBlur = 15;
-      ctx.shadowColor = "#ff35df";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      
-      ctx.fillText("[ ! ]", 0, 0);
-      
-      ctx.restore();
-    }
-  });
-}
+  // Background gradient
+  const progress = Math.min(1, score / 12000);
+  const sky = ctx.createLinearGradient(0, 0, 0, H);
+  sky.addColorStop(0, `rgb(${7+16*progress}, ${6+10*progress}, ${31+38*progress})`);
+  sky.addColorStop(.5, `rgb(${13+14*progress}, ${8+8*progress}, ${43+30*progress})`);
+  sky.addColorStop(1, `rgb(${3+5*progress}, ${3+5*progress}, ${12+18*progress})`);
+  ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
 
-
-/* =========================================================
-   SPEED LINES
-========================================================= */
-
-function drawSpeedLines(){
-
-  speedLines.forEach(
-    s => {
-
-      ctx.save();
-
-      ctx.globalAlpha =
-        s.alpha *
-        s.life;
-
-      const grad =
-        ctx.createLinearGradient(
-          s.x,
-          0,
-          s.x + s.length,
-          0
-        );
-
-      grad.addColorStop(
-        0,
-        "rgba(80,210,255,0)"
-      );
-
-      grad.addColorStop(
-        .5,
-        "rgba(190,130,255,.65)"
-      );
-
-      grad.addColorStop(
-        1,
-        "rgba(255,100,240,0)"
-      );
-
-      ctx.fillStyle =
-        grad;
-
-      ctx.fillRect(
-        s.x,
-        s.y,
-        s.length,
-        s.width
-      );
-
-      ctx.restore();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   AFTERIMAGES
-========================================================= */
-
-function drawTrails(){
-
-  trails.forEach(
-    t => {
-
-      ctx.save();
-
-      ctx.globalAlpha =
-        t.alpha;
-
-      ctx.translate(
-        t.x,
-        t.y
-      );
-
-      ctx.rotate(
-        t.rotation || 0
-      );
-
-      ctx.scale(
-        t.scale,
-        t.scale
-      );
-
-      ctx.fillStyle =
-        "#9d79ff";
-
-      ctx.shadowBlur =
-        18;
-
-      ctx.shadowColor =
-        "#8b55ff";
-
-      ctx.beginPath();
-
-      ctx.roundRect(
-        0,
-        0,
-        player.width,
-        player.height,
-        13
-      );
-
-      ctx.fill();
-
-      ctx.restore();
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   PLAYER
-========================================================= */
-
-function drawPlayer(){
-
-  let bob = 0;
-
-  if(
-    player.grounded &&
-    player.dash <= 0
-  ){
-
-    bob =
-      Math.sin(
-        player.runPhase
-      ) *
-      1.8;
-
+  // Universal BG Elements
+  if (!is3D) {
+    // 2D buildings
+    buildings.forEach(b => {
+      const top = ground + 5 - b.height;
+      ctx.fillStyle = "rgba(8,8,24,.78)"; ctx.fillRect(b.x, top, b.width, b.height);
+      ctx.fillStyle = "rgba(75,90,190,.12)"; ctx.fillRect(b.x, top, 1, b.height);
+    });
   }
 
+  // Branch Rendering
+  if (is3D) draw3D(); else draw2D();
 
-  ctx.save();
-
-
-  /*
-   * Center pivot
-   */
-
-  ctx.translate(
-    player.x +
-    player.width / 2,
-
-    player.y +
-    player.height
-  );
-
-
-  /*
-   * Rotation
-   */
-
-  ctx.rotate(
-    player.rotation
-  );
-
-
-  /*
-   * Scale
-   */
-
-  ctx.scale(
-    player.squashX,
-    player.squashY
-  );
-
-
-  ctx.translate(
-    -player.width / 2,
-    -player.height
-  );
-
-
-  /*
-   * Dash glow
-   */
-
-  if(
-    player.dash > 0
-  ){
-
-    ctx.shadowBlur =
-      30;
-
-    ctx.shadowColor =
-      "rgba(130,100,255,.9)";
-
-  }
-
-
-  /*
-   * BODY
-   */
-
-  const body =
-    ctx.createLinearGradient(
-      0,
-      0,
-      0,
-      player.height
-    );
-
-  body.addColorStop(
-    0,
-    "#ffffff"
-  );
-
-  body.addColorStop(
-    .55,
-    "#eee9ff"
-  );
-
-  body.addColorStop(
-    1,
-    "#aaa3bd"
-  );
-
-  ctx.fillStyle =
-    body;
-
-  ctx.beginPath();
-
-  ctx.roundRect(
-    0,
-    bob,
-    player.width,
-    player.height,
-    13
-  );
-
-  ctx.fill();
-
-
-  ctx.shadowBlur =
-    0;
-
-
-  /*
-   * FACE
-   */
-
-  ctx.fillStyle =
-    "#141421";
-
-  ctx.beginPath();
-
-  ctx.arc(
-    23,
-    15 + bob,
-    3,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-
-  /*
-   * HAIR
-   */
-
-  ctx.strokeStyle =
-    "#736b88";
-
-  ctx.lineWidth =
-    1.5;
-
-  ctx.beginPath();
-
-  ctx.moveTo(
-    7,
-    5 + bob
-  );
-
-  ctx.quadraticCurveTo(
-    12,
-    -1 + bob,
-    17,
-    5 + bob
-  );
-
-  ctx.stroke();
-
-
-  /*
-   * LEGS
-   */
-
-  const legSwing =
-    player.grounded
-    ? Math.sin(
-        player.runPhase
-      ) * 4
-    : 0;
-
-  ctx.fillStyle =
-    "#8f889e";
-
-  ctx.fillRect(
-    7 + legSwing,
-    41 + bob,
-    7,
-    8
-  );
-
-  ctx.fillRect(
-    23 - legSwing,
-    41 + bob,
-    7,
-    8
-  );
-
-
-  /*
-   * Dash energy
-   */
-
-  if(
-    player.dash > 0
-  ){
-
-    ctx.fillStyle =
-      "rgba(220,200,255,.9)";
-
-    ctx.shadowBlur =
-      10;
-
-    ctx.shadowColor =
-      "#9c6cff";
-
-    ctx.fillRect(
-      -12,
-      15 + bob,
-      10,
-      2
-    );
-
-    ctx.fillRect(
-      -22,
-      22 + bob,
-      15,
-      2
-    );
-
-    ctx.fillRect(
-      -15,
-      29 + bob,
-      10,
-      2
-    );
-
-  }
-
-
+  // Draw HUD Particles
+  drawParticles();
   ctx.restore();
 
+  // Flash
+  if(flash > 0){ ctx.fillStyle = `rgba(220, 200, 255, ${flash})`; ctx.fillRect(0, 0, W, H); }
 }
 
+/* =========================================================
+   DRAW 2D
+========================================================= */
+function draw2D() {
+  // Ground
+  ctx.shadowBlur = 12; ctx.shadowColor = "rgba(120,90,255,.7)"; ctx.fillStyle = "rgba(155,125,255,.42)";
+  ctx.fillRect(0, ground, W, 2); ctx.shadowBlur = 0;
+  const g = ctx.createLinearGradient(0, ground, 0, ground + 70);
+  g.addColorStop(0, "rgba(100,70,255,.10)"); g.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = g; ctx.fillRect(0, ground, W, 70);
+
+  // Entities
+  obstacles.forEach(o => {
+    ctx.save(); ctx.translate(o.x, o.y + Math.sin(worldTime*2 + o.phase)*.8);
+    ctx.fillStyle = "rgba(0,0,0,.3)"; ctx.beginPath(); ctx.ellipse(o.width/2, o.height+7, o.width*.7, 4, 0, 0, Math.PI*2); ctx.fill();
+    ctx.shadowBlur = 10; ctx.shadowColor = "rgba(105,75,255,.3)";
+    const grad = ctx.createLinearGradient(0,0,0,o.height); grad.addColorStop(0,"#44485d"); grad.addColorStop(1,"#171925");
+    ctx.fillStyle = grad; ctx.beginPath(); ctx.roundRect(0,0,o.width,o.height, 7); ctx.fill();
+    ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(180,160,255,.2)"; ctx.stroke(); ctx.restore();
+  });
+  
+  meteors.forEach(m => {
+    ctx.save(); ctx.translate(m.x, m.y);
+    ctx.fillStyle = "#fff"; ctx.shadowBlur = 20; ctx.shadowColor = "#ff35df";
+    ctx.beginPath(); ctx.arc(0, 0, m.size, 0, Math.PI*2); ctx.fill();
+    ctx.restore();
+  });
+
+  drawTrails2D();
+  drawPlayer(player.x);
+}
 
 /* =========================================================
-   PETALS
+   DRAW 3D
 ========================================================= */
+function draw3D() {
+  // Draw Lanes (Grid lines)
+  ctx.strokeStyle = "rgba(155, 125, 255, 0.4)";
+  ctx.lineWidth = 2;
+  
+  for (let i = -1.5; i <= 1.5; i++) {
+    const xBase = i * LANE_WIDTH;
+    const pStart = project3D(xBase, ground, 0); // Near camera
+    const pEnd = project3D(xBase, ground, 5000); // Far away
+    ctx.beginPath(); ctx.moveTo(pStart.x, pStart.y); ctx.lineTo(pEnd.x, pEnd.y); ctx.stroke();
+  }
+  
+  // Horizon Line
+  const horizon = project3D(0, ground, 5000);
+  ctx.shadowBlur = 15; ctx.shadowColor = "#ff35df";
+  ctx.fillStyle = "rgba(255, 53, 223, 0.8)";
+  ctx.fillRect(0, horizon.y - 2, W, 4);
+  ctx.shadowBlur = 0;
 
-function drawPetals(){
+  // Build Render List to Sort by Z-Depth
+  let renderList = [];
+  
+  obstacles.forEach(o => renderList.push({ ...o, type: 'obstacle' }));
+  meteors.forEach(m => renderList.push({ ...m, type: 'meteor' }));
+  trails.forEach(t => renderList.push({ ...t, type: 'trail' }));
+  renderList.push({ ...player, type: 'player' }); // Player is at z=0
 
-  petals.forEach(
-    p => {
+  // Painter's Algorithm (Furthest to Closest)
+  renderList.sort((a, b) => b.z - a.z);
 
+  renderList.forEach(obj => {
+    if (obj.z < cameraZ) return;
+    
+    // Y Anchor Logic: Obstacles anchor to ground, Player uses absolute Y
+    const isEntity = (obj.type === 'player' || obj.type === 'trail');
+    const drawY = isEntity ? obj.y : (obj.type === 'meteor' ? obj.y : ground - obj.height);
+    const drawX = isEntity ? obj.x3D : obj.x3D;
+
+    const proj = project3D(drawX, drawY, obj.z);
+    
+    if (obj.type === 'player') {
+      // Re-use drawPlayer but at projected coordinates
+      drawPlayer(proj.x - (player.width * proj.scale)/2, proj.scale);
+    } 
+    else if (obj.type === 'trail') {
       ctx.save();
-
-      ctx.globalAlpha =
-        p.alpha;
-
-      ctx.translate(
-        p.x,
-        p.y
-      );
-
-      ctx.rotate(
-        p.rotation
-      );
-
-      ctx.fillStyle =
-        "#d58bff";
-
-      ctx.shadowBlur =
-        7;
-
-      ctx.shadowColor =
-        "#a849ff";
-
-      ctx.beginPath();
-
-      ctx.ellipse(
-        0,
-        0,
-        p.size,
-        p.size * .55,
-        0,
-        0,
-        Math.PI * 2
-      );
-
-      ctx.fill();
-
+      ctx.globalAlpha = obj.alpha;
+      ctx.translate(proj.x, proj.y);
+      ctx.scale(obj.scale * proj.scale, obj.scale * proj.scale);
+      ctx.fillStyle = "#9d79ff"; ctx.shadowBlur = 18; ctx.shadowColor = "#8b55ff";
+      ctx.beginPath(); ctx.roundRect(0, 0, player.width, player.height, 13); ctx.fill();
       ctx.restore();
-
     }
-  );
-
+    else if (obj.type === 'obstacle') {
+      const pWidth = obj.width * proj.scale;
+      const pHeight = obj.height * proj.scale;
+      
+      ctx.save();
+      ctx.translate(proj.x - pWidth/2, proj.y);
+      ctx.shadowBlur = 15; ctx.shadowColor = obj.color;
+      ctx.fillStyle = "rgba(20,20,35,0.9)";
+      ctx.beginPath(); ctx.roundRect(0, 0, pWidth, pHeight, 5); ctx.fill();
+      ctx.strokeStyle = obj.color; ctx.lineWidth = 2; ctx.stroke();
+      ctx.restore();
+    }
+    else if (obj.type === 'meteor') {
+      ctx.save();
+      ctx.translate(proj.x, proj.y);
+      ctx.fillStyle = "#fff"; ctx.shadowBlur = 20; ctx.shadowColor = "#ff35df";
+      ctx.beginPath(); ctx.arc(0, 0, obj.size * proj.scale, 0, Math.PI*2); ctx.fill();
+      ctx.restore();
+    }
+  });
 }
 
-
 /* =========================================================
-   PARTICLES DRAW
+   DRAWING UTILS
 ========================================================= */
+function drawPlayer(drawX, scale = 1){
+  let bob = (player.grounded && player.dash <= 0) ? Math.sin(player.runPhase)*1.8 : 0;
+
+  ctx.save();
+  ctx.translate(drawX + (player.width*scale)/2, player.y + (player.height*scale));
+  ctx.rotate(player.rotation);
+  ctx.scale(player.squashX * scale, player.squashY * scale);
+  ctx.translate(-player.width/2, -player.height);
+
+  if(player.dash > 0){ ctx.shadowBlur = 30; ctx.shadowColor = "rgba(130,100,255,.9)"; }
+
+  // Body
+  const body = ctx.createLinearGradient(0,0,0,player.height);
+  body.addColorStop(0,"#ffffff"); body.addColorStop(.55,"#eee9ff"); body.addColorStop(1,"#aaa3bd");
+  ctx.fillStyle = body; ctx.beginPath(); ctx.roundRect(0, bob, player.width, player.height, 13); ctx.fill();
+  ctx.shadowBlur = 0;
+
+  // Face
+  ctx.fillStyle = "#141421"; ctx.beginPath(); ctx.arc(23, 15+bob, 3, 0, Math.PI*2); ctx.fill();
+  ctx.strokeStyle = "#736b88"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(7, 5+bob); ctx.quadraticCurveTo(12, -1+bob, 17, 5+bob); ctx.stroke();
+
+  // Legs
+  const legSwing = player.grounded ? Math.sin(player.runPhase)*4 : 0;
+  ctx.fillStyle = "#8f889e"; ctx.fillRect(7+legSwing, 41+bob, 7, 8); ctx.fillRect(23-legSwing, 41+bob, 7, 8);
+
+  if(player.dash > 0){
+    ctx.fillStyle = "rgba(220,200,255,.9)"; ctx.shadowBlur = 10; ctx.shadowColor = "#9c6cff";
+    ctx.fillRect(-12, 15+bob, 10, 2); ctx.fillRect(-22, 22+bob, 15, 2); ctx.fillRect(-15, 29+bob, 10, 2);
+  }
+  ctx.restore();
+}
+
+function drawTrails2D(){
+  trails.forEach(t => {
+    ctx.save(); ctx.globalAlpha = t.alpha; ctx.translate(t.x, t.y); ctx.rotate(t.rotation || 0); ctx.scale(t.scale, t.scale);
+    ctx.fillStyle = "#9d79ff"; ctx.shadowBlur = 18; ctx.shadowColor = "#8b55ff";
+    ctx.beginPath(); ctx.roundRect(0, 0, player.width, player.height, 13); ctx.fill();
+    ctx.restore();
+  });
+}
 
 function drawParticles(){
-
-  particles.forEach(
-    p => {
-
-      ctx.save();
-
-      ctx.globalAlpha =
-        Math.max(0, Math.min(1, p.life));
-
-      if(
-        p.type === "shock"
-      ){
-
-        ctx.strokeStyle =
-          `rgba(190, 150, 255, ${ctx.globalAlpha})`;
-
-        ctx.lineWidth =
-          2;
-
-        ctx.beginPath();
-
-        ctx.arc(
-          p.x,
-          p.y,
-          p.size,
-          0,
-          Math.PI * 2
-        );
-
-        ctx.stroke();
-
-      }else{
-
-        ctx.fillStyle = p.color;
-
-        ctx.shadowBlur =
-          (p.type === "moon_debris" || p.type === "meteor_trail") ? 12 : 8;
-
-        ctx.shadowColor =
-          p.color;
-
-        ctx.beginPath();
-
-        ctx.arc(
-          p.x,
-          p.y,
-          p.size,
-          0,
-          Math.PI * 2
-        );
-
-        ctx.fill();
-
-      }
-
-      ctx.restore();
-
+  particles.forEach(p => {
+    ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+    
+    // Project particle if in 3D mode
+    let renderX = p.x, renderY = p.y, renderScale = 1;
+    if (is3D) {
+       const proj = project3D(p.x - W/2, p.y, p.z || 0); // shift x to center origin
+       if (p.z < cameraZ) { ctx.restore(); return; }
+       renderX = proj.x; renderY = proj.y; renderScale = proj.scale;
     }
-  );
 
+    if(p.type === "shock"){
+      ctx.strokeStyle = `rgba(190, 150, 255, ${ctx.globalAlpha})`; ctx.lineWidth = 2 * renderScale;
+      ctx.beginPath(); ctx.arc(renderX, renderY, p.size * renderScale, 0, Math.PI*2); ctx.stroke();
+    }else{
+      ctx.fillStyle = p.color; ctx.shadowBlur = 8; ctx.shadowColor = p.color;
+      ctx.beginPath(); ctx.arc(renderX, renderY, p.size * renderScale, 0, Math.PI*2); ctx.fill();
+    }
+    ctx.restore();
+  });
 }
 
-
-/* =========================================================
-   GAME OVER
-========================================================= */
-
-function endGame(){
-
-  running =
-    false;
-
-  const final =
-    Math.floor(score);
-
-  const oldBest =
-    best;
-
-  if(
-    final > best
-  ){
-
-    best =
-      final;
-
-    localStorage.setItem(
-      "annabeyRunBest",
-      best
-    );
-
-  }
-
-
-  finalEl.textContent =
-    formatScore(final);
-
-  bestEl.textContent =
-    formatScore(best);
-
-  newBestEl.style.display =
-    final > oldBest
-    ? "block"
-    : "none";
-
-  gameOver.classList.remove(
-    "hidden"
-  );
-
-  touchHint.classList.add(
-    "hidden"
-  );
-
-  cameraShake =
-    9;
-
-  flash =
-    .12;
-
-  vibrate([
-    40,
-    50,
-    80
-  ]);
-
-}
-
-
-/* =========================================================
-   VIBRATION
-========================================================= */
-
-function vibrate(pattern){
-
-  if(
-    "vibrate" in navigator
-  ){
-
-    try{
-
-      navigator.vibrate(
-        pattern
-      );
-
-    }catch(_){}
-
-  }
-
-}
-
-
-/* =========================================================
-   TOUCH
-========================================================= */
-
-window.addEventListener(
-  "pointerup",
-  event => {
-
-    if(
-      event.target.closest(
-        "button"
-      )
-    ){
-
-      return;
-
-    }
-
-    if(!running){
-
-      return;
-
-    }
-
-    action();
-
-  },
-  {
-    passive:true
-  }
-);
-
-
-/* =========================================================
-   BUTTONS
-========================================================= */
-
-startButton.addEventListener(
-  "click",
-  startGame
-);
-
-againButton.addEventListener(
-  "click",
-  startGame
-);
-
-
-backButton.addEventListener(
-  "click",
-  () => {
-
-    window.parent.postMessage(
-      {
-        type:
-          "ANNABEY_RUN_BACK"
-      },
-      "*"
-    );
-
-    if(
-      window.parent ===
-      window
-    ){
-
-      history.back();
-
-    }
-
-  }
-);
-
-
-/* =========================================================
-   MOBILE GESTURES
-========================================================= */
-
-document.addEventListener(
-  "gesturestart",
-  event => {
-
-    event.preventDefault();
-
-  }
-);
-
-document.addEventListener(
-  "touchmove",
-  event => {
-
-    if(
-      event.cancelable
-    ){
-
-      event.preventDefault();
-
-    }
-
-  },
-  {
-    passive:false
-  }
-);
-
-
-/* =========================================================
-   INITIAL DRAW
-========================================================= */
-
+// Init
 draw();
-
 </script>
-
 </body>
 </html>
