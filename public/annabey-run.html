@@ -5,17 +5,31 @@
 
 <meta
   name="viewport"
-  content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"
+  content="
+    width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    user-scalable=no,
+    viewport-fit=cover
+  "
 >
 
-<meta name="theme-color" content="#05060a">
+<meta name="theme-color" content="#05030d">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta
+  name="apple-mobile-web-app-status-bar-style"
+  content="black-translucent"
+>
 
 <title>Annabey Run</title>
 
 <style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
 *{
   box-sizing:border-box;
   -webkit-tap-highlight-color:transparent;
@@ -26,9 +40,11 @@ body{
   width:100%;
   height:100%;
   margin:0;
+  padding:0;
+
   overflow:hidden;
 
-  background:#05060a;
+  background:#05030d;
   color:#fff;
 
   font-family:
@@ -40,10 +56,11 @@ body{
     sans-serif;
 
   touch-action:none;
-  overscroll-behavior:none;
 
   user-select:none;
   -webkit-user-select:none;
+
+  overscroll-behavior:none;
 }
 
 body{
@@ -57,11 +74,21 @@ button{
   outline:0;
 }
 
+
+/* =========================================================
+   GAME
+========================================================= */
+
 .game{
   position:fixed;
   inset:0;
+
+  width:100%;
+  height:100%;
+
   overflow:hidden;
-  background:#05060a;
+
+  background:#05030d;
 }
 
 canvas{
@@ -74,19 +101,48 @@ canvas{
   display:block;
 }
 
+
+/* =========================================================
+   ATMOSPHERE
+========================================================= */
+
 .ambient{
   position:absolute;
   inset:0;
+
   pointer-events:none;
 
   background:
     radial-gradient(
-      circle at 50% 100%,
-      rgba(255,255,255,.035),
-      transparent 42%
+      ellipse at 50% 35%,
+      rgba(72,76,190,.10),
+      transparent 55%
+    ),
+    radial-gradient(
+      ellipse at 50% 100%,
+      rgba(255,0,190,.07),
+      transparent 45%
     );
 
   mix-blend-mode:screen;
+
+  z-index:2;
+}
+
+.vignette{
+  position:absolute;
+  inset:0;
+
+  pointer-events:none;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      transparent 45%,
+      rgba(0,0,0,.35) 100%
+    );
+
+  z-index:8;
 }
 
 .grain{
@@ -95,83 +151,163 @@ canvas{
 
   pointer-events:none;
 
-  opacity:.025;
+  opacity:.035;
 
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 
-  animation:grain .22s steps(2) infinite;
+  animation:
+    grain .22s steps(2) infinite;
+
+  z-index:9;
 }
 
-/* =========================================
-   PORTRAIT ONLY
-========================================= */
 
-.rotate-warning{
-  display:none;
+/* =========================================================
+   NEON LOGO
+========================================================= */
 
-  position:fixed;
-  inset:0;
+.logo-wrap{
+  position:absolute;
 
-  z-index:9999;
+  top:
+    max(
+      52px,
+      env(safe-area-inset-top)
+    );
 
-  background:#05060a;
+  left:50%;
 
-  align-items:center;
-  justify-content:center;
+  transform:
+    translateX(-50%);
+
+  z-index:12;
+
+  pointer-events:none;
 
   text-align:center;
 
-  padding:30px;
+  animation:
+    logoFloat 4s ease-in-out infinite;
 }
 
-.rotate-warning-content{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:14px;
+.logo{
+  position:relative;
+
+  display:inline-block;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      37px,
+      11vw,
+      68px
+    );
+
+  font-weight:700;
+
+  font-style:italic;
+
+  letter-spacing:-.08em;
+
+  line-height:.8;
+
+  color:#fff;
+
+  transform:skewX(-6deg);
+
+  text-shadow:
+    0 0 4px #fff,
+    0 0 10px #b8a2ff,
+    0 0 22px #8c5cff,
+    0 0 42px #713bff,
+    0 0 70px rgba(255,0,214,.65);
+
+  animation:
+    logoGlow 2.6s ease-in-out infinite;
 }
 
-.rotate-icon{
-  font-size:38px;
-  animation:rotatePhone 1.8s ease-in-out infinite;
+.logo::before{
+  content:"✦";
+
+  position:absolute;
+
+  top:-23px;
+  left:50%;
+
+  transform:
+    translateX(-50%)
+    rotate(-8deg);
+
+  font-size:18px;
+
+  color:#fff;
+
+  text-shadow:
+    0 0 8px #fff,
+    0 0 20px #7d5cff,
+    0 0 35px #ff39dd;
+
+  animation:
+    crownPulse 1.8s ease-in-out infinite;
 }
 
-.rotate-title{
-  font-size:11px;
-  letter-spacing:.25em;
-  text-transform:uppercase;
+.logo::after{
+  content:"";
+
+  position:absolute;
+
+  left:-12%;
+  right:-12%;
+
+  bottom:-9px;
+
+  height:3px;
+
+  border-radius:100%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      #35e7ff,
+      #fff,
+      #ff35df,
+      transparent
+    );
+
+  box-shadow:
+    0 0 8px #35e7ff,
+    0 0 18px #ff35df;
+
+  transform:rotate(-3deg);
+
+  opacity:.8;
 }
 
-.rotate-sub{
-  color:rgba(255,255,255,.35);
-  font-size:9px;
-  letter-spacing:.08em;
-}
 
-@media (orientation:landscape){
-  .game{
-    display:none;
-  }
-
-  .rotate-warning{
-    display:flex;
-  }
-}
-
-/* =========================================
-   TOP UI
-========================================= */
+/* =========================================================
+   SCORE
+========================================================= */
 
 .top-ui{
   position:absolute;
 
-  top:max(10px,env(safe-area-inset-top));
+  top:
+    max(
+      10px,
+      env(safe-area-inset-top)
+    );
+
   left:0;
   right:0;
 
   padding:
-    12px
+    10px
     max(18px,env(safe-area-inset-right))
     0
     max(18px,env(safe-area-inset-left));
@@ -180,41 +316,45 @@ canvas{
   justify-content:space-between;
   align-items:flex-start;
 
-  pointer-events:none;
+  z-index:13;
 
-  z-index:20;
+  pointer-events:none;
 }
 
 .back{
-  width:44px;
-  height:44px;
+  width:42px;
+  height:42px;
 
   border-radius:50%;
 
-  border:1px solid rgba(255,255,255,.14);
+  color:#fff;
 
-  background:rgba(0,0,0,.35);
+  background:
+    rgba(8,6,20,.45);
 
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
+  border:
+    1px solid
+    rgba(145,110,255,.28);
 
-  color:rgba(255,255,255,.85);
+  box-shadow:
+    0 0 20px rgba(110,60,255,.15),
+    inset 0 0 15px rgba(255,255,255,.04);
 
-  font-size:20px;
+  backdrop-filter:blur(14px);
+
+  pointer-events:auto;
+
+  font-size:21px;
 
   display:grid;
   place-items:center;
 
-  pointer-events:auto;
-
   transition:
-    transform .16s ease,
-    background .16s ease;
+    transform .18s ease;
 }
 
 .back:active{
   transform:scale(.86);
-  background:rgba(255,255,255,.12);
 }
 
 .score{
@@ -224,43 +364,50 @@ canvas{
 .score-label{
   display:block;
 
-  color:rgba(255,255,255,.32);
+  font-size:7px;
 
-  font-size:8px;
-  letter-spacing:.3em;
+  letter-spacing:.35em;
+
+  color:
+    rgba(255,255,255,.38);
 }
 
 .score-value{
   display:block;
 
-  margin-top:4px;
+  margin-top:3px;
 
   font-family:monospace;
 
-  font-size:17px;
+  font-size:16px;
+
   font-weight:600;
 
   letter-spacing:.12em;
 
+  color:#fff;
+
   text-shadow:
-    0 0 20px rgba(255,255,255,.2);
+    0 0 12px rgba(122,214,255,.5);
 }
 
 .best{
-  margin-top:5px;
-
-  color:rgba(255,255,255,.27);
+  margin-top:4px;
 
   font-family:monospace;
 
-  font-size:8px;
+  font-size:7px;
 
-  letter-spacing:.12em;
+  letter-spacing:.15em;
+
+  color:
+    rgba(255,255,255,.28);
 }
 
-/* =========================================
-   SCREENS
-========================================= */
+
+/* =========================================================
+   START / GAME OVER
+========================================================= */
 
 .screen{
   position:absolute;
@@ -270,17 +417,15 @@ canvas{
   place-items:center;
 
   padding:
-    100px
+    130px
     24px
-    100px;
+    110px;
 
   text-align:center;
 
-  z-index:15;
+  z-index:11;
 
   pointer-events:none;
-
-  opacity:1;
 
   transition:
     opacity .45s ease,
@@ -289,172 +434,209 @@ canvas{
 
 .screen.hidden{
   opacity:0;
-  transform:scale(1.055);
+
+  transform:
+    scale(1.07);
+
   pointer-events:none;
 }
 
 .panel{
-  width:min(420px,100%);
+  width:min(390px,100%);
 
   display:flex;
   flex-direction:column;
   align-items:center;
 }
 
-/* =========================================
-   TITLE
-========================================= */
 
-.logo{
+/* =========================================================
+   START TITLE
+========================================================= */
+
+.start-title{
   font-family:
     Georgia,
-    "Times New Roman",
     serif;
 
   font-size:
-    clamp(48px,15vw,82px);
-
-  line-height:.85;
-
-  font-weight:400;
-
-  letter-spacing:-.055em;
-
-  background:
-    linear-gradient(
-      180deg,
-      #fff 0%,
-      #dedbd3 55%,
-      #85838a 100%
+    clamp(
+      40px,
+      13vw,
+      65px
     );
 
-  -webkit-background-clip:text;
-  background-clip:text;
+  line-height:.9;
 
-  color:transparent;
+  font-style:italic;
+
+  color:#fff;
 
   text-shadow:
-    0 15px 50px rgba(255,255,255,.08);
-
-  animation:
-    titleFloat 4s ease-in-out infinite;
+    0 0 12px #765cff,
+    0 0 30px #8a42ff,
+    0 0 55px rgba(255,0,214,.45);
 }
 
 .subtitle{
-  margin-top:20px;
+  margin-top:17px;
 
-  color:rgba(255,255,255,.45);
+  font-size:8px;
 
-  font-size:9px;
-
-  letter-spacing:.34em;
+  letter-spacing:.38em;
 
   text-transform:uppercase;
+
+  color:
+    rgba(255,255,255,.42);
 }
 
-/* =========================================
+
+/* =========================================================
    BUTTON
-========================================= */
+========================================================= */
 
 .start-button{
-  margin-top:34px;
+  position:relative;
 
-  min-width:160px;
+  margin-top:30px;
+
+  min-width:165px;
   min-height:52px;
 
-  padding:0 28px;
+  padding:0 26px;
 
   border-radius:999px;
 
-  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
 
   background:
     linear-gradient(
       135deg,
-      rgba(255,255,255,.12),
-      rgba(255,255,255,.035)
+      rgba(112,75,255,.32),
+      rgba(255,30,205,.14)
     );
 
-  color:rgba(255,255,255,.92);
-
-  font-size:10px;
-
-  letter-spacing:.25em;
-
-  text-transform:uppercase;
+  border:
+    1px solid
+    rgba(180,150,255,.4);
 
   box-shadow:
-    0 15px 50px rgba(0,0,0,.3),
-    inset 0 1px rgba(255,255,255,.08);
+    0 0 15px rgba(103,65,255,.25),
+    0 0 35px rgba(255,0,212,.12),
+    inset 0 1px rgba(255,255,255,.12);
 
-  backdrop-filter:blur(16px);
-  -webkit-backdrop-filter:blur(16px);
-
-  pointer-events:auto;
-
-  transition:
-    transform .18s ease,
-    background .18s ease;
-}
-
-.start-button:active{
-  transform:scale(.91);
-  background:rgba(255,255,255,.15);
-}
-
-.hint{
-  margin-top:17px;
-
-  color:rgba(255,255,255,.25);
-
-  font-size:8px;
-
-  letter-spacing:.12em;
-}
-
-/* =========================================
-   GAME OVER
-========================================= */
-
-.over-label{
-  color:rgba(255,255,255,.38);
+  backdrop-filter:blur(15px);
 
   font-size:9px;
 
-  letter-spacing:.35em;
+  letter-spacing:.28em;
+
+  text-transform:uppercase;
+
+  pointer-events:auto;
+
+  overflow:hidden;
+
+  transition:
+    transform .18s ease;
+}
+
+.start-button::before{
+  content:"";
+
+  position:absolute;
+
+  top:0;
+  bottom:0;
+
+  width:35%;
+
+  left:-45%;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(255,255,255,.35),
+      transparent
+    );
+
+  transform:skewX(-20deg);
+
+  animation:
+    buttonShine 3s ease-in-out infinite;
+}
+
+.start-button:active{
+  transform:scale(.93);
+}
+
+.hint{
+  margin-top:15px;
+
+  font-size:7px;
+
+  letter-spacing:.16em;
+
+  color:
+    rgba(255,255,255,.24);
+}
+
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+.over-label{
+  font-size:8px;
+
+  letter-spacing:.38em;
+
+  color:
+    rgba(255,255,255,.35);
 }
 
 .final-score{
-  margin-top:15px;
+  margin-top:13px;
 
-  font-family:Georgia,serif;
+  font-family:
+    Georgia,
+    serif;
 
   font-size:
-    clamp(55px,17vw,88px);
+    clamp(
+      58px,
+      18vw,
+      90px
+    );
 
-  line-height:.9;
+  line-height:.85;
 
-  font-weight:400;
+  color:#fff;
 
-  letter-spacing:-.05em;
+  text-shadow:
+    0 0 20px #765cff,
+    0 0 45px rgba(255,0,220,.35);
 }
 
 .new-best{
-  margin-top:12px;
-
-  color:#e8d9b7;
+  margin-top:10px;
 
   font-size:8px;
 
   letter-spacing:.3em;
 
-  animation:
-    bestPulse 1.3s ease-in-out infinite;
+  color:#f4dcff;
+
+  text-shadow:
+    0 0 10px #c452ff;
 }
 
-/* =========================================
+
+/* =========================================================
    TOUCH HINT
-========================================= */
+========================================================= */
 
 .touch-hint{
   position:absolute;
@@ -462,39 +644,142 @@ canvas{
   left:50%;
 
   bottom:
-    max(22px,env(safe-area-inset-bottom));
+    max(
+      22px,
+      env(safe-area-inset-bottom)
+    );
 
-  transform:translateX(-50%);
+  transform:
+    translateX(-50%);
 
-  color:rgba(255,255,255,.2);
+  z-index:12;
 
-  font-size:8px;
+  color:
+    rgba(255,255,255,.25);
 
-  letter-spacing:.22em;
+  font-size:7px;
+
+  letter-spacing:.25em;
 
   white-space:nowrap;
 
   pointer-events:none;
 
-  z-index:10;
-
   transition:
-    opacity .5s ease,
-    transform .5s ease;
+    opacity .45s ease,
+    transform .45s ease;
 }
 
 .touch-hint.hidden{
   opacity:0;
+
   transform:
     translateX(-50%)
     translateY(8px);
 }
 
-/* =========================================
+
+/* =========================================================
+   LANDSCAPE BLOCK
+========================================================= */
+
+@media (orientation:landscape){
+
+  .game::after{
+    content:"ROTATE YOUR PHONE";
+
+    position:absolute;
+    inset:0;
+
+    display:grid;
+    place-items:center;
+
+    z-index:999;
+
+    background:#05030d;
+
+    color:#fff;
+
+    font-size:10px;
+
+    letter-spacing:.3em;
+  }
+
+}
+
+
+/* =========================================================
    ANIMATIONS
-========================================= */
+========================================================= */
+
+@keyframes logoFloat{
+
+  0%,
+  100%{
+    transform:
+      translateX(-50%)
+      translateY(0);
+  }
+
+  50%{
+    transform:
+      translateX(-50%)
+      translateY(-4px);
+  }
+
+}
+
+@keyframes logoGlow{
+
+  0%,
+  100%{
+    filter:
+      brightness(1)
+      saturate(1);
+  }
+
+  50%{
+    filter:
+      brightness(1.22)
+      saturate(1.25);
+  }
+
+}
+
+@keyframes crownPulse{
+
+  0%,
+  100%{
+    transform:
+      translateX(-50%)
+      scale(.9);
+    opacity:.7;
+  }
+
+  50%{
+    transform:
+      translateX(-50%)
+      scale(1.15);
+    opacity:1;
+  }
+
+}
+
+@keyframes buttonShine{
+
+  0%{
+    left:-45%;
+  }
+
+  55%,
+  100%{
+    left:125%;
+  }
+
+}
 
 @keyframes grain{
+
   0%{
     transform:translate(0,0);
   }
@@ -514,182 +799,149 @@ canvas{
   100%{
     transform:translate(-2%,-1%);
   }
+
 }
 
-@keyframes titleFloat{
-  0%,100%{
-    transform:translateY(0);
-  }
-
-  50%{
-    transform:translateY(-4px);
-  }
-}
-
-@keyframes bestPulse{
-  0%,100%{
-    opacity:.5;
-  }
-
-  50%{
-    opacity:1;
-  }
-}
-
-@keyframes rotatePhone{
-  0%,100%{
-    transform:rotate(0deg);
-  }
-
-  50%{
-    transform:rotate(90deg);
-  }
-}
-
-@media(prefers-reduced-motion:reduce){
-  .grain,
-  .logo,
-  .new-best,
-  .rotate-icon{
-    animation:none;
-  }
-}
 </style>
 </head>
 
 <body>
-
-<div class="rotate-warning">
-  <div class="rotate-warning-content">
-    <div class="rotate-icon">📱</div>
-    <div class="rotate-title">
-      Portrait Mode
-    </div>
-    <div class="rotate-sub">
-      Please rotate your phone
-    </div>
-  </div>
-</div>
 
 <div class="game">
 
 <canvas id="gameCanvas"></canvas>
 
 <div class="ambient"></div>
+<div class="vignette"></div>
 <div class="grain"></div>
 
 
-<!-- =====================================
+<!-- =====================================================
+     NEON ANNABEY LOGO
+===================================================== -->
+
+<div class="logo-wrap">
+
+  <div class="logo">
+    Annabey
+  </div>
+
+</div>
+
+
+<!-- =====================================================
      TOP UI
-===================================== -->
+===================================================== -->
 
 <div class="top-ui">
 
-<button
-  id="backButton"
-  class="back"
-  aria-label="Kembali"
->
-←
-</button>
+  <button
+    id="backButton"
+    class="back"
+    aria-label="Kembali"
+  >
+    ←
+  </button>
 
-<div class="score">
+  <div class="score">
 
-<span class="score-label">
-SCORE
-</span>
+    <span class="score-label">
+      SCORE
+    </span>
 
-<span
-  id="score"
-  class="score-value"
->
-000000
-</span>
+    <span
+      id="score"
+      class="score-value"
+    >
+      000000
+    </span>
 
-<div class="best">
-BEST
-<span id="best">000000</span>
+    <div class="best">
+      BEST
+      <span id="best">
+        000000
+      </span>
+    </div>
+
+  </div>
+
 </div>
 
-</div>
 
-</div>
-
-
-<!-- =====================================
-     START SCREEN
-===================================== -->
+<!-- =====================================================
+     START
+===================================================== -->
 
 <div
   id="startScreen"
   class="screen"
 >
 
-<div class="panel">
+  <div class="panel">
 
-<div class="logo">
-Annabey Run
+    <div class="start-title">
+      RUN
+    </div>
+
+    <div class="subtitle">
+      enter the neon night
+    </div>
+
+    <button
+      id="startButton"
+      class="start-button"
+    >
+      Tap to Run
+    </button>
+
+    <div class="hint">
+      TAP = JUMP&nbsp;&nbsp; · &nbsp;&nbsp;
+      DOUBLE TAP = DASH
+    </div>
+
+  </div>
+
 </div>
 
-<div class="subtitle">
-just keep running ✦
-</div>
 
-<button
-  id="startButton"
-  class="start-button"
->
-Tap to Run
-</button>
-
-<div class="hint">
-TAP = JUMP&nbsp;&nbsp; · &nbsp;&nbsp;
-DOUBLE TAP = DASH
-</div>
-
-</div>
-
-</div>
-
-
-<!-- =====================================
+<!-- =====================================================
      GAME OVER
-===================================== -->
+===================================================== -->
 
 <div
   id="gameOver"
   class="screen hidden"
 >
 
-<div class="panel">
+  <div class="panel">
 
-<div class="over-label">
-RUN ENDED
-</div>
+    <div class="over-label">
+      RUN ENDED
+    </div>
 
-<div
-  id="finalScore"
-  class="final-score"
->
-000000
-</div>
+    <div
+      id="finalScore"
+      class="final-score"
+    >
+      000000
+    </div>
 
-<div
-  id="newBest"
-  class="new-best"
-  style="display:none"
->
-NEW BEST ✦
-</div>
+    <div
+      id="newBest"
+      class="new-best"
+      style="display:none"
+    >
+      NEW BEST ✦
+    </div>
 
-<button
-  id="againButton"
-  class="start-button"
->
-Run Again
-</button>
+    <button
+      id="againButton"
+      class="start-button"
+    >
+      Run Again
+    </button>
 
-</div>
+  </div>
 
 </div>
 
@@ -698,7 +950,7 @@ Run Again
   id="touchHint"
   class="touch-hint"
 >
-TAP TO JUMP
+  TAP TO JUMP · DOUBLE TAP TO DASH
 </div>
 
 </div>
@@ -706,50 +958,50 @@ TAP TO JUMP
 
 <script>
 
-/* =========================================
+/* =========================================================
    DOM
-========================================= */
+========================================================= */
 
 const canvas =
-document.getElementById("gameCanvas");
+  document.getElementById("gameCanvas");
 
 const ctx =
-canvas.getContext("2d");
+  canvas.getContext("2d");
 
 const startScreen =
-document.getElementById("startScreen");
+  document.getElementById("startScreen");
 
 const gameOver =
-document.getElementById("gameOver");
+  document.getElementById("gameOver");
 
 const startButton =
-document.getElementById("startButton");
+  document.getElementById("startButton");
 
 const againButton =
-document.getElementById("againButton");
+  document.getElementById("againButton");
 
 const backButton =
-document.getElementById("backButton");
+  document.getElementById("backButton");
 
 const scoreEl =
-document.getElementById("score");
+  document.getElementById("score");
 
 const bestEl =
-document.getElementById("best");
+  document.getElementById("best");
 
 const finalEl =
-document.getElementById("finalScore");
+  document.getElementById("finalScore");
 
 const newBestEl =
-document.getElementById("newBest");
+  document.getElementById("newBest");
 
 const touchHint =
-document.getElementById("touchHint");
+  document.getElementById("touchHint");
 
 
-/* =========================================
+/* =========================================================
    WORLD
-========================================= */
+========================================================= */
 
 let W = 0;
 let H = 0;
@@ -762,34 +1014,43 @@ let running = false;
 let score = 0;
 
 let best =
-Number(
-  localStorage.getItem("annabeyRunBest")
-) || 0;
+  Number(
+    localStorage.getItem(
+      "annabeyRunBest"
+    )
+  ) || 0;
+
 
 /*
- * SLOW STARTING SPEED
+ * SENGAJA PELAN
  */
-let speed = 4.7;
 
-const MAX_SPEED = 8.2;
+let speed = 5.0;
 
 let worldTime = 0;
+
 let lastTime = 0;
 
-let obstacleTimer = 1.15;
-let starTimer = .8;
+let obstacleTimer = 0;
+
+let starTimer = 0;
 
 let cameraShake = 0;
+
+let flash = 0;
 
 let obstacles = [];
 let stars = [];
 let particles = [];
 let trails = [];
+let speedLines = [];
+let buildings = [];
+let petals = [];
 
 
-/* =========================================
+/* =========================================================
    PLAYER
-========================================= */
+========================================================= */
 
 const player = {
 
@@ -809,9 +1070,7 @@ const player = {
 
   dashCooldown:0,
 
-  runPhase:0,
-
-  rotation:0,
+  jumpTime:0,
 
   squashX:1,
 
@@ -819,56 +1078,46 @@ const player = {
 
   stretch:1,
 
+  rotation:0,
+
+  runPhase:0,
+
   landing:0,
 
-  jumpPhase:"ground",
-
-  blinkTimer:0
+  dashPhase:0
 
 };
 
 
-/* =========================================
-   PHYSICS
-========================================= */
-
-const PHYSICS = {
-
-  gravity:920,
-
-  jumpVelocity:-515,
-
-  terminalVelocity:760
-
-};
-
-
-/* =========================================
+/* =========================================================
    RESIZE
-========================================= */
+========================================================= */
 
 function resize(){
 
   DPR =
-  Math.min(
-    window.devicePixelRatio || 1,
-    2
-  );
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
 
-  W = window.innerWidth;
-  H = window.innerHeight;
+  W =
+    window.innerWidth;
+
+  H =
+    window.innerHeight;
 
   canvas.width =
-  Math.floor(W * DPR);
+    Math.floor(W * DPR);
 
   canvas.height =
-  Math.floor(H * DPR);
+    Math.floor(H * DPR);
 
   canvas.style.width =
-  W + "px";
+    W + "px";
 
   canvas.style.height =
-  H + "px";
+    H + "px";
 
   ctx.setTransform(
     DPR,
@@ -880,15 +1129,12 @@ function resize(){
   );
 
   ground =
-    H * .80;
+    H * .79;
 
   player.x =
     Math.max(
       38,
-      Math.min(
-        78,
-        W * .15
-      )
+      W * .15
     );
 
   if(!running){
@@ -898,6 +1144,8 @@ function resize(){
       player.height;
 
   }
+
+  createBuildings();
 
 }
 
@@ -918,47 +1166,110 @@ window.addEventListener(
   }
 );
 
+
+/* =========================================================
+   BUILDINGS
+========================================================= */
+
+function createBuildings(){
+
+  buildings = [];
+
+  let x = -20;
+
+  while(x < W + 300){
+
+    const width =
+      25 +
+      Math.random() * 45;
+
+    const height =
+      80 +
+      Math.random() * 170;
+
+    buildings.push({
+
+      x,
+
+      width,
+
+      height,
+
+      layer:
+        Math.random() < .5
+        ? .35
+        : .55,
+
+      lights:
+        2 +
+        Math.floor(
+          Math.random() * 5
+        )
+
+    });
+
+    x +=
+      width +
+      8 +
+      Math.random() * 18;
+
+  }
+
+}
+
+
+/* =========================================================
+   INITIAL
+========================================================= */
+
 resize();
 
 
-/* =========================================
+/* =========================================================
    SCORE
-========================================= */
+========================================================= */
 
-function formatScore(value){
+function formatScore(v){
 
   return String(
-    Math.floor(value)
-  ).padStart(6,"0");
+    Math.floor(v)
+  ).padStart(
+    6,
+    "0"
+  );
 
 }
 
 bestEl.textContent =
-formatScore(best);
+  formatScore(best);
 
 
-/* =========================================
+/* =========================================================
    START GAME
-========================================= */
+========================================================= */
 
 function startGame(){
 
   score = 0;
 
-  speed = 4.7;
+  speed = 5.0;
 
-  obstacleTimer = .9;
+  obstacleTimer = .95;
 
-  starTimer = .65;
+  starTimer = .75;
 
   worldTime = 0;
 
   cameraShake = 0;
 
+  flash = 0;
+
   obstacles = [];
   stars = [];
   particles = [];
   trails = [];
+  speedLines = [];
+  petals = [];
 
   player.y =
     ground -
@@ -972,18 +1283,20 @@ function startGame(){
 
   player.dashCooldown = 0;
 
-  player.runPhase = 0;
-
-  player.rotation = 0;
+  player.jumpTime = 0;
 
   player.squashX = 1;
   player.squashY = 1;
 
   player.stretch = 1;
 
+  player.rotation = 0;
+
+  player.runPhase = 0;
+
   player.landing = 0;
 
-  player.jumpPhase = "ground";
+  player.dashPhase = 0;
 
   running = true;
 
@@ -1012,159 +1325,275 @@ function startGame(){
 }
 
 
-/* =========================================
-   ACTION
-========================================= */
+/* =========================================================
+   INPUT
+========================================================= */
 
 let lastTap = 0;
 
+let dashLock = false;
+
+
 function action(){
 
-  if(!running){
+  if(!running)
     return;
-  }
 
   const now =
     performance.now();
 
-  /*
-   * DOUBLE TAP DASH
-   *
-   * Dash hanya di udara.
-   */
+  const doubleTap =
+    now - lastTap < 320;
+
+
+  /* =====================================================
+     DOUBLE TAP = DASH
+  ===================================================== */
 
   if(
-    now - lastTap < 280 &&
-    !player.grounded &&
-    player.dash <= 0 &&
-    player.dashCooldown <= 0
+    doubleTap &&
+    !dashLock
   ){
 
-    startDash();
+    performDash();
 
     lastTap = 0;
 
     return;
+
   }
 
 
-  /*
-   * NORMAL JUMP
-   */
+  /* =====================================================
+     SINGLE TAP = JUMP
+  ===================================================== */
 
-  if(player.grounded){
+  if(
+    player.grounded &&
+    player.dash <= 0
+  ){
 
     jump();
 
   }
+
 
   lastTap = now;
 
 }
 
 
-/* =========================================
+/* =========================================================
    JUMP
-========================================= */
+========================================================= */
 
 function jump(){
 
-  player.grounded = false;
-
-  player.velocityY =
-    PHYSICS.jumpVelocity;
-
-  player.jumpPhase =
-    "takeoff";
-
-  player.runPhase = 0;
-
   /*
-   * TAKEOFF SQUASH
+   * ANTICIPATION
    */
 
-  player.squashX = 1.18;
-  player.squashY = .78;
+  player.squashX = 1.16;
 
-  player.stretch = 1.22;
+  player.squashY = .80;
 
-  player.rotation = -.05;
+  player.stretch = 1.18;
+
+  /*
+   * PHYSICS
+   */
+
+  player.velocityY =
+    -13.5;
+
+  player.grounded =
+    false;
+
+  player.jumpTime =
+    0;
+
+  player.rotation =
+    -.08;
+
+  /*
+   * TAKEOFF PARTICLES
+   */
 
   burst(
     player.x + 17,
-    player.y + player.height,
+    ground,
     12
   );
 
   /*
-   * Small dust ring
+   * Small shockwave
    */
 
-  dustBurst(
+  shockwave(
     player.x + 17,
-    ground
+    ground,
+    20
   );
-
-  cameraShake = 1.5;
 
   vibrate(10);
 
 }
 
 
-/* =========================================
+/* =========================================================
    DASH
-========================================= */
+========================================================= */
 
-function startDash(){
+function performDash(){
 
-  player.dash = .38;
+  if(
+    player.dashCooldown > 0
+  ){
+    return;
+  }
 
-  player.dashCooldown = .7;
+  player.dash =
+    28;
 
-  player.jumpPhase = "dash";
+  player.dashPhase =
+    1;
 
-  player.stretch = 1.35;
+  player.dashCooldown =
+    .55;
 
-  cameraShake = 4;
+  player.squashX =
+    1.32;
+
+  player.squashY =
+    .72;
+
+  player.stretch =
+    1.30;
+
+  player.rotation =
+    -.05;
+
+  cameraShake =
+    7;
+
+  flash =
+    .13;
+
+  dashLock = true;
+
+
+  /*
+   * Main energy burst
+   */
 
   burst(
     player.x,
     player.y + 23,
-    24
+    30
   );
 
-  for(let i=0;i<4;i++){
 
-    trails.push({
+  /*
+   * Directional speed lines
+   */
+
+  for(
+    let i = 0;
+    i < 14;
+    i++
+  ){
+
+    speedLines.push({
 
       x:
         player.x -
-        i * 7,
+        Math.random() * 25,
 
       y:
-        player.y,
+        player.y +
+        Math.random() *
+        player.height,
+
+      length:
+        15 +
+        Math.random() * 45,
 
       alpha:
-        .35 -
-        i * .06,
+        .35 +
+        Math.random() * .35,
 
-      scale:
-        1 -
-        i * .06
+      life:1,
+
+      width:
+        1 +
+        Math.random() * 2
 
     });
 
   }
 
-  vibrate(20);
+
+  /*
+   * Afterimages immediately
+   */
+
+  for(
+    let i = 0;
+    i < 5;
+    i++
+  ){
+
+    trails.push({
+
+      x:
+        player.x -
+        i * 8,
+
+      y:
+        player.y,
+
+      alpha:
+        .40 -
+        i * .055,
+
+      scale:
+        1 -
+        i * .025,
+
+      rotation:
+        player.rotation
+
+    });
+
+  }
+
+
+  vibrate([
+    12,
+    22,
+    18
+  ]);
+
+
+  /*
+   * Unlock after dash
+   */
+
+  setTimeout(
+    () => {
+
+      dashLock = false;
+
+    },
+    350
+  );
 
 }
 
 
-/* =========================================
+/* =========================================================
    PARTICLES
-========================================= */
+========================================================= */
 
 function burst(
   x,
@@ -1173,10 +1602,18 @@ function burst(
 ){
 
   for(
-    let i=0;
-    i<count;
+    let i = 0;
+    i < count;
     i++
   ){
+
+    const angle =
+      Math.random() *
+      Math.PI * 2;
+
+    const force =
+      1.5 +
+      Math.random() * 4.5;
 
     particles.push({
 
@@ -1185,22 +1622,25 @@ function burst(
       y,
 
       vx:
-        (Math.random()-.5)*150,
+        Math.cos(angle) *
+        force,
 
       vy:
-        (Math.random()-.65)*180,
+        Math.sin(angle) *
+        force -
 
-      life:
-        .65 +
-        Math.random()*.35,
+        Math.random() * 1.5,
+
+      life:1,
 
       size:
         1.5 +
-        Math.random()*3,
+        Math.random() * 3.5,
 
-      gravity:
-        120 +
-        Math.random()*160
+      type:
+        Math.random() < .25
+        ? "spark"
+        : "dot"
 
     });
 
@@ -1209,59 +1649,43 @@ function burst(
 }
 
 
-/* =========================================
-   DUST
-========================================= */
+/* =========================================================
+   SHOCKWAVE
+========================================================= */
 
-function dustBurst(
+function shockwave(
   x,
-  y
+  y,
+  size
 ){
 
-  for(let i=0;i<10;i++){
+  particles.push({
 
-    particles.push({
+    x,
+    y,
 
-      x:
-        x +
-        (Math.random()-.5)*20,
+    vx:0,
+    vy:0,
 
-      y:
-        y -
-        Math.random()*2,
+    life:1,
 
-      vx:
-        (Math.random()-.5)*100,
+    size,
 
-      vy:
-        -Math.random()*45,
+    type:"shock"
 
-      life:
-        .35 +
-        Math.random()*.2,
-
-      size:
-        1 +
-        Math.random()*2,
-
-      gravity:50
-
-    });
-
-  }
+  });
 
 }
 
 
-/* =========================================
+/* =========================================================
    LOOP
-========================================= */
+========================================================= */
 
 function loop(time){
 
-  if(!running){
+  if(!running)
     return;
-  }
 
   const dt =
     Math.min(
@@ -1272,74 +1696,91 @@ function loop(time){
       )
     );
 
-  lastTime = time;
+  lastTime =
+    time;
 
   update(dt);
 
   draw();
 
-  requestAnimationFrame(loop);
+  requestAnimationFrame(
+    loop
+  );
 
 }
 
 
-/* =========================================
+/* =========================================================
    UPDATE
-========================================= */
+========================================================= */
 
 function update(dt){
 
-  /* =====================================
+  /* =====================================================
      SCORE
-  ===================================== */
+  ===================================================== */
 
   score +=
     dt *
     speed *
-    9;
+    8;
 
 
-  /* =====================================
-     SLOW SPEED INCREASE
-  ===================================== */
+  /* =====================================================
+     SLOW SPEED PROGRESSION
+  ===================================================== */
 
   speed =
     Math.min(
-      MAX_SPEED,
+      9.2,
       speed +
-      dt * .055
+      dt * .045
     );
+
 
   worldTime += dt;
 
 
-  /* =====================================
+  /* =====================================================
+     DASH COOLDOWN
+  ===================================================== */
+
+  player.dashCooldown =
+    Math.max(
+      0,
+      player.dashCooldown - dt
+    );
+
+
+  /* =====================================================
      OBSTACLE SPAWN
-  ===================================== */
+  ===================================================== */
 
   obstacleTimer -= dt;
 
-  if(obstacleTimer <= 0){
+  if(
+    obstacleTimer <= 0
+  ){
 
-    const height =
-      27 +
-      Math.random()*29;
+    const h =
+      28 +
+      Math.random() * 27;
 
-    const width =
-      19 +
-      Math.random()*18;
+    const w =
+      18 +
+      Math.random() * 19;
 
     obstacles.push({
 
       x:
-        W + 35,
+        W + 45,
 
       y:
-        ground - height,
+        ground - h,
 
-      width,
+      width:w,
 
-      height,
+      height:h,
 
       phase:
         Math.random() *
@@ -1347,38 +1788,34 @@ function update(dt){
 
     });
 
-    /*
-     * Deliberately relaxed spacing
-     */
 
     obstacleTimer =
       .95 +
-      Math.random()*.95 -
-      Math.min(
-        .18,
-        score/50000
-      );
+      Math.random() * .8;
 
   }
 
 
-  /* =====================================
+  /* =====================================================
      STAR SPAWN
-  ===================================== */
+  ===================================================== */
 
   starTimer -= dt;
 
-  if(starTimer <= 0){
+  if(
+    starTimer <= 0
+  ){
 
     stars.push({
 
       x:
-        W + 25,
+        W + 30,
 
       y:
         ground -
-        90 -
-        Math.random()*145,
+        85 -
+        Math.random() *
+        145,
 
       phase:
         Math.random() *
@@ -1388,90 +1825,104 @@ function update(dt){
 
     starTimer =
       .7 +
-      Math.random()*.8;
+      Math.random() *
+      .75;
 
   }
 
 
-  /* =====================================
-     PLAYER PHYSICS
-  ===================================== */
+  /* =====================================================
+     PETALS
+  ===================================================== */
 
-  player.dashCooldown =
-    Math.max(
-      0,
-      player.dashCooldown - dt
-    );
+  if(
+    Math.random() < .12
+  ){
+
+    petals.push({
+
+      x:
+        W + 10,
+
+      y:
+        Math.random() *
+        ground,
+
+      vx:
+        -0.3 -
+        Math.random() * .6,
+
+      vy:
+        .15 +
+        Math.random() * .45,
+
+      rotation:
+        Math.random() *
+        Math.PI,
+
+      spin:
+        (Math.random()-.5) *
+        .04,
+
+      size:
+        2 +
+        Math.random() * 3,
+
+      alpha:
+        .2 +
+        Math.random() * .3
+
+    });
+
+  }
+
+
+  /* =====================================================
+     PLAYER PHYSICS
+  ===================================================== */
+
+  player.jumpTime += dt;
 
 
   /*
-   * Gravity
+   * GRAVITY
+   *
+   * velocity = pixels / second
+   * y += velocity * dt
    */
 
-  if(!player.grounded){
+  player.velocityY +=
+    31 * dt;
 
-    player.velocityY +=
-      PHYSICS.gravity * dt;
-
-    player.velocityY =
-      Math.min(
-        player.velocityY,
-        PHYSICS.terminalVelocity
-      );
-
-    player.y +=
-      player.velocityY * dt;
+  player.y +=
+    player.velocityY * dt;
 
 
-    /*
-     * AIR STATE
-     */
+  /* =====================================================
+     AIR ROTATION
+  ===================================================== */
 
-    if(player.velocityY < -80){
+  if(
+    !player.grounded &&
+    player.dash <= 0
+  ){
 
-      player.jumpPhase =
-        "rising";
-
-    }
-    else if(
-      player.velocityY > 100
-    ){
-
-      player.jumpPhase =
-        "falling";
-
-    }
-
-
-    /*
-     * Air rotation
-     */
-
-    const targetRotation =
+    player.rotation =
       Math.max(
-        -.18,
+        -.22,
         Math.min(
           .22,
-          player.velocityY * .00035
+          player.velocityY *
+          .018
         )
-      );
-
-    player.rotation +=
-      (
-        targetRotation -
-        player.rotation
-      ) *
-      Math.min(
-        1,
-        dt * 8
       );
 
   }
 
 
-  /* =====================================
+  /* =====================================================
      LANDING
-  ===================================== */
+  ===================================================== */
 
   if(
     player.y +
@@ -1479,268 +1930,360 @@ function update(dt){
     ground
   ){
 
-    if(!player.grounded){
+    if(
+      !player.grounded
+    ){
 
-      player.y =
-        ground -
-        player.height;
+      player.landing =
+        1;
 
-      player.velocityY = 0;
+      player.squashX =
+        1.27;
 
-      player.grounded = true;
+      player.squashY =
+        .70;
 
-      player.jumpPhase =
-        "land";
-
-      player.rotation = 0;
-
-      /*
-       * LANDING SQUASH
-       */
-
-      player.squashX = 1.28;
-      player.squashY = .70;
-
-      player.landing = .22;
-
-      player.stretch = .9;
-
-      cameraShake = 4;
-
-      dustBurst(
-        player.x + 17,
-        ground
-      );
+      cameraShake =
+        4;
 
       burst(
         player.x + 17,
-        ground - 2,
-        8
+        ground,
+        14
+      );
+
+      shockwave(
+        player.x + 17,
+        ground,
+        17
       );
 
       vibrate(8);
 
     }
-    else{
 
-      player.y =
-        ground -
-        player.height;
 
-    }
+    player.y =
+      ground -
+      player.height;
+
+    player.velocityY =
+      0;
+
+    player.grounded =
+      true;
+
+    player.rotation =
+      0;
 
   }
 
 
-  /* =====================================
+  /* =====================================================
      RUN ANIMATION
-  ===================================== */
+  ===================================================== */
 
-  if(player.grounded){
+  if(
+    player.grounded
+  ){
 
     player.runPhase +=
       dt *
       speed *
-      3.1;
+      2.6;
 
   }
 
 
-  /* =====================================
-     ANIMATION RECOVERY
-  ===================================== */
+  /* =====================================================
+     SQUASH / STRETCH RECOVERY
+  ===================================================== */
 
   player.squashX +=
-    (
-      1 -
-      player.squashX
-    ) *
+    (1 - player.squashX) *
     Math.min(
       1,
-      dt * 13
+      dt * 11
     );
 
   player.squashY +=
-    (
-      1 -
-      player.squashY
-    ) *
+    (1 - player.squashY) *
     Math.min(
       1,
-      dt * 13
+      dt * 11
     );
 
   player.stretch +=
-    (
-      1 -
-      player.stretch
-    ) *
+    (1 - player.stretch) *
     Math.min(
       1,
-      dt * 9
+      dt * 8
     );
 
   player.landing =
     Math.max(
       0,
-      player.landing - dt
+      player.landing -
+      dt * 5
     );
 
 
-  /* =====================================
-     DASH
-  ===================================== */
+  /* =====================================================
+     DASH STATE
+  ===================================================== */
 
-  let movementMultiplier = 1;
+  let multiplier = 1;
 
-  if(player.dash > 0){
+  if(
+    player.dash > 0
+  ){
 
-    player.dash -= dt;
+    player.dash -=
+      dt * 60;
 
-    movementMultiplier = 1.75;
+    player.dashPhase +=
+      dt * 12;
 
-    /*
-     * Strong stretch during dash
-     */
-
-    player.stretch +=
-      (
-        1.38 -
-        player.stretch
-      ) *
-      Math.min(
-        1,
-        dt * 15
-      );
+    multiplier =
+      1.9;
 
 
     /*
-     * Continuous dash trail
+     * Continuous afterimages
      */
 
     trails.push({
 
       x:
-        player.x,
+        player.x -
+        4,
 
       y:
         player.y,
 
-      alpha:
-        .28,
+      alpha:.28,
 
       scale:
         .92 +
-        Math.random()*.08
+        Math.random() * .1,
+
+      rotation:
+        player.rotation
 
     });
+
+
+    /*
+     * Continuous speed lines
+     */
+
+    if(
+      Math.random() < .7
+    ){
+
+      speedLines.push({
+
+        x:
+          player.x -
+          Math.random() * 20,
+
+        y:
+          player.y +
+          Math.random() *
+          player.height,
+
+        length:
+          20 +
+          Math.random() * 50,
+
+        alpha:
+          .25 +
+          Math.random() * .3,
+
+        life:1,
+
+        width:
+          1 +
+          Math.random() * 2
+
+      });
+
+    }
 
   }
 
 
-  /* =====================================
-     * WORLD MOVEMENT
-  ===================================== */
+  /* =====================================================
+     WORLD MOVEMENT
+  ===================================================== */
 
   const movement =
     speed *
     60 *
     dt *
-    movementMultiplier;
+    multiplier;
 
 
   obstacles.forEach(
-    obstacle => {
-
-      obstacle.x -= movement;
-
+    o => {
+      o.x -= movement;
     }
   );
-
 
   stars.forEach(
-    star => {
+    s => {
+      s.x -= movement;
+    }
+  );
 
-      star.x -= movement;
+
+  buildings.forEach(
+    b => {
+
+      b.x -=
+        movement *
+        .18;
+
+      if(
+        b.x +
+        b.width <
+        -50
+      ){
+
+        b.x =
+          W +
+          Math.random() *
+          120;
+
+      }
 
     }
   );
 
 
-  /* =====================================
-     * CLEAN
-  ===================================== */
+  /* =====================================================
+     PETALS UPDATE
+  ===================================================== */
+
+  petals.forEach(
+    p => {
+
+      p.x +=
+        p.vx *
+        movement;
+
+      p.y +=
+        p.vy *
+        movement;
+
+      p.rotation +=
+        p.spin;
+
+    }
+  );
+
+
+  /* =====================================================
+     CLEAN
+  ===================================================== */
 
   obstacles =
     obstacles.filter(
-      obstacle =>
-        obstacle.x +
-        obstacle.width >
+      o =>
+        o.x +
+        o.width >
         -60
     );
 
   stars =
     stars.filter(
-      star =>
-        star.x >
+      s =>
+        s.x >
         -60
     );
 
+  petals =
+    petals.filter(
+      p =>
+        p.x >
+        -30 &&
+        p.y <
+        H + 30
+    );
 
-  /* =====================================
-     * COLLISION
-  ===================================== */
+
+  /* =====================================================
+     COLLISION
+  ===================================================== */
 
   for(
-    const obstacle of obstacles
+    const o of obstacles
   ){
-
-    /*
-     * Slightly forgiving hitbox
-     */
-
-    const px =
-      player.x + 7;
-
-    const py =
-      player.y + 7;
-
-    const pw =
-      player.width - 14;
-
-    const ph =
-      player.height - 8;
 
     if(
 
-      px <
-      obstacle.x +
-      obstacle.width &&
+      player.x + 7 <
+      o.x + o.width &&
 
-      px + pw >
-      obstacle.x &&
+      player.x +
+      player.width - 7 >
+      o.x &&
 
-      py <
-      obstacle.y +
-      obstacle.height &&
+      player.y + 8 <
+      o.y + o.height &&
 
-      py + ph >
-      obstacle.y
+      player.y +
+      player.height - 5 >
+      o.y
 
     ){
 
-      endGame();
+      /*
+       * During dash:
+       * destroy obstacle instead
+       */
 
-      return;
+      if(
+        player.dash > 0
+      ){
+
+        burst(
+          o.x +
+          o.width / 2,
+          o.y +
+          o.height / 2,
+          25
+        );
+
+        cameraShake =
+          7;
+
+        flash =
+          .08;
+
+        o.x =
+          -9999;
+
+        score += 50;
+
+        vibrate(10);
+
+      }else{
+
+        endGame();
+
+        return;
+
+      }
 
     }
 
   }
 
 
-  /* =====================================
-     * STAR COLLECTION
-  ===================================== */
+  /* =====================================================
+     STAR COLLECTION
+  ===================================================== */
 
   for(
     let i =
@@ -1751,34 +2294,42 @@ function update(dt){
     i--
   ){
 
-    const star =
+    const s =
       stars[i];
 
     const dx =
       player.x +
       17 -
-      star.x;
+      s.x;
 
     const dy =
       player.y +
       23 -
-      star.y;
+      s.y;
 
     if(
-      dx*dx +
-      dy*dy <
-      850
+      dx * dx +
+      dy * dy <
+      900
     ){
 
-      score += 100;
+      score +=
+        100;
 
       burst(
-        star.x,
-        star.y,
+        s.x,
+        s.y,
         20
       );
 
-      cameraShake = 2;
+      shockwave(
+        s.x,
+        s.y,
+        12
+      );
+
+      cameraShake =
+        2;
 
       stars.splice(
         i,
@@ -1792,58 +2343,100 @@ function update(dt){
   }
 
 
-  /* =====================================
-     * PARTICLES
-  ===================================== */
+  /* =====================================================
+     PARTICLES
+  ===================================================== */
 
   particles.forEach(
-    particle => {
+    p => {
 
-      particle.x +=
-        particle.vx * dt;
+      if(
+        p.type === "shock"
+      ){
 
-      particle.y +=
-        particle.vy * dt;
+        p.size +=
+          100 * dt;
 
-      particle.vy +=
-        particle.gravity * dt;
+        p.life -=
+          dt * 3;
 
-      particle.life -=
-        dt;
+      }else{
+
+        p.x +=
+          p.vx;
+
+        p.y +=
+          p.vy;
+
+        p.vy +=
+          8 * dt;
+
+        p.life -=
+          dt * 2.4;
+
+      }
 
     }
   );
 
   particles =
     particles.filter(
-      particle =>
-        particle.life > 0
+      p =>
+        p.life > 0
     );
 
 
-  /* =====================================
-     * TRAILS
-  ===================================== */
+  /* =====================================================
+     TRAILS
+  ===================================================== */
 
   trails.forEach(
-    trail => {
+    t => {
 
-      trail.alpha -=
-        dt * 3.8;
+      t.alpha -=
+        dt * 3.5;
 
     }
   );
 
   trails =
     trails.filter(
-      trail =>
-        trail.alpha > 0
+      t =>
+        t.alpha > 0
     );
 
 
-  /* =====================================
-     * CAMERA
-  ===================================== */
+  /* =====================================================
+     SPEED LINES
+  ===================================================== */
+
+  speedLines.forEach(
+    s => {
+
+      s.x -=
+        speed *
+        80 *
+        dt;
+
+      s.life -=
+        dt * 3;
+
+      s.alpha *=
+        .985;
+
+    }
+  );
+
+  speedLines =
+    speedLines.filter(
+      s =>
+        s.life > 0
+    );
+
+
+  /* =====================================================
+     CAMERA
+  ===================================================== */
 
   cameraShake =
     Math.max(
@@ -1852,16 +2445,25 @@ function update(dt){
       dt * 18
     );
 
+  flash =
+    Math.max(
+      0,
+      flash -
+      dt
+    );
 
-  /* =====================================
-     * UI
-  ===================================== */
+
+  /* =====================================================
+     SCORE UI
+  ===================================================== */
 
   scoreEl.textContent =
     formatScore(score);
 
 
-  if(score > 180){
+  if(
+    score > 180
+  ){
 
     touchHint.classList.add(
       "hidden"
@@ -1872,19 +2474,21 @@ function update(dt){
 }
 
 
-/* =========================================
+/* =========================================================
    DRAW
-========================================= */
+========================================================= */
 
 function draw(){
 
   const shake =
     cameraShake > 0
     ? (
-        Math.random()-.5
+        Math.random() -
+        .5
       ) *
       cameraShake
     : 0;
+
 
   ctx.save();
 
@@ -1894,15 +2498,16 @@ function draw(){
   );
 
 
-  /* =====================================
+  /* =====================================================
      SKY
-  ===================================== */
+  ===================================================== */
 
   const progress =
     Math.min(
       1,
-      score / 10000
+      score / 12000
     );
+
 
   const sky =
     ctx.createLinearGradient(
@@ -1915,22 +2520,32 @@ function draw(){
   sky.addColorStop(
     0,
     `rgb(
-      ${10 + 20*progress},
-      ${15 + 15*progress},
-      ${38 + 35*progress}
+      ${7 + 16 * progress},
+      ${6 + 10 * progress},
+      ${31 + 38 * progress}
+    )`
+  );
+
+  sky.addColorStop(
+    .5,
+    `rgb(
+      ${13 + 14 * progress},
+      ${8 + 8 * progress},
+      ${43 + 30 * progress}
     )`
   );
 
   sky.addColorStop(
     1,
     `rgb(
-      ${5 + 7*progress},
-      ${6 + 8*progress},
-      ${12 + 16*progress}
+      ${3 + 5 * progress},
+      ${3 + 5 * progress},
+      ${12 + 18 * progress}
     )`
   );
 
-  ctx.fillStyle = sky;
+  ctx.fillStyle =
+    sky;
 
   ctx.fillRect(
     0,
@@ -1940,132 +2555,199 @@ function draw(){
   );
 
 
-  /* =====================================
+  /* =====================================================
      MOON
-  ===================================== */
+  ===================================================== */
 
   drawMoon();
 
 
-  /* =====================================
+  /* =====================================================
      PARALLAX STARS
-  ===================================== */
+  ===================================================== */
 
-  drawBackgroundStars();
-
-
-  /* =====================================
-     DISTANT HORIZON
-  ===================================== */
-
-  drawHorizon();
+  drawSkyStars();
 
 
-  /* =====================================
-     GROUND
-  ===================================== */
+  /* =====================================================
+     CITY
+  ===================================================== */
+
+  drawBuildings();
+
+
+  /* =====================================================
+     GROUND GLOW
+  ===================================================== */
 
   drawGround();
 
 
-  /* =====================================
+  /* =====================================================
      COLLECTIBLES
-  ===================================== */
+  ===================================================== */
 
-  drawStars();
+  drawCollectibles();
 
 
-  /* =====================================
+  /* =====================================================
      OBSTACLES
-  ===================================== */
+  ===================================================== */
 
   drawObstacles();
 
 
-  /* =====================================
-     DASH TRAILS
-  ===================================== */
+  /* =====================================================
+     DASH SPEED LINES
+  ===================================================== */
+
+  drawSpeedLines();
+
+
+  /* =====================================================
+     DASH AFTERIMAGES
+  ===================================================== */
 
   drawTrails();
 
 
-  /* =====================================
+  /* =====================================================
      PLAYER
-  ===================================== */
+  ===================================================== */
 
   drawPlayer();
 
 
-  /* =====================================
+  /* =====================================================
+     PETALS
+  ===================================================== */
+
+  drawPetals();
+
+
+  /* =====================================================
      PARTICLES
-  ===================================== */
+  ===================================================== */
 
   drawParticles();
 
 
   ctx.restore();
 
+
+  /* =====================================================
+     FLASH
+  ===================================================== */
+
+  if(
+    flash > 0
+  ){
+
+    ctx.fillStyle =
+      `rgba(
+        220,
+        200,
+        255,
+        ${flash}
+      )`;
+
+    ctx.fillRect(
+      0,
+      0,
+      W,
+      H
+    );
+
+  }
+
 }
 
 
-/* =========================================
+/* =========================================================
    MOON
-========================================= */
+========================================================= */
 
 function drawMoon(){
 
-  const moonX =
+  const x =
     W * .78;
 
-  const moonY =
-    H * .18;
+  const y =
+    H * .20;
 
   const glow =
     ctx.createRadialGradient(
-      moonX,
-      moonY,
+      x,
+      y,
       0,
-      moonX,
-      moonY,
-      110
+      x,
+      y,
+      115
     );
 
   glow.addColorStop(
     0,
-    "rgba(255,245,215,.13)"
+    "rgba(150,180,255,.16)"
   );
 
   glow.addColorStop(
-    .35,
-    "rgba(255,245,215,.04)"
+    .45,
+    "rgba(110,100,255,.06)"
   );
 
   glow.addColorStop(
     1,
-    "rgba(255,245,215,0)"
+    "rgba(80,50,255,0)"
   );
 
-  ctx.fillStyle = glow;
+  ctx.fillStyle =
+    glow;
 
   ctx.fillRect(
-    moonX - 110,
-    moonY - 110,
-    220,
-    220
+    x - 115,
+    y - 115,
+    230,
+    230
   );
+
+
+  ctx.save();
+
+  ctx.shadowBlur =
+    25;
+
+  ctx.shadowColor =
+    "rgba(190,205,255,.7)";
+
+  ctx.fillStyle =
+    "rgba(210,220,255,.72)";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    x,
+    y,
+    30,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+  ctx.restore();
 
 }
 
 
-/* =========================================
-   BACKGROUND STARS
-========================================= */
+/* =========================================================
+   SKY STARS
+========================================================= */
 
-function drawBackgroundStars(){
+function drawSkyStars(){
 
   for(
-    let i=0;
-    i<60;
+    let i = 0;
+    i < 65;
     i++
   ){
 
@@ -2079,7 +2761,7 @@ function drawBackgroundStars(){
       (
         i * 61
       ) %
-      (ground * .72);
+      (ground * .68);
 
     const twinkle =
       (
@@ -2087,16 +2769,22 @@ function drawBackgroundStars(){
           worldTime * 2 +
           i
         ) + 1
-      ) * .11 + .06;
+      ) * .10 +
+      .04;
 
     ctx.fillStyle =
-      `rgba(255,255,255,${twinkle})`;
+      `rgba(
+        190,
+        210,
+        255,
+        ${twinkle}
+      )`;
 
     ctx.fillRect(
       x,
       y,
-      1.3,
-      1.3
+      1.2,
+      1.2
     );
 
   }
@@ -2104,54 +2792,116 @@ function drawBackgroundStars(){
 }
 
 
-/* =========================================
-   HORIZON
-========================================= */
+/* =========================================================
+   BUILDINGS
+========================================================= */
 
-function drawHorizon(){
+function drawBuildings(){
 
-  const horizon =
-    ground - 45;
+  buildings.forEach(
+    b => {
 
-  const gradient =
-    ctx.createLinearGradient(
-      0,
-      horizon,
-      0,
-      ground
-    );
+      const base =
+        ground + 5;
 
-  gradient.addColorStop(
-    0,
-    "rgba(20,25,45,0)"
-  );
+      const top =
+        base -
+        b.height;
 
-  gradient.addColorStop(
-    1,
-    "rgba(5,7,13,.55)"
-  );
+      ctx.fillStyle =
+        "rgba(8,8,24,.78)";
 
-  ctx.fillStyle =
-    gradient;
+      ctx.fillRect(
+        b.x,
+        top,
+        b.width,
+        b.height
+      );
 
-  ctx.fillRect(
-    0,
-    horizon,
-    W,
-    50
+
+      /*
+       * Neon edge
+       */
+
+      ctx.fillStyle =
+        "rgba(75,90,190,.12)";
+
+      ctx.fillRect(
+        b.x,
+        top,
+        1,
+        b.height
+      );
+
+
+      /*
+       * Windows
+       */
+
+      for(
+        let row = 0;
+        row < b.lights;
+        row++
+      ){
+
+        const wy =
+          top +
+          13 +
+          row * 19;
+
+        if(
+          wy >
+          ground - 8
+        ){
+          continue;
+        }
+
+        const wx =
+          b.x +
+          7 +
+          (
+            row % 2
+          ) *
+          5;
+
+        ctx.fillStyle =
+          row % 3 === 0
+          ? "rgba(80,180,255,.35)"
+          : "rgba(255,70,220,.18)";
+
+        ctx.fillRect(
+          wx,
+          wy,
+          3,
+          2
+        );
+
+      }
+
+    }
   );
 
 }
 
 
-/* =========================================
+/* =========================================================
    GROUND
-========================================= */
+========================================================= */
 
 function drawGround(){
 
+  /*
+   * Main line
+   */
+
+  ctx.shadowBlur =
+    12;
+
+  ctx.shadowColor =
+    "rgba(120,90,255,.7)";
+
   ctx.fillStyle =
-    "rgba(255,255,255,.08)";
+    "rgba(155,125,255,.42)";
 
   ctx.fillRect(
     0,
@@ -2160,57 +2910,67 @@ function drawGround(){
     2
   );
 
+  ctx.shadowBlur =
+    0;
 
-  const glow =
+
+  /*
+   * Ground gradient
+   */
+
+  const g =
     ctx.createLinearGradient(
       0,
       ground,
       0,
-      ground + 65
+      ground + 70
     );
 
-  glow.addColorStop(
+  g.addColorStop(
     0,
-    "rgba(255,255,255,.055)"
+    "rgba(100,70,255,.10)"
   );
 
-  glow.addColorStop(
+  g.addColorStop(
     1,
-    "rgba(255,255,255,0)"
+    "rgba(0,0,0,0)"
   );
 
-  ctx.fillStyle = glow;
+  ctx.fillStyle =
+    g;
 
   ctx.fillRect(
     0,
     ground,
     W,
-    65
+    70
   );
 
 
   /*
-   * Moving floor streaks
+   * Moving neon marks
    */
 
-  const offset =
-    (
-      score * 5
-    ) % 70;
-
-  ctx.fillStyle =
-    "rgba(255,255,255,.025)";
-
   for(
-    let x=-70+offset;
-    x<W;
-    x+=70
+    let i = 0;
+    i < 12;
+    i++
   ){
+
+    const x =
+      (
+        i * 100 -
+        score * .8
+      ) %
+      (W + 100);
+
+    ctx.fillStyle =
+      "rgba(110,85,255,.14)";
 
     ctx.fillRect(
       x,
-      ground + 24,
-      32,
+      ground + 17,
+      40,
       1
     );
 
@@ -2219,32 +2979,32 @@ function drawGround(){
 }
 
 
-/* =========================================
-   STARS
-========================================= */
+/* =========================================================
+   COLLECTIBLES
+========================================================= */
 
-function drawStars(){
+function drawCollectibles(){
 
   stars.forEach(
-    star => {
+    s => {
 
       const pulse =
         1 +
         Math.sin(
           worldTime * 5 +
-          star.phase
-        ) * .2;
+          s.phase
+        ) * .18;
 
       ctx.save();
 
       ctx.translate(
-        star.x,
-        star.y
+        s.x,
+        s.y
       );
 
       ctx.rotate(
         worldTime * 2 +
-        star.phase
+        s.phase
       );
 
       ctx.scale(
@@ -2252,30 +3012,35 @@ function drawStars(){
         pulse
       );
 
-      ctx.shadowBlur = 18;
+      ctx.shadowBlur =
+        22;
 
       ctx.shadowColor =
-        "#fff4cc";
+        "#9c6cff";
 
       ctx.fillStyle =
-        "#f4e8ba";
+        "#e8dcff";
 
       ctx.beginPath();
 
       ctx.moveTo(
-        0,-6
+        0,
+        -7
       );
 
       ctx.lineTo(
-        4,0
+        4,
+        0
       );
 
       ctx.lineTo(
-        0,6
+        0,
+        7
       );
 
       ctx.lineTo(
-        -4,0
+        -4,
+        0
       );
 
       ctx.closePath();
@@ -2290,26 +3055,26 @@ function drawStars(){
 }
 
 
-/* =========================================
+/* =========================================================
    OBSTACLES
-========================================= */
+========================================================= */
 
 function drawObstacles(){
 
   obstacles.forEach(
-    obstacle => {
+    o => {
 
       const bob =
         Math.sin(
           worldTime * 2 +
-          obstacle.phase
+          o.phase
         ) * .8;
 
       ctx.save();
 
       ctx.translate(
-        obstacle.x,
-        obstacle.y + bob
+        o.x,
+        o.y + bob
       );
 
 
@@ -2318,14 +3083,14 @@ function drawObstacles(){
        */
 
       ctx.fillStyle =
-        "rgba(0,0,0,.25)";
+        "rgba(0,0,0,.3)";
 
       ctx.beginPath();
 
       ctx.ellipse(
-        obstacle.width / 2,
-        obstacle.height + 7,
-        obstacle.width * .7,
+        o.width / 2,
+        o.height + 7,
+        o.width * .7,
         4,
         0,
         0,
@@ -2336,64 +3101,110 @@ function drawObstacles(){
 
 
       /*
-       * Body
+       * Neon outline
        */
 
-      const gradient =
+      ctx.shadowBlur =
+        10;
+
+      ctx.shadowColor =
+        "rgba(105,75,255,.3)";
+
+      const grad =
         ctx.createLinearGradient(
           0,
           0,
           0,
-          obstacle.height
+          o.height
         );
 
-      gradient.addColorStop(
+      grad.addColorStop(
         0,
-        "#44495b"
+        "#44485d"
       );
 
-      gradient.addColorStop(
+      grad.addColorStop(
         1,
-        "#181b25"
+        "#171925"
       );
 
       ctx.fillStyle =
-        gradient;
+        grad;
 
       ctx.beginPath();
 
       ctx.roundRect(
         0,
         0,
-        obstacle.width,
-        obstacle.height,
+        o.width,
+        o.height,
         7
       );
 
       ctx.fill();
 
+      ctx.shadowBlur =
+        0;
 
       ctx.strokeStyle =
-        "rgba(255,255,255,.13)";
+        "rgba(180,160,255,.2)";
 
       ctx.stroke();
 
+      ctx.restore();
 
-      /*
-       * Tiny highlight
-       */
+    }
+  );
+
+}
+
+
+/* =========================================================
+   SPEED LINES
+========================================================= */
+
+function drawSpeedLines(){
+
+  speedLines.forEach(
+    s => {
+
+      ctx.save();
+
+      ctx.globalAlpha =
+        s.alpha *
+        s.life;
+
+      const grad =
+        ctx.createLinearGradient(
+          s.x,
+          0,
+          s.x + s.length,
+          0
+        );
+
+      grad.addColorStop(
+        0,
+        "rgba(80,210,255,0)"
+      );
+
+      grad.addColorStop(
+        .5,
+        "rgba(190,130,255,.65)"
+      );
+
+      grad.addColorStop(
+        1,
+        "rgba(255,100,240,0)"
+      );
 
       ctx.fillStyle =
-        "rgba(255,255,255,.08)";
+        grad;
 
       ctx.fillRect(
-        5,
-        5,
-        Math.max(
-          3,
-          obstacle.width - 10
-        ),
-        2
+        s.x,
+        s.y,
+        s.length,
+        s.width
       );
 
       ctx.restore();
@@ -2404,32 +3215,42 @@ function drawObstacles(){
 }
 
 
-/* =========================================
-   TRAILS
-========================================= */
+/* =========================================================
+   AFTERIMAGES
+========================================================= */
 
 function drawTrails(){
 
   trails.forEach(
-    trail => {
+    t => {
 
       ctx.save();
 
       ctx.globalAlpha =
-        trail.alpha;
+        t.alpha;
 
       ctx.translate(
-        trail.x,
-        trail.y
+        t.x,
+        t.y
+      );
+
+      ctx.rotate(
+        t.rotation || 0
       );
 
       ctx.scale(
-        trail.scale,
-        trail.scale
+        t.scale,
+        t.scale
       );
 
       ctx.fillStyle =
-        "#eee9df";
+        "#9d79ff";
+
+      ctx.shadowBlur =
+        18;
+
+      ctx.shadowColor =
+        "#8b55ff";
 
       ctx.beginPath();
 
@@ -2451,68 +3272,24 @@ function drawTrails(){
 }
 
 
-/* =========================================
+/* =========================================================
    PLAYER
-========================================= */
+========================================================= */
 
 function drawPlayer(){
 
-  /*
-   * Running bob
-   */
-
   let bob = 0;
 
-  if(player.grounded){
+  if(
+    player.grounded &&
+    player.dash <= 0
+  ){
 
     bob =
       Math.sin(
         player.runPhase
-      ) * 1.8;
-
-  }
-  else if(
-    player.jumpPhase === "rising"
-  ){
-
-    bob = -1.5;
-
-  }
-  else if(
-    player.jumpPhase === "falling"
-  ){
-
-    bob = 1.5;
-
-  }
-
-
-  /*
-   * Leg animation
-   */
-
-  let legSwing = 0;
-
-  if(player.grounded){
-
-    legSwing =
-      Math.sin(
-        player.runPhase
-      ) * 4.2;
-
-  }
-
-
-  /*
-   * Air leg tuck
-   */
-
-  if(!player.grounded){
-
-    legSwing =
-      player.velocityY < 0
-      ? -2
-      : 2;
+      ) *
+      1.8;
 
   }
 
@@ -2534,7 +3311,7 @@ function drawPlayer(){
 
 
   /*
-   * Air rotation
+   * Rotation
    */
 
   ctx.rotate(
@@ -2543,24 +3320,12 @@ function drawPlayer(){
 
 
   /*
-   * Dynamic scale
+   * Scale
    */
 
-  let scaleY =
-    player.squashY *
-    player.stretch;
-
-  let scaleX =
-    player.squashX /
-    Math.max(
-      .75,
-      player.stretch
-    );
-
-
   ctx.scale(
-    scaleX,
-    scaleY
+    player.squashX,
+    player.squashY
   );
 
 
@@ -2574,13 +3339,15 @@ function drawPlayer(){
    * Dash glow
    */
 
-  if(player.dash > 0){
+  if(
+    player.dash > 0
+  ){
 
     ctx.shadowBlur =
-      28;
+      30;
 
     ctx.shadowColor =
-      "rgba(255,230,180,.85)";
+      "rgba(130,100,255,.9)";
 
   }
 
@@ -2599,12 +3366,17 @@ function drawPlayer(){
 
   body.addColorStop(
     0,
-    "#fffdf8"
+    "#ffffff"
+  );
+
+  body.addColorStop(
+    .55,
+    "#eee9ff"
   );
 
   body.addColorStop(
     1,
-    "#c8c2b7"
+    "#aaa3bd"
   );
 
   ctx.fillStyle =
@@ -2622,29 +3394,9 @@ function drawPlayer(){
 
   ctx.fill();
 
-  ctx.shadowBlur = 0;
 
-
-  /*
-   * HEAD HIGHLIGHT
-   */
-
-  ctx.fillStyle =
-    "rgba(255,255,255,.35)";
-
-  ctx.beginPath();
-
-  ctx.ellipse(
-    10,
-    8 + bob,
-    7,
-    3,
-    -.25,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
+  ctx.shadowBlur =
+    0;
 
 
   /*
@@ -2652,7 +3404,7 @@ function drawPlayer(){
    */
 
   ctx.fillStyle =
-    "#171923";
+    "#141421";
 
   ctx.beginPath();
 
@@ -2668,35 +3420,14 @@ function drawPlayer(){
 
 
   /*
-   * Tiny eye shine
-   */
-
-  ctx.fillStyle =
-    "rgba(255,255,255,.65)";
-
-  ctx.beginPath();
-
-  ctx.arc(
-    24,
-    14,
-    .8,
-    0,
-    Math.PI * 2
-  );
-
-  ctx.fill();
-
-
-  /*
    * HAIR
    */
 
   ctx.strokeStyle =
-    "#77716a";
+    "#736b88";
 
-  ctx.lineWidth = 1.5;
-
-  ctx.lineCap = "round";
+  ctx.lineWidth =
+    1.5;
 
   ctx.beginPath();
 
@@ -2719,8 +3450,15 @@ function drawPlayer(){
    * LEGS
    */
 
+  const legSwing =
+    player.grounded
+    ? Math.sin(
+        player.runPhase
+      ) * 4
+    : 0;
+
   ctx.fillStyle =
-    "#aaa398";
+    "#8f889e";
 
   ctx.fillRect(
     7 + legSwing,
@@ -2738,54 +3476,40 @@ function drawPlayer(){
 
 
   /*
-   * Foot highlights
+   * Dash energy
    */
 
-  ctx.fillStyle =
-    "rgba(255,255,255,.2)";
-
-  ctx.fillRect(
-    7 + legSwing,
-    41 + bob,
-    7,
-    2
-  );
-
-  ctx.fillRect(
-    23 - legSwing,
-    41 + bob,
-    7,
-    2
-  );
-
-
-  /*
-   * DASH STREAKS
-   */
-
-  if(player.dash > 0){
+  if(
+    player.dash > 0
+  ){
 
     ctx.fillStyle =
-      "rgba(255,240,190,.85)";
+      "rgba(220,200,255,.9)";
+
+    ctx.shadowBlur =
+      10;
+
+    ctx.shadowColor =
+      "#9c6cff";
 
     ctx.fillRect(
-      -14,
-      16 + bob,
+      -12,
+      15 + bob,
       10,
       2
     );
 
     ctx.fillRect(
-      -23,
-      23 + bob,
+      -22,
+      22 + bob,
       15,
       2
     );
 
     ctx.fillRect(
-      -13,
-      30 + bob,
-      9,
+      -15,
+      29 + bob,
+      10,
       2
     );
 
@@ -2797,51 +3521,144 @@ function drawPlayer(){
 }
 
 
-/* =========================================
-   PARTICLES
-========================================= */
+/* =========================================================
+   PETALS
+========================================================= */
 
-function drawParticles(){
+function drawPetals(){
 
-  particles.forEach(
-    particle => {
+  petals.forEach(
+    p => {
+
+      ctx.save();
 
       ctx.globalAlpha =
-        Math.max(
-          0,
-          particle.life
-        );
+        p.alpha;
+
+      ctx.translate(
+        p.x,
+        p.y
+      );
+
+      ctx.rotate(
+        p.rotation
+      );
 
       ctx.fillStyle =
-        "#f2e7c9";
+        "#d58bff";
+
+      ctx.shadowBlur =
+        7;
+
+      ctx.shadowColor =
+        "#a849ff";
 
       ctx.beginPath();
 
-      ctx.arc(
-        particle.x,
-        particle.y,
-        particle.size,
+      ctx.ellipse(
+        0,
+        0,
+        p.size,
+        p.size * .55,
+        0,
         0,
         Math.PI * 2
       );
 
       ctx.fill();
 
+      ctx.restore();
+
     }
   );
-
-  ctx.globalAlpha = 1;
 
 }
 
 
-/* =========================================
+/* =========================================================
+   PARTICLES DRAW
+========================================================= */
+
+function drawParticles(){
+
+  particles.forEach(
+    p => {
+
+      ctx.save();
+
+      ctx.globalAlpha =
+        p.life;
+
+      if(
+        p.type === "shock"
+      ){
+
+        ctx.strokeStyle =
+          `rgba(
+            190,
+            150,
+            255,
+            ${p.life}
+          )`;
+
+        ctx.lineWidth =
+          2;
+
+        ctx.beginPath();
+
+        ctx.arc(
+          p.x,
+          p.y,
+          p.size,
+          0,
+          Math.PI * 2
+        );
+
+        ctx.stroke();
+
+      }else{
+
+        ctx.fillStyle =
+          p.type === "spark"
+          ? "#bda3ff"
+          : "#eee7ff";
+
+        ctx.shadowBlur =
+          8;
+
+        ctx.shadowColor =
+          "#9a65ff";
+
+        ctx.beginPath();
+
+        ctx.arc(
+          p.x,
+          p.y,
+          p.size,
+          0,
+          Math.PI * 2
+        );
+
+        ctx.fill();
+
+      }
+
+      ctx.restore();
+
+    }
+  );
+
+}
+
+
+/* =========================================================
    GAME OVER
-========================================= */
+========================================================= */
 
 function endGame(){
 
-  running = false;
+  running =
+    false;
 
   const final =
     Math.floor(score);
@@ -2849,9 +3666,12 @@ function endGame(){
   const oldBest =
     best;
 
-  if(final > best){
+  if(
+    final > best
+  ){
 
-    best = final;
+    best =
+      final;
 
     localStorage.setItem(
       "annabeyRunBest",
@@ -2859,6 +3679,7 @@ function endGame(){
     );
 
   }
+
 
   finalEl.textContent =
     formatScore(final);
@@ -2879,17 +3700,11 @@ function endGame(){
     "hidden"
   );
 
-  cameraShake = 8;
+  cameraShake =
+    9;
 
-  /*
-   * Final impact
-   */
-
-  burst(
-    player.x + 17,
-    player.y + 23,
-    28
-  );
+  flash =
+    .12;
 
   vibrate([
     40,
@@ -2900,9 +3715,9 @@ function endGame(){
 }
 
 
-/* =========================================
+/* =========================================================
    VIBRATION
-========================================= */
+========================================================= */
 
 function vibrate(pattern){
 
@@ -2916,30 +3731,35 @@ function vibrate(pattern){
         pattern
       );
 
-    }
-    catch(_){}
+    }catch(_){}
 
   }
 
 }
 
 
-/* =========================================
+/* =========================================================
    TOUCH
-========================================= */
+========================================================= */
 
 window.addEventListener(
   "pointerup",
   event => {
 
     if(
-      event.target.closest("button")
+      event.target.closest(
+        "button"
+      )
     ){
+
       return;
+
     }
 
     if(!running){
+
       return;
+
     }
 
     action();
@@ -2951,42 +3771,9 @@ window.addEventListener(
 );
 
 
-/* =========================================
-   KEYBOARD
-   Kept only as fallback.
-========================================= */
-
-window.addEventListener(
-  "keydown",
-  event => {
-
-    if(
-      event.code === "Space" ||
-      event.code === "ArrowUp"
-    ){
-
-      event.preventDefault();
-
-      if(!running){
-
-        startGame();
-
-      }
-      else{
-
-        action();
-
-      }
-
-    }
-
-  }
-);
-
-
-/* =========================================
+/* =========================================================
    BUTTONS
-========================================= */
+========================================================= */
 
 startButton.addEventListener(
   "click",
@@ -3012,7 +3799,8 @@ backButton.addEventListener(
     );
 
     if(
-      window.parent === window
+      window.parent ===
+      window
     ){
 
       history.back();
@@ -3023,9 +3811,9 @@ backButton.addEventListener(
 );
 
 
-/* =========================================
-   PREVENT GESTURES
-========================================= */
+/* =========================================================
+   MOBILE GESTURES
+========================================================= */
 
 document.addEventListener(
   "gesturestart",
@@ -3040,7 +3828,9 @@ document.addEventListener(
   "touchmove",
   event => {
 
-    if(event.cancelable){
+    if(
+      event.cancelable
+    ){
 
       event.preventDefault();
 
@@ -3053,13 +3843,13 @@ document.addEventListener(
 );
 
 
-/* =========================================
-   INITIAL
-========================================= */
+/* =========================================================
+   INITIAL DRAW
+========================================================= */
 
 draw();
 
 </script>
 
 </body>
-</html>q
+</html>
