@@ -631,6 +631,20 @@ function drawParticles(){
     ctx.restore();
   });
 }
+   /* =========================================================
+   BUTTON LISTENERS (FIX TOMBOL)
+========================================================= */
+startButton.addEventListener("click", startGame);
+againButton.addEventListener("click", startGame);
+
+backButton.addEventListener("click", () => {
+  if (window.parent !== window) {
+    window.parent.postMessage({ type: "ANNABEY_RUN_BACK" }, "*");
+  } else {
+    history.back();
+  }
+});
+
 draw();
 </script>
 </body>
