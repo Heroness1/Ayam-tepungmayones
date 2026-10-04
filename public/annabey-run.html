@@ -1047,6 +1047,16 @@ let speedLines = [];
 let buildings = [];
 let petals = [];
 
+/*
+ * MOON & MILESTONE SYSTEM
+ */
+let nextMilestone = 500;
+let moonPhase = 0; 
+let moonAnimTimer = 0;
+let moonDynX = 0;
+let moonDynY = 0;
+let moonScale = 1;
+
 
 /* =========================================================
    PLAYER
@@ -1143,6 +1153,11 @@ function resize(){
       ground -
       player.height;
 
+  }
+
+  if (moonPhase === 0) {
+    moonDynX = W * .78;
+    moonDynY = H * .20;
   }
 
   createBuildings();
@@ -1270,6 +1285,14 @@ function startGame(){
   trails = [];
   speedLines = [];
   petals = [];
+
+  // Reset Moon System
+  nextMilestone = 500;
+  moonPhase = 0;
+  moonAnimTimer = 0;
+  moonScale = 1;
+  moonDynX = W * .78;
+  moonDynY = H * .20;
 
   player.y =
     ground -
@@ -1615,6 +1638,8 @@ function burst(
       1.5 +
       Math.random() * 4.5;
 
+    const isSpark = Math.random() < .25;
+
     particles.push({
 
       x,
@@ -1637,10 +1662,9 @@ function burst(
         1.5 +
         Math.random() * 3.5,
 
-      type:
-        Math.random() < .25
-        ? "spark"
-        : "dot"
+      type: isSpark ? "spark" : "dot",
+
+      color: isSpark ? "#bda3ff" : "#eee7ff"
 
     });
 
@@ -1675,6 +1699,43 @@ function shockwave(
 
   });
 
+}
+
+
+/* =========================================================
+   MOON EXPLOSION (MILESTONE)
+========================================================= */
+
+function spawnMoonExplosion(x, y) {
+  
+  // Concentric shockwaves
+  shockwave(x, y, 40);
+  setTimeout(() => shockwave(x, y, 70), 100);
+  setTimeout(() => shockwave(x, y, 100), 220);
+
+  // Massive particle blast
+  for (let i = 0; i < 220; i++) {
+    const angle = Math.random() * Math.PI * 2;
+    const force = 4 + Math.random() * 22;
+    
+    // Mix of bright neon colors
+    let color = "#ffffff";
+    const rand = Math.random();
+    if (rand < 0.3) color = "#35e7ff";
+    else if (rand < 0.6) color = "#ff35df";
+    else if (rand < 0.8) color = "#bda3ff";
+
+    particles.push({
+      x: x,
+      y: y,
+      vx: Math.cos(angle) * force,
+      vy: Math.sin(angle) * force - 3,
+      life: 1.5 + Math.random() * 1.8,
+      size: 2.5 + Math.random() * 6.5,
+      type: "moon_debris",
+      color: color
+    });
+  }
 }
 
 
@@ -1724,6 +1785,86 @@ function update(dt){
     dt *
     speed *
     8;
+
+  /* =====================================================
+     MILESTONE CHECK (500, 1000, 1500, dst)
+  ===================================================== */
+  
+  if (score >= nextMilestone) {
+    nextMilestone += 500;
+    moonPhase = 1;
+    moonAnimTimer = 0;
+  }
+
+
+  /* =====================================================
+     MOON ANIMATION STATE MACHINE
+  ===================================================== */
+
+  const centerX = W / 2;
+  const centerY = H / 3.5;
+  const baseMoonX = W * .78;
+  const baseMoonY = H * .20;
+
+  if (moonPhase === 0) {
+    moonDynX = baseMoonX;
+    moonDynY = baseMoonY;
+    moonScale = 1;
+  } 
+  else if (moonPhase === 1) {
+    // Phase 1: Moving to center and wobbling
+    moonAnimTimer += dt;
+    const duration = 1.8;
+    const progress = Math.min(1, moonAnimTimer / duration);
+    
+    // EaseInOutCubic
+    const ease = progress < 0.5 
+      ? 4 * progress * progress * progress 
+      : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+    moonDynX = baseMoonX + (centerX - baseMoonX) * ease;
+    moonDynY = baseMoonY + (centerY - baseMoonY) * ease;
+
+    // Building up unstable energy (wobble)
+    moonScale = 1 + (Math.sin(moonAnimTimer * 45) * 0.18 * progress);
+
+    if (progress >= 1) {
+      // BOOM!
+      moonPhase = 2;
+      moonAnimTimer = 0;
+      cameraShake = 28;
+      flash = 0.75;
+      spawnMoonExplosion(moonDynX, moonDynY);
+      vibrate([60, 50, 120, 50, 200]); // HEBOH Vibration
+    }
+  } 
+  else if (moonPhase === 2) {
+    // Phase 2: Exploded / Hidden
+    moonAnimTimer += dt;
+    moonScale = 0;
+    if (moonAnimTimer > 4.5) { // Hide for a few seconds
+      moonPhase = 3;
+      moonAnimTimer = 0;
+    }
+  } 
+  else if (moonPhase === 3) {
+    // Phase 3: Returning / Scaling back up
+    moonAnimTimer += dt;
+    const progress = Math.min(1, moonAnimTimer / 2.5);
+    
+    moonDynX = baseMoonX;
+    moonDynY = baseMoonY;
+    
+    // EaseOutElastic for a bouncy return
+    const c4 = (2 * Math.PI) / 3;
+    const easeBounce = progress === 0 ? 0 : progress === 1 ? 1 : Math.pow(2, -10 * progress) * Math.sin((progress * 10 - 0.75) * c4) + 1;
+    
+    moonScale = Math.max(0, easeBounce);
+
+    if (progress >= 1) {
+      moonPhase = 0;
+    }
+  }
 
 
   /* =====================================================
@@ -1892,7 +2033,7 @@ function update(dt){
     31 * dt;
 
   player.y +=
-    player.velocityY; // <--- SUDAH DIPERBAIKI (tanpa * dt)
+    player.velocityY; 
 
 
   /* =====================================================
@@ -2352,7 +2493,7 @@ function update(dt){
       ){
 
         p.size +=
-          100 * dt;
+          180 * dt;
 
         p.life -=
           dt * 3;
@@ -2370,6 +2511,11 @@ function update(dt){
 
         p.life -=
           dt * 2.4;
+
+        if (p.type === "moon_debris") {
+           p.life -= dt * 0.4; // Linger longer
+           p.size *= 0.96;
+        }
 
       }
 
@@ -2666,19 +2812,22 @@ function draw(){
 
 function drawMoon(){
 
-  const x =
-    W * .78;
+  if (moonScale <= 0) return;
 
-  const y =
-    H * .20;
+  const x = moonDynX;
+  const y = moonDynY;
+
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(moonScale, moonScale);
 
   const glow =
     ctx.createRadialGradient(
-      x,
-      y,
       0,
-      x,
-      y,
+      0,
+      0,
+      0,
+      0,
       115
     );
 
@@ -2701,14 +2850,11 @@ function drawMoon(){
     glow;
 
   ctx.fillRect(
-    x - 115,
-    y - 115,
+    -115,
+    -115,
     230,
     230
   );
-
-
-  ctx.save();
 
   ctx.shadowBlur =
     25;
@@ -2722,8 +2868,8 @@ function drawMoon(){
   ctx.beginPath();
 
   ctx.arc(
-    x,
-    y,
+    0,
+    0,
     30,
     0,
     Math.PI * 2
@@ -3584,19 +3730,14 @@ function drawParticles(){
       ctx.save();
 
       ctx.globalAlpha =
-        p.life;
+        Math.max(0, Math.min(1, p.life));
 
       if(
         p.type === "shock"
       ){
 
         ctx.strokeStyle =
-          `rgba(
-            190,
-            150,
-            255,
-            ${p.life}
-          )`;
+          `rgba(190, 150, 255, ${ctx.globalAlpha})`;
 
         ctx.lineWidth =
           2;
@@ -3615,16 +3756,13 @@ function drawParticles(){
 
       }else{
 
-        ctx.fillStyle =
-          p.type === "spark"
-          ? "#bda3ff"
-          : "#eee7ff";
+        ctx.fillStyle = p.color;
 
         ctx.shadowBlur =
-          8;
+          p.type === "moon_debris" ? 12 : 8;
 
         ctx.shadowColor =
-          "#9a65ff";
+          p.color;
 
         ctx.beginPath();
 
