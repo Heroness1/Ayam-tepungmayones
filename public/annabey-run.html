@@ -1032,11 +1032,11 @@ let worldTime = 0;
 let lastTime = 0;
 
 let obstacleTimer = 0;
-
 let starTimer = 0;
+let meteorTimer = 0;
+let jetTimer = 0;
 
 let cameraShake = 0;
-
 let flash = 0;
 
 let obstacles = [];
@@ -1046,6 +1046,9 @@ let trails = [];
 let speedLines = [];
 let buildings = [];
 let petals = [];
+let meteors = [];
+let jets = [];
+let warnings = [];
 
 /*
  * MOON & MILESTONE SYSTEM
@@ -1270,8 +1273,9 @@ function startGame(){
   speed = 5.0;
 
   obstacleTimer = .95;
-
   starTimer = .75;
+  meteorTimer = 4.0;
+  jetTimer = 7.0;
 
   worldTime = 0;
 
@@ -1285,6 +1289,9 @@ function startGame(){
   trails = [];
   speedLines = [];
   petals = [];
+  meteors = [];
+  jets = [];
+  warnings = [];
 
   // Reset Moon System
   nextMilestone = 500;
@@ -1835,7 +1842,7 @@ function update(dt){
       cameraShake = 28;
       flash = 0.75;
       spawnMoonExplosion(moonDynX, moonDynY);
-      vibrate([60, 50, 120, 50, 200]); // HEBOH Vibration
+      vibrate([60, 50, 120, 50, 200]); 
     }
   } 
   else if (moonPhase === 2) {
@@ -1970,6 +1977,68 @@ function update(dt){
       .75;
 
   }
+
+
+  /* =====================================================
+     METEOR SPAWN
+  ===================================================== */
+
+  meteorTimer -= dt;
+
+  if (meteorTimer <= 0) {
+    meteors.push({
+      x: W * 0.4 + Math.random() * (W * 0.8),
+      y: -50,
+      size: 14 + Math.random() * 6,
+      vx: 180 + Math.random() * 100, // Kecepatan mendatar
+      vy: 320 + Math.random() * 120  // Kecepatan vertikal jatuh
+    });
+
+    meteorTimer = 2.5 + Math.random() * 3.5;
+  }
+
+
+  /* =====================================================
+     JET SPAWN & WARNING
+  ===================================================== */
+
+  jetTimer -= dt;
+
+  if (jetTimer <= 1.0 && jetTimer > 0 && warnings.length === 0) {
+    // Munculkan warning 1 detik sebelum jet lewat
+    const jetHeight = ground - 45 - Math.random() * 40; 
+    warnings.push({
+      x: W - 40,
+      y: jetHeight,
+      life: 1.0
+    });
+  }
+
+  if (jetTimer <= 0) {
+    // Spawn Jet!
+    const warning = warnings.pop();
+    const startY = warning ? warning.y : ground - 45 - Math.random() * 40;
+
+    jets.push({
+      x: W + 50,
+      y: startY,
+      width: 48,
+      height: 20,
+      speed: 450 + Math.random() * 250 // Super cepat!
+    });
+
+    jetTimer = 5.0 + Math.random() * 4.0;
+  }
+
+
+  /* =====================================================
+     WARNING UPDATE
+  ===================================================== */
+  
+  warnings.forEach(w => {
+    w.life -= dt;
+  });
+  warnings = warnings.filter(w => w.life > 0);
 
 
   /* =====================================================
@@ -2300,6 +2369,47 @@ function update(dt){
 
 
   /* =====================================================
+     METEOR & JET MOVEMENT
+  ===================================================== */
+
+  meteors.forEach(m => {
+    // Bergerak ke kiri dan bawah
+    m.x -= (movement + m.vx * dt);
+    m.y += m.vy * dt;
+
+    // Tambah partikel ekor meteor
+    if (Math.random() < 0.6) {
+      particles.push({
+        x: m.x + (Math.random() - 0.5) * m.size,
+        y: m.y + (Math.random() - 0.5) * m.size,
+        vx: m.vx * 0.05,
+        vy: -m.vy * 0.05,
+        life: 0.5 + Math.random() * 0.5,
+        size: 1.5 + Math.random() * 2.5,
+        type: "meteor_trail",
+        color: Math.random() < 0.5 ? "#ff35df" : "#ff9e5e"
+      });
+    }
+  });
+
+  jets.forEach(j => {
+    j.x -= (movement + j.speed * dt);
+
+    // Ekor jet
+    if (Math.random() < 0.8) {
+      speedLines.push({
+        x: j.x + j.width,
+        y: j.y + j.height / 2 + (Math.random() - 0.5) * 8,
+        length: 20 + Math.random() * 40,
+        alpha: 0.5 + Math.random() * 0.5,
+        life: 0.8,
+        width: 1 + Math.random() * 2
+      });
+    }
+  });
+
+
+  /* =====================================================
      PETALS UPDATE
   ===================================================== */
 
@@ -2325,97 +2435,86 @@ function update(dt){
      CLEAN
   ===================================================== */
 
-  obstacles =
-    obstacles.filter(
-      o =>
-        o.x +
-        o.width >
-        -60
-    );
-
-  stars =
-    stars.filter(
-      s =>
-        s.x >
-        -60
-    );
-
-  petals =
-    petals.filter(
-      p =>
-        p.x >
-        -30 &&
-        p.y <
-        H + 30
-    );
+  obstacles = obstacles.filter(o => o.x + o.width > -60);
+  stars = stars.filter(s => s.x > -60);
+  petals = petals.filter(p => p.x > -30 && p.y < H + 30);
+  meteors = meteors.filter(m => m.y < H + 60 && m.x > -60);
+  jets = jets.filter(j => j.x + j.width > -100);
 
 
   /* =====================================================
-     COLLISION
+     COLLISION CHECKER UTILITY
   ===================================================== */
 
-  for(
-    const o of obstacles
-  ){
+  function checkCollision(objHitbox) {
+    return (
+      player.x + 7 < objHitbox.right &&
+      player.x + player.width - 7 > objHitbox.left &&
+      player.y + 8 < objHitbox.bottom &&
+      player.y + player.height - 5 > objHitbox.top
+    );
+  }
 
-    if(
-
-      player.x + 7 <
-      o.x + o.width &&
-
-      player.x +
-      player.width - 7 >
-      o.x &&
-
-      player.y + 8 <
-      o.y + o.height &&
-
-      player.y +
-      player.height - 5 >
-      o.y
-
-    ){
-
-      /*
-       * During dash:
-       * destroy obstacle instead
-       */
-
-      if(
-        player.dash > 0
-      ){
-
-        burst(
-          o.x +
-          o.width / 2,
-          o.y +
-          o.height / 2,
-          25
-        );
-
-        cameraShake =
-          7;
-
-        flash =
-          .08;
-
-        o.x =
-          -9999;
-
-        score += 50;
-
-        vibrate(10);
-
-      }else{
-
-        endGame();
-
-        return;
-
-      }
-
+  function handleImpact(obj, centerX, centerY, scoreBonus, isJet = false) {
+    if (player.dash > 0) {
+      burst(centerX, centerY, isJet ? 35 : 25);
+      shockwave(centerX, centerY, isJet ? 40 : 25);
+      cameraShake = isJet ? 10 : 7;
+      flash = 0.08;
+      obj.x = -9999; 
+      score += scoreBonus;
+      vibrate([15, 20]);
+      return false; // Not game over
+    } else {
+      endGame();
+      return true; // Game over
     }
+  }
 
+
+  /* =====================================================
+     OBSTACLE COLLISION
+  ===================================================== */
+
+  for (const o of obstacles) {
+    const box = {
+      left: o.x, right: o.x + o.width,
+      top: o.y, bottom: o.y + o.height
+    };
+    
+    if (checkCollision(box)) {
+      if (handleImpact(o, o.x + o.width / 2, o.y + o.height / 2, 50)) return;
+    }
+  }
+
+  /* =====================================================
+     METEOR COLLISION
+  ===================================================== */
+
+  for (const m of meteors) {
+    const box = {
+      left: m.x - m.size/2, right: m.x + m.size/2,
+      top: m.y - m.size/2, bottom: m.y + m.size/2
+    };
+    
+    if (checkCollision(box)) {
+      if (handleImpact(m, m.x, m.y, 50)) return;
+    }
+  }
+
+  /* =====================================================
+     JET COLLISION
+  ===================================================== */
+
+  for (const j of jets) {
+    const box = {
+      left: j.x, right: j.x + j.width,
+      top: j.y, bottom: j.y + j.height
+    };
+    
+    if (checkCollision(box)) {
+      if (handleImpact(j, j.x + j.width/2, j.y + j.height/2, 100, true)) return;
+    }
   }
 
 
@@ -2512,8 +2611,8 @@ function update(dt){
         p.life -=
           dt * 2.4;
 
-        if (p.type === "moon_debris") {
-           p.life -= dt * 0.4; // Linger longer
+        if (p.type === "moon_debris" || p.type === "meteor_trail") {
+           p.life -= dt * 0.4; 
            p.size *= 0.96;
         }
 
@@ -2734,10 +2833,12 @@ function draw(){
 
 
   /* =====================================================
-     OBSTACLES
+     OBSTACLES & NEW ENEMIES
   ===================================================== */
 
   drawObstacles();
+  drawMeteors();
+  drawJets();
 
 
   /* =====================================================
@@ -2773,6 +2874,13 @@ function draw(){
   ===================================================== */
 
   drawParticles();
+
+
+  /* =====================================================
+     UI WARNINGS
+  ===================================================== */
+  
+  drawWarnings();
 
 
   ctx.restore();
@@ -3303,6 +3411,106 @@ function drawObstacles(){
 
 
 /* =========================================================
+   METEORS
+========================================================= */
+
+function drawMeteors(){
+
+  meteors.forEach(m => {
+    ctx.save();
+    ctx.translate(m.x, m.y);
+    
+    // Core
+    ctx.fillStyle = "#fff";
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "#ff35df";
+    
+    ctx.beginPath();
+    ctx.arc(0, 0, m.size, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Inner glow
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#ff9e5e";
+    ctx.fillStyle = "#ffb085";
+    ctx.beginPath();
+    ctx.arc(0, 0, m.size * 0.6, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  });
+
+}
+
+
+/* =========================================================
+   JETS (INTERCEPTORS)
+========================================================= */
+
+function drawJets(){
+
+  jets.forEach(j => {
+    ctx.save();
+    ctx.translate(j.x, j.y);
+
+    // Jet body shape (hadap kiri)
+    ctx.beginPath();
+    ctx.moveTo(0, j.height / 2); // Moncong (kiri)
+    ctx.lineTo(j.width, 0); // Sayap atas kanan
+    ctx.lineTo(j.width - 12, j.height / 2); // Belakang tengah
+    ctx.lineTo(j.width, j.height); // Sayap bawah kanan
+    ctx.closePath();
+
+    ctx.fillStyle = "#1b1433";
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = "#35e7ff";
+    ctx.fill();
+
+    ctx.strokeStyle = "#75edff";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Engine glow
+    ctx.fillStyle = "#ff35df";
+    ctx.shadowBlur = 10;
+    ctx.shadowColor = "#ff35df";
+    ctx.beginPath();
+    ctx.arc(j.width - 10, j.height / 2, 4, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  });
+
+}
+
+
+/* =========================================================
+   WARNING INDICATORS
+========================================================= */
+
+function drawWarnings() {
+  warnings.forEach(w => {
+    // Blinking effect
+    if (Math.floor(worldTime * 12) % 2 === 0) {
+      ctx.save();
+      ctx.translate(w.x, w.y);
+      
+      ctx.font = "bold 18px Arial";
+      ctx.fillStyle = "#ff35df";
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = "#ff35df";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      
+      ctx.fillText("[ ! ]", 0, 0);
+      
+      ctx.restore();
+    }
+  });
+}
+
+
+/* =========================================================
    SPEED LINES
 ========================================================= */
 
@@ -3759,7 +3967,7 @@ function drawParticles(){
         ctx.fillStyle = p.color;
 
         ctx.shadowBlur =
-          p.type === "moon_debris" ? 12 : 8;
+          (p.type === "moon_debris" || p.type === "meteor_trail") ? 12 : 8;
 
         ctx.shadowColor =
           p.color;
