@@ -7,7 +7,7 @@
 <title>Annabey Run - 3D Dimensions</title>
 <style>
 /* =========================================================
-   RESET & UI STYLES (Tetap sama seperti versi aslimu)
+   RESET & UI STYLES 
 ========================================================= */
 *{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html, body{ width:100%; height:100%; margin:0; padding:0; overflow:hidden; background:#05030d; color:#fff; font-family: Inter, system-ui, sans-serif; touch-action:none; user-select:none; -webkit-user-select:none; overscroll-behavior:none; }
@@ -53,7 +53,6 @@ canvas{ position:absolute; inset:0; width:100%; height:100%; display:block; }
 .touch-hint.hidden{ opacity:0; transform: translateX(-50%) translateY(8px); }
 
 @media (orientation:landscape){ .game::after{ content:"ROTATE YOUR PHONE"; position:absolute; inset:0; display:grid; place-items:center; z-index:999; background:#05030d; color:#fff; font-size:10px; letter-spacing:.3em; } }
-
 @keyframes logoFloat{ 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-4px);} }
 @keyframes logoGlow{ 0%,100%{filter:brightness(1) saturate(1);} 50%{filter:brightness(1.22) saturate(1.25);} }
 @keyframes crownPulse{ 0%,100%{transform:translateX(-50%) scale(.9);opacity:.7;} 50%{transform:translateX(-50%) scale(1.15);opacity:1;} }
@@ -120,31 +119,26 @@ const finalEl = document.getElementById("finalScore");
 const newBestEl = document.getElementById("newBest");
 const touchHint = document.getElementById("touchHint");
 
-let W = 0, H = 0, DPR = 1, ground = 0;
+let W = 0, H = 0, DPR = 1, ground = 0, HORIZON_Y = 0;
 let running = false, score = 0;
 let best = Number(localStorage.getItem("annabeyRunBest")) || 0;
 let speed = 5.0, worldTime = 0, lastTime = 0;
 
-// Entities
 let obstacles = [], stars = [], particles = [], trails = [], speedLines = [];
 let buildings = [], petals = [], meteors = [], jets = [], warnings = [];
 
-// Timers
 let obstacleTimer = 0, starTimer = 0, meteorTimer = 0, jetTimer = 0;
 let cameraShake = 0, flash = 0;
-
-// Moon System
 let nextMilestone = 500, moonPhase = 0, moonAnimTimer = 0, moonScale = 1;
 let moonDynX = 0, moonDynY = 0;
 
 /* =========================================================
-   3D SYSTEM GLOBALS
+   3D SYSTEM GLOBALS (FIXED HORIZON)
 ========================================================= */
 let is3D = false;
-const focalLength = 350;
-const cameraZ = -500;
-const LANE_WIDTH = 130; 
-let transitionPhase = 0; // 0 = 2D, 1 = 3D
+const focalLength = 400; // Skala 1:1 pada z=0
+const cameraZ = -400;    
+const LANE_WIDTH = 135; 
 
 /* =========================================================
    PLAYER
@@ -154,10 +148,7 @@ const player = {
   velocityY: 0, grounded: true, dash: 0, dashCooldown: 0,
   jumpTime: 0, squashX: 1, squashY: 1, stretch: 1, rotation: 0,
   runPhase: 0, landing: 0, dashPhase: 0,
-  // 3D Props
-  targetLane: 0, // -1 (Left), 0 (Center), 1 (Right)
-  x3D: 0,
-  z: 0
+  targetLane: 0, x3D: 0, z: 0
 };
 
 /* =========================================================
@@ -169,7 +160,10 @@ function resize(){
   canvas.width = Math.floor(W * DPR); canvas.height = Math.floor(H * DPR);
   canvas.style.width = W + "px"; canvas.style.height = H + "px";
   ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  
   ground = H * .79;
+  HORIZON_Y = H * .38; // Titik hilang (Vanishing point) yang BENAR untuk 3D
+
   player.x = Math.max(38, W * .15);
   if(!running) player.y = ground - player.height;
   if (moonPhase === 0) { moonDynX = W * .78; moonDynY = H * .20; }
@@ -184,14 +178,12 @@ function createBuildings(){
   while(x < W + 300){
     buildings.push({
       x, width: 25 + Math.random() * 45, height: 80 + Math.random() * 170,
-      layer: Math.random() < .5 ? .35 : .55,
-      lights: 2 + Math.floor(Math.random() * 5)
+      layer: Math.random() < .5 ? .35 : .55, lights: 2 + Math.floor(Math.random() * 5)
     });
     x += buildings[buildings.length-1].width + 8 + Math.random() * 18;
   }
 }
 resize();
-
 function formatScore(v){ return String(Math.floor(v)).padStart(6, "0"); }
 bestEl.textContent = formatScore(best);
 
@@ -199,20 +191,16 @@ bestEl.textContent = formatScore(best);
    GAME CONTROL
 ========================================================= */
 function startGame(){
-  score = 0; speed = 5.0; worldTime = 0; cameraShake = 0; flash = 0;
-  is3D = false; transitionPhase = 0;
-  
+  score = 0; speed = 5.0; worldTime = 0; cameraShake = 0; flash = 0; is3D = false;
   obstacleTimer = .95; starTimer = .75; meteorTimer = 4.0; jetTimer = 7.0;
   obstacles = []; stars = []; particles = []; trails = []; speedLines = [];
   petals = []; meteors = []; jets = []; warnings = [];
-
-  nextMilestone = 500; moonPhase = 0; moonAnimTimer = 0; moonScale = 1;
-  moonDynX = W * .78; moonDynY = H * .20;
+  nextMilestone = 500; moonPhase = 0; moonAnimTimer = 0; moonScale = 1; moonDynX = W * .78; moonDynY = H * .20;
 
   player.y = ground - player.height; player.velocityY = 0; player.grounded = true;
   player.dash = 0; player.dashCooldown = 0; player.jumpTime = 0;
-  player.squashX = 1; player.squashY = 1; player.stretch = 1;
-  player.rotation = 0; player.runPhase = 0; player.landing = 0; player.dashPhase = 0;
+  player.squashX = 1; player.squashY = 1; player.stretch = 1; player.rotation = 0;
+  player.runPhase = 0; player.landing = 0; player.dashPhase = 0;
   player.targetLane = 0; player.x3D = 0; player.z = 0; player.x = Math.max(38, W * .15);
 
   running = true;
@@ -237,7 +225,7 @@ function endGame(){
 }
 
 /* =========================================================
-   INPUT (SWIPE & TAP)
+   INPUT (4-WAY SWIPE KHUSUS MOBILE)
 ========================================================= */
 let lastTap = 0, dashLock = false;
 let touchStartX = 0, touchStartY = 0;
@@ -253,22 +241,35 @@ window.addEventListener("touchend", (e) => {
   
   const deltaX = e.changedTouches[0].clientX - touchStartX;
   const deltaY = e.changedTouches[0].clientY - touchStartY;
+  const absX = Math.abs(deltaX);
+  const absY = Math.abs(deltaY);
   const now = performance.now();
   const doubleTap = now - lastTap < 320;
 
   if (is3D) {
-    // 3D Mode Input (Swipe to change lane)
-    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
-      if (deltaX > 0 && player.targetLane < 1) player.targetLane++;
-      else if (deltaX < 0 && player.targetLane > -1) player.targetLane--;
-      vibrate(5);
+    // Mode 3D: Didedikasikan penuh untuk SWIPE agar nyaman di HP
+    if (Math.max(absX, absY) > 30) { 
+      // Jika gesekan cukup jauh (Swipe terdeteksi)
+      if (absX > absY) {
+        // Swipe Horizontal (Kiri/Kanan)
+        if (deltaX > 0 && player.targetLane < 1) player.targetLane++;
+        else if (deltaX < 0 && player.targetLane > -1) player.targetLane--;
+        vibrate(5);
+      } else {
+        // Swipe Vertikal (Atas/Bawah)
+        if (deltaY < 0 && player.grounded && player.dash <= 0) {
+          jump(); // Swipe Up
+        } else if (deltaY > 0 && !dashLock) {
+          performDash(); // Swipe Down
+        }
+      }
     } else {
-      // Tap (Jump/Dash)
+      // Fallback Tap ringan (Jaga-jaga user menekan layar)
       if (doubleTap && !dashLock) performDash();
       else if (player.grounded && player.dash <= 0) jump();
     }
   } else {
-    // 2D Mode Input
+    // Mode 2D Klasik: Murni Tap
     if (doubleTap && !dashLock) performDash();
     else if (player.grounded && player.dash <= 0) jump();
   }
@@ -277,7 +278,7 @@ window.addEventListener("touchend", (e) => {
 });
 
 /* =========================================================
-   ACTIONS & PARTICLES
+   ACTIONS
 ========================================================= */
 function jump(){
   player.squashX = 1.16; player.squashY = .80; player.stretch = 1.18;
@@ -292,43 +293,30 @@ function performDash(){
   player.dash = 28; player.dashPhase = 1; player.dashCooldown = .55;
   player.squashX = 1.32; player.squashY = .72; player.stretch = 1.30; player.rotation = -.05;
   cameraShake = 7; flash = .13; dashLock = true;
-  
   const drawX = is3D ? (W/2 + player.x3D) : player.x;
   burst(drawX, player.y + 23, 30);
-  
-  // Add trails immediately
-  for(let i=0; i<5; i++) {
-    trails.push({ x: drawX - (is3D? 0: i*8), y: player.y, z: player.z + (is3D? i*20 : 0), alpha: .40 - i*.055, scale: 1 - i*.025, rotation: player.rotation });
-  }
   vibrate([12, 22, 18]);
   setTimeout(() => { dashLock = false; }, 350);
 }
 
 function burst(x, y, count){
   for(let i=0; i<count; i++){
-    const angle = Math.random() * Math.PI * 2;
-    const force = 1.5 + Math.random() * 4.5;
-    const isSpark = Math.random() < .25;
+    const angle = Math.random() * Math.PI * 2; const force = 1.5 + Math.random() * 4.5; const isSpark = Math.random() < .25;
     particles.push({ x, y, z: is3D ? player.z : 0, vx: Math.cos(angle) * force, vy: Math.sin(angle) * force - Math.random() * 1.5, life: 1, size: 1.5 + Math.random() * 3.5, type: isSpark ? "spark" : "dot", color: isSpark ? "#bda3ff" : "#eee7ff" });
   }
 }
-
-function shockwave(x, y, size){
-  particles.push({ x, y, z: is3D ? player.z : 0, vx: 0, vy: 0, life: 1, size, type: "shock" });
-}
-
-function vibrate(pattern){
-  if("vibrate" in navigator){ try{ navigator.vibrate(pattern); }catch(_){} }
-}
+function shockwave(x, y, size){ particles.push({ x, y, z: is3D ? player.z : 0, vx: 0, vy: 0, life: 1, size, type: "shock" }); }
+function vibrate(pattern){ if("vibrate" in navigator){ try{ navigator.vibrate(pattern); }catch(_){} } }
 
 /* =========================================================
-   3D PROJECTION UTILITY
+   MATEMATIKA PROYEKSI 3D (FIXED HORIZON)
 ========================================================= */
 function project3D(x, y, z) {
   const relZ = Math.max(1, z - cameraZ);
   const scale = focalLength / relZ;
   const screenX = (W / 2) + x * scale;
-  const screenY = ground + (y - ground) * scale;
+  // Perhitungan Y menggunakan HORIZON_Y agar membentuk lorong perspektif
+  const screenY = HORIZON_Y + (y - HORIZON_Y) * scale;
   return { x: screenX, y: screenY, scale: scale };
 }
 
@@ -345,59 +333,35 @@ function loop(time){
 }
 
 function update(dt){
-  score += dt * speed * 8;
-  worldTime += dt;
+  score += dt * speed * 8; worldTime += dt;
   speed = Math.min(11.0, speed + dt * .045);
 
-  /* ================= DIMENSION TRANSITION ================= */
+  // TRIGGER TRANSISI KE 3D DIMENSI
   if (score >= 2200 && !is3D) {
-    is3D = true;
-    flash = 1.0;
-    cameraShake = 30;
-    // Clear 2D specific entities
+    is3D = true; flash = 1.0; cameraShake = 30;
     obstacles = []; meteors = []; jets = []; warnings = []; trails = [];
-    
-    // UI Hint Update
-    touchHint.textContent = "3D ENGAGED: SWIPE TO SWITCH LANES";
+    touchHint.textContent = "3D ENGAGED: SWIPE TO MOVE & JUMP";
     touchHint.classList.remove("hidden");
     touchHint.style.color = "#ff35df";
     setTimeout(() => touchHint.classList.add("hidden"), 3000);
     vibrate([100, 50, 100, 50, 200]);
   }
 
-  // Moon milestones (Works in both 2D and 3D skies)
-  if (score >= nextMilestone) {
-    nextMilestone += 500;
-    moonPhase = 1; moonAnimTimer = 0;
-  }
-  
-  if (score > 180 && !is3D) touchHint.classList.add("hidden");
-
-  // Physics Update
+  // Fisika Player
   player.dashCooldown = Math.max(0, player.dashCooldown - dt);
-  player.jumpTime += dt;
-  player.velocityY += 31 * dt;
-  player.y += player.velocityY;
+  player.jumpTime += dt; player.velocityY += 31 * dt; player.y += player.velocityY;
+  if(!player.grounded && player.dash <= 0) player.rotation = Math.max(-.22, Math.min(.22, player.velocityY * .018));
 
-  if(!player.grounded && player.dash <= 0) {
-    player.rotation = Math.max(-.22, Math.min(.22, player.velocityY * .018));
-  }
-
-  // Landing
+  // Pendaratan
   if(player.y + player.height >= ground) {
     if(!player.grounded) {
       player.landing = 1; player.squashX = 1.27; player.squashY = .70; cameraShake = 4;
-      burst(is3D ? W/2 + player.x3D : player.x + 17, ground, 14);
-      shockwave(is3D ? W/2 + player.x3D : player.x + 17, ground, 17);
-      vibrate(8);
+      burst(is3D ? W/2 + player.x3D : player.x + 17, ground, 14); shockwave(is3D ? W/2 + player.x3D : player.x + 17, ground, 17); vibrate(8);
     }
-    player.y = ground - player.height; player.velocityY = 0;
-    player.grounded = true; player.rotation = 0;
+    player.y = ground - player.height; player.velocityY = 0; player.grounded = true; player.rotation = 0;
   }
 
   if(player.grounded) player.runPhase += dt * speed * 2.6;
-
-  // Squashes
   player.squashX += (1 - player.squashX) * Math.min(1, dt * 11);
   player.squashY += (1 - player.squashY) * Math.min(1, dt * 11);
   player.stretch += (1 - player.stretch) * Math.min(1, dt * 8);
@@ -406,22 +370,24 @@ function update(dt){
   let multiplier = 1;
   if(player.dash > 0) {
     player.dash -= dt * 60; player.dashPhase += dt * 12; multiplier = 1.9;
-    const drawX = is3D ? (W/2 + player.x3D) : player.x;
-    trails.push({ x: drawX - (is3D? 0:4), y: player.y, z: player.z + (is3D? 40:0), alpha: .28, scale: .92 + Math.random()*.1, rotation: player.rotation });
+    trails.push({ 
+      x3D: is3D ? player.x3D : 0, x2D: is3D ? 0 : player.x - 4, y: player.y, z: player.z + (is3D ? 40 : 0),
+      alpha: .28, rotation: player.rotation 
+    });
   }
 
-  // Camera Shake & Flash decay
-  cameraShake = Math.max(0, cameraShake - dt * 18);
-  flash = Math.max(0, flash - dt);
+  cameraShake = Math.max(0, cameraShake - dt * 18); flash = Math.max(0, flash - dt);
 
-  // Entities Spawning & Movement based on Dimension
-  if (is3D) {
-    update3D(dt, multiplier);
-  } else {
-    update2D(dt, multiplier);
-  }
+  if (is3D) update3D(dt, multiplier); else update2D(dt, multiplier);
 
-  updateCommonParticles(dt);
+  // Update Particles Global
+  particles.forEach(p => {
+    if(p.type === "shock") { p.size += 180 * dt; p.life -= dt * 3; }
+    else { p.x += p.vx; p.y += p.vy; p.vy += 8 * dt; p.life -= dt * 2.4; if (is3D) p.z -= speed * 150 * dt; }
+  });
+  particles = particles.filter(p => p.life > 0 && (!is3D || p.z > cameraZ));
+  trails.forEach(t => { t.alpha -= dt * 3.5; if(is3D) t.z -= speed * 180 * dt; });
+  trails = trails.filter(t => t.alpha > 0);
 }
 
 /* =========================================================
@@ -429,45 +395,22 @@ function update(dt){
 ========================================================= */
 function update2D(dt, multiplier){
   const movement = speed * 60 * dt * multiplier;
-  
-  // Spawners
   obstacleTimer -= dt;
   if(obstacleTimer <= 0){
     obstacles.push({ x: W + 45, y: ground - (28 + Math.random()*27), width: 18 + Math.random()*19, height: 28 + Math.random()*27, phase: Math.random() * Math.PI*2 });
     obstacleTimer = .95 + Math.random() * .8;
   }
-
-  meteorTimer -= dt;
-  if (meteorTimer <= 0) {
-    meteors.push({ x: W * 0.4 + Math.random() * (W * 0.8), y: -50, size: 14 + Math.random() * 6, vx: 180 + Math.random() * 100, vy: 320 + Math.random() * 120 });
-    meteorTimer = 2.5 + Math.random() * 3.5;
-  }
-
-  // Moving
   obstacles.forEach(o => o.x -= movement);
-  meteors.forEach(m => {
-    m.x -= (movement + m.vx * dt); m.y += m.vy * dt;
-    if (Math.random() < 0.6) particles.push({ x: m.x + (Math.random() - 0.5)*m.size, y: m.y, z:0, vx: m.vx*0.05, vy: -m.vy*0.05, life: 0.8, size: 2, type: "meteor_trail", color: "#ff35df" });
-  });
+  obstacles = obstacles.filter(o => o.x + o.width > -60);
   
   buildings.forEach(b => { b.x -= movement * .18; if(b.x + b.width < -50) b.x = W + Math.random() * 120; });
-
-  // Cleanup
-  obstacles = obstacles.filter(o => o.x + o.width > -60);
-  meteors = meteors.filter(m => m.y < H + 60 && m.x > -60);
-
-  // Collision
-  function handleImpact2D(objX, objY, bonus) {
-    if (player.dash > 0) {
-      burst(objX, objY, 25); shockwave(objX, objY, 25); cameraShake = 7; flash = 0.08;
-      score += bonus; vibrate([15, 20]); return false;
-    } else { endGame(); return true; }
-  }
 
   for (let i=0; i<obstacles.length; i++) {
     const o = obstacles[i];
     if (player.x + 7 < o.x + o.width && player.x + player.width - 7 > o.x && player.y + 8 < o.y + o.height && player.y + player.height - 5 > o.y) {
-      if (handleImpact2D(o.x, o.y, 50)) return; else o.x = -999;
+      if (player.dash > 0) {
+        burst(o.x, o.y, 25); shockwave(o.x, o.y, 25); cameraShake = 7; flash = 0.08; score += 50; vibrate([15, 20]); o.x = -999;
+      } else { endGame(); return; }
     }
   }
 }
@@ -476,26 +419,18 @@ function update2D(dt, multiplier){
    3D MODE LOGIC
 ========================================================= */
 function update3D(dt, multiplier){
-  // LERP Player to Lane
+  // Gerakan halus LERP ke jalur target
   const targetX3D = player.targetLane * LANE_WIDTH;
   player.x3D += (targetX3D - player.x3D) * Math.min(1, dt * 15);
 
   const movementZ = speed * 180 * dt * multiplier;
 
-  // 3D Spawners
   obstacleTimer -= dt;
   if(obstacleTimer <= 0){
-    const lane = Math.floor(Math.random() * 3) - 1; // -1, 0, 1
+    const lane = Math.floor(Math.random() * 3) - 1; 
     const isTall = Math.random() > 0.5;
-    obstacles.push({
-      x3D: lane * LANE_WIDTH,
-      y: ground, // anchor bottom
-      z: 3500,
-      width: 40,
-      height: isTall ? 65 : 40,
-      color: isTall ? "#35e7ff" : "#ff35df"
-    });
-    obstacleTimer = 0.6 + Math.random() * 0.4;
+    obstacles.push({ x3D: lane * LANE_WIDTH, y: ground, z: 3500, width: 44, height: isTall ? 65 : 44, color: isTall ? "#35e7ff" : "#ff35df" });
+    obstacleTimer = 0.5 + Math.random() * 0.4;
   }
 
   meteorTimer -= dt;
@@ -505,25 +440,18 @@ function update3D(dt, multiplier){
     meteorTimer = 1.5 + Math.random() * 2.0;
   }
 
-  // Move Entities Towards Camera (Decrease Z)
   obstacles.forEach(o => o.z -= movementZ);
-  meteors.forEach(m => {
-    m.z -= movementZ; m.y += m.vy * dt;
-    if (Math.random() < 0.6) particles.push({ x: m.x3D + W/2, y: m.y, z: m.z, vx: (Math.random()-0.5)*2, vy: -5, life: 0.8, size: 3, type: "meteor_trail", color: "#ff9e5e" });
-  });
+  meteors.forEach(m => { m.z -= movementZ; m.y += m.vy * dt; });
 
-  // Cleanup
   obstacles = obstacles.filter(o => o.z > cameraZ - 100);
   meteors = meteors.filter(m => m.z > cameraZ - 100 && m.y < ground + 50);
-  
   buildings.forEach(b => { b.x -= (movementZ * 0.05); if(b.x + b.width < -50) b.x = W + Math.random() * 120; });
 
-  // 3D Collision Detection
   function checkCollision3D(obj) {
     const xDist = Math.abs(player.x3D - obj.x3D);
-    const zDist = Math.abs(player.z - obj.z); // player z is 0
-    const yHit = (player.y + player.height > obj.y - (obj.height || obj.size));
-    // Hitbox tolerance
+    const zDist = Math.abs(player.z - obj.z);
+    const objHitY = obj.y - (obj.height || obj.size); // Titik atas objek
+    const yHit = (player.y + player.height > objHitY);
     return (xDist < (LANE_WIDTH/2) - 10) && (zDist < 80) && yHit;
   }
 
@@ -531,25 +459,10 @@ function update3D(dt, multiplier){
     const o = obstacles[i];
     if (checkCollision3D(o)) {
       if (player.dash > 0) {
-        burst(W/2 + o.x3D, o.y - 20, 25); shockwave(W/2 + o.x3D, o.y, 25);
-        cameraShake = 7; flash = 0.08; score += 50; vibrate([15, 20]); o.z = -999;
+        burst(W/2 + o.x3D, o.y - 20, 25); shockwave(W/2 + o.x3D, o.y, 25); cameraShake = 7; flash = 0.08; score += 50; vibrate([15, 20]); o.z = -999;
       } else { endGame(); return; }
     }
   }
-}
-
-/* =========================================================
-   COMMON PARTICLES UPDATE
-========================================================= */
-function updateCommonParticles(dt) {
-  particles.forEach(p => {
-    if(p.type === "shock") { p.size += 180 * dt; p.life -= dt * 3; }
-    else { p.x += p.vx; p.y += p.vy; p.vy += 8 * dt; p.life -= dt * 2.4; if (is3D) p.z -= speed * 150 * dt; }
-  });
-  particles = particles.filter(p => p.life > 0 && (!is3D || p.z > cameraZ));
-
-  trails.forEach(t => { t.alpha -= dt * 3.5; if(is3D) t.z -= speed * 180 * dt; });
-  trails = trails.filter(t => t.alpha > 0);
 }
 
 /* =========================================================
@@ -559,7 +472,6 @@ function draw(){
   const shake = cameraShake > 0 ? (Math.random() - .5) * cameraShake : 0;
   ctx.save(); ctx.translate(shake, shake);
 
-  // Background gradient
   const progress = Math.min(1, score / 12000);
   const sky = ctx.createLinearGradient(0, 0, 0, H);
   sky.addColorStop(0, `rgb(${7+16*progress}, ${6+10*progress}, ${31+38*progress})`);
@@ -567,24 +479,19 @@ function draw(){
   sky.addColorStop(1, `rgb(${3+5*progress}, ${3+5*progress}, ${12+18*progress})`);
   ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
 
-  // Universal BG Elements
   if (!is3D) {
-    // 2D buildings
     buildings.forEach(b => {
       const top = ground + 5 - b.height;
       ctx.fillStyle = "rgba(8,8,24,.78)"; ctx.fillRect(b.x, top, b.width, b.height);
       ctx.fillStyle = "rgba(75,90,190,.12)"; ctx.fillRect(b.x, top, 1, b.height);
     });
+    draw2D();
+  } else {
+    draw3D();
   }
 
-  // Branch Rendering
-  if (is3D) draw3D(); else draw2D();
-
-  // Draw HUD Particles
   drawParticles();
   ctx.restore();
-
-  // Flash
   if(flash > 0){ ctx.fillStyle = `rgba(220, 200, 255, ${flash})`; ctx.fillRect(0, 0, W, H); }
 }
 
@@ -592,14 +499,11 @@ function draw(){
    DRAW 2D
 ========================================================= */
 function draw2D() {
-  // Ground
   ctx.shadowBlur = 12; ctx.shadowColor = "rgba(120,90,255,.7)"; ctx.fillStyle = "rgba(155,125,255,.42)";
   ctx.fillRect(0, ground, W, 2); ctx.shadowBlur = 0;
-  const g = ctx.createLinearGradient(0, ground, 0, ground + 70);
-  g.addColorStop(0, "rgba(100,70,255,.10)"); g.addColorStop(1, "rgba(0,0,0,0)");
+  const g = ctx.createLinearGradient(0, ground, 0, ground + 70); g.addColorStop(0, "rgba(100,70,255,.10)"); g.addColorStop(1, "rgba(0,0,0,0)");
   ctx.fillStyle = g; ctx.fillRect(0, ground, W, 70);
 
-  // Entities
   obstacles.forEach(o => {
     ctx.save(); ctx.translate(o.x, o.y + Math.sin(worldTime*2 + o.phase)*.8);
     ctx.fillStyle = "rgba(0,0,0,.3)"; ctx.beginPath(); ctx.ellipse(o.width/2, o.height+7, o.width*.7, 4, 0, 0, Math.PI*2); ctx.fill();
@@ -609,120 +513,95 @@ function draw2D() {
     ctx.shadowBlur = 0; ctx.strokeStyle = "rgba(180,160,255,.2)"; ctx.stroke(); ctx.restore();
   });
   
-  meteors.forEach(m => {
-    ctx.save(); ctx.translate(m.x, m.y);
-    ctx.fillStyle = "#fff"; ctx.shadowBlur = 20; ctx.shadowColor = "#ff35df";
-    ctx.beginPath(); ctx.arc(0, 0, m.size, 0, Math.PI*2); ctx.fill();
-    ctx.restore();
-  });
-
-  drawTrails2D();
-  drawPlayer(player.x);
+  trails.forEach(t => { drawPlayerSprite(t.x2D, t.y, 1, t.alpha, t.rotation); });
+  drawPlayerSprite(player.x, player.y, 1, 1, player.rotation);
 }
 
 /* =========================================================
    DRAW 3D
 ========================================================= */
 function draw3D() {
-  // Draw Lanes (Grid lines)
-  ctx.strokeStyle = "rgba(155, 125, 255, 0.4)";
-  ctx.lineWidth = 2;
-  
+  // Gambar Lorong/Jalur Perspektif
+  ctx.strokeStyle = "rgba(155, 125, 255, 0.4)"; ctx.lineWidth = 2;
   for (let i = -1.5; i <= 1.5; i++) {
-    const xBase = i * LANE_WIDTH;
-    const pStart = project3D(xBase, ground, 0); // Near camera
-    const pEnd = project3D(xBase, ground, 5000); // Far away
+    const pStart = project3D(i * LANE_WIDTH, ground, 0); 
+    const pEnd = project3D(i * LANE_WIDTH, ground, 5000);
     ctx.beginPath(); ctx.moveTo(pStart.x, pStart.y); ctx.lineTo(pEnd.x, pEnd.y); ctx.stroke();
   }
   
-  // Horizon Line
+  // Garis Cakrawala / Horizon
   const horizon = project3D(0, ground, 5000);
-  ctx.shadowBlur = 15; ctx.shadowColor = "#ff35df";
-  ctx.fillStyle = "rgba(255, 53, 223, 0.8)";
-  ctx.fillRect(0, horizon.y - 2, W, 4);
-  ctx.shadowBlur = 0;
+  ctx.shadowBlur = 15; ctx.shadowColor = "#ff35df"; ctx.fillStyle = "rgba(255, 53, 223, 0.8)";
+  ctx.fillRect(0, horizon.y - 2, W, 4); ctx.shadowBlur = 0;
 
-  // Build Render List to Sort by Z-Depth
+  // Render berdasarkan kedalaman (Painter's Algorithm)
   let renderList = [];
-  
   obstacles.forEach(o => renderList.push({ ...o, type: 'obstacle' }));
   meteors.forEach(m => renderList.push({ ...m, type: 'meteor' }));
   trails.forEach(t => renderList.push({ ...t, type: 'trail' }));
-  renderList.push({ ...player, type: 'player' }); // Player is at z=0
+  renderList.push({ ...player, type: 'player', x3D: player.x3D, y: player.y }); 
 
-  // Painter's Algorithm (Furthest to Closest)
   renderList.sort((a, b) => b.z - a.z);
 
   renderList.forEach(obj => {
     if (obj.z < cameraZ) return;
     
-    // Y Anchor Logic: Obstacles anchor to ground, Player uses absolute Y
-    const isEntity = (obj.type === 'player' || obj.type === 'trail');
-    const drawY = isEntity ? obj.y : (obj.type === 'meteor' ? obj.y : ground - obj.height);
-    const drawX = isEntity ? obj.x3D : obj.x3D;
+    // Tentukan titik yang akan diproyeksikan (Bagian Bawah/Pijakan)
+    let feetY = ground; 
+    if (obj.type === 'player' || obj.type === 'trail') feetY = obj.y + player.height;
+    else if (obj.type === 'meteor') feetY = obj.y;
 
-    const proj = project3D(drawX, drawY, obj.z);
+    const proj = project3D(obj.x3D, feetY, obj.z);
     
-    if (obj.type === 'player') {
-      // Re-use drawPlayer but at projected coordinates
-      drawPlayer(proj.x - (player.width * proj.scale)/2, proj.scale);
+    if (obj.type === 'player' || obj.type === 'trail') {
+      const topX = proj.x - (player.width * proj.scale)/2;
+      const topY = proj.y - (player.height * proj.scale);
+      drawPlayerSprite(topX, topY, proj.scale, obj.type === 'trail' ? obj.alpha : 1, obj.rotation);
     } 
-    else if (obj.type === 'trail') {
-      ctx.save();
-      ctx.globalAlpha = obj.alpha;
-      ctx.translate(proj.x, proj.y);
-      ctx.scale(obj.scale * proj.scale, obj.scale * proj.scale);
-      ctx.fillStyle = "#9d79ff"; ctx.shadowBlur = 18; ctx.shadowColor = "#8b55ff";
-      ctx.beginPath(); ctx.roundRect(0, 0, player.width, player.height, 13); ctx.fill();
-      ctx.restore();
-    }
     else if (obj.type === 'obstacle') {
-      const pWidth = obj.width * proj.scale;
-      const pHeight = obj.height * proj.scale;
-      
-      ctx.save();
-      ctx.translate(proj.x - pWidth/2, proj.y);
-      ctx.shadowBlur = 15; ctx.shadowColor = obj.color;
-      ctx.fillStyle = "rgba(20,20,35,0.9)";
+      const pWidth = obj.width * proj.scale; const pHeight = obj.height * proj.scale;
+      ctx.save(); ctx.translate(proj.x - pWidth/2, proj.y - pHeight); // Tarik ke atas dari titik pijakan
+      ctx.shadowBlur = 15; ctx.shadowColor = obj.color; ctx.fillStyle = "rgba(20,20,35,0.9)";
       ctx.beginPath(); ctx.roundRect(0, 0, pWidth, pHeight, 5); ctx.fill();
-      ctx.strokeStyle = obj.color; ctx.lineWidth = 2; ctx.stroke();
-      ctx.restore();
+      ctx.strokeStyle = obj.color; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
     }
     else if (obj.type === 'meteor') {
-      ctx.save();
-      ctx.translate(proj.x, proj.y);
+      ctx.save(); ctx.translate(proj.x, proj.y);
       ctx.fillStyle = "#fff"; ctx.shadowBlur = 20; ctx.shadowColor = "#ff35df";
-      ctx.beginPath(); ctx.arc(0, 0, obj.size * proj.scale, 0, Math.PI*2); ctx.fill();
-      ctx.restore();
+      ctx.beginPath(); ctx.arc(0, 0, obj.size * proj.scale, 0, Math.PI*2); ctx.fill(); ctx.restore();
     }
   });
 }
 
 /* =========================================================
-   DRAWING UTILS
+   DRAWING CORE (Universal Sprite)
 ========================================================= */
-function drawPlayer(drawX, scale = 1){
+// x, y di sini mengacu pada koordinat Top-Left Sprite di layar
+function drawPlayerSprite(x, y, scale, alpha = 1, rot = 0){
   let bob = (player.grounded && player.dash <= 0) ? Math.sin(player.runPhase)*1.8 : 0;
-
   ctx.save();
-  ctx.translate(drawX + (player.width*scale)/2, player.y + (player.height*scale));
-  ctx.rotate(player.rotation);
+  ctx.globalAlpha = alpha;
+  
+  // Pivot ke titik tengah bawah karakter
+  ctx.translate(x + (player.width * scale)/2, y + (player.height * scale));
+  ctx.rotate(rot);
+  
+  // Transformasi skala bawaan Canvas untuk 3D & efek Squash
   ctx.scale(player.squashX * scale, player.squashY * scale);
+  
+  // Geser balik ke Top-Left lokal agar kodingan gambar murni tidak perlu dikali 'scale' lagi
   ctx.translate(-player.width/2, -player.height);
 
-  if(player.dash > 0){ ctx.shadowBlur = 30; ctx.shadowColor = "rgba(130,100,255,.9)"; }
+  if(player.dash > 0 && alpha === 1){ ctx.shadowBlur = 30; ctx.shadowColor = "rgba(130,100,255,.9)"; }
 
-  // Body
   const body = ctx.createLinearGradient(0,0,0,player.height);
   body.addColorStop(0,"#ffffff"); body.addColorStop(.55,"#eee9ff"); body.addColorStop(1,"#aaa3bd");
   ctx.fillStyle = body; ctx.beginPath(); ctx.roundRect(0, bob, player.width, player.height, 13); ctx.fill();
   ctx.shadowBlur = 0;
 
-  // Face
   ctx.fillStyle = "#141421"; ctx.beginPath(); ctx.arc(23, 15+bob, 3, 0, Math.PI*2); ctx.fill();
   ctx.strokeStyle = "#736b88"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(7, 5+bob); ctx.quadraticCurveTo(12, -1+bob, 17, 5+bob); ctx.stroke();
 
-  // Legs
   const legSwing = player.grounded ? Math.sin(player.runPhase)*4 : 0;
   ctx.fillStyle = "#8f889e"; ctx.fillRect(7+legSwing, 41+bob, 7, 8); ctx.fillRect(23-legSwing, 41+bob, 7, 8);
 
@@ -733,27 +612,15 @@ function drawPlayer(drawX, scale = 1){
   ctx.restore();
 }
 
-function drawTrails2D(){
-  trails.forEach(t => {
-    ctx.save(); ctx.globalAlpha = t.alpha; ctx.translate(t.x, t.y); ctx.rotate(t.rotation || 0); ctx.scale(t.scale, t.scale);
-    ctx.fillStyle = "#9d79ff"; ctx.shadowBlur = 18; ctx.shadowColor = "#8b55ff";
-    ctx.beginPath(); ctx.roundRect(0, 0, player.width, player.height, 13); ctx.fill();
-    ctx.restore();
-  });
-}
-
 function drawParticles(){
   particles.forEach(p => {
     ctx.save(); ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
-    
-    // Project particle if in 3D mode
     let renderX = p.x, renderY = p.y, renderScale = 1;
     if (is3D) {
-       const proj = project3D(p.x - W/2, p.y, p.z || 0); // shift x to center origin
+       const proj = project3D(p.x, p.y, p.z || 0);
        if (p.z < cameraZ) { ctx.restore(); return; }
        renderX = proj.x; renderY = proj.y; renderScale = proj.scale;
     }
-
     if(p.type === "shock"){
       ctx.strokeStyle = `rgba(190, 150, 255, ${ctx.globalAlpha})`; ctx.lineWidth = 2 * renderScale;
       ctx.beginPath(); ctx.arc(renderX, renderY, p.size * renderScale, 0, Math.PI*2); ctx.stroke();
@@ -764,8 +631,6 @@ function drawParticles(){
     ctx.restore();
   });
 }
-
-// Init
 draw();
 </script>
 </body>
