@@ -1159,7 +1159,7 @@ function update(dt){
 
 
   player.y+=
-  player.velocityY*dt;
+  player.velocityY; // <--- PERBAIKAN DI SINI (menghapus * dt)
 
 
   /*
