@@ -1,3 +1,1970 @@
-<!doctype html><html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><title>Annabey Run</title><style>*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#06070b;color:#fff;font-family:Inter,system-ui,sans-serif;touch-action:none}.g{position:fixed;inset:0;background:linear-gradient(#11182c,#171421 55%,#07080d)}canvas{position:absolute;inset:0;width:100%;height:100%}.ui{position:absolute;inset:0;pointer-events:none}.score{position:absolute;right:22px;top:20px;text-align:right;font:600 13px monospace;letter-spacing:.15em}.score small{display:block;color:#85899b;font-size:8px;letter-spacing:.25em}.center{position:absolute;inset:0;display:grid;place-items:center;text-align:center}.panel{padding:24px}.logo{font:400 clamp(44px,12vw,82px)/.9 Georgia,serif}.sub{margin-top:14px;color:#9ba0b0;font-size:10px;letter-spacing:.3em;text-transform:uppercase}.start{margin-top:28px;border:1px solid #fff2;background:#ffffff10;color:#fff;border-radius:999px;padding:13px 24px;font-size:10px;letter-spacing:.22em;text-transform:uppercase}.hint{margin-top:15px;color:#666b7c;font-size:9px;letter-spacing:.08em}.hide{display:none}.back{position:absolute;top:18px;left:18px;z-index:4;width:42px;height:42px;border-radius:50%;border:1px solid #fff2;background:#0006;color:#fff;font-size:20px;pointer-events:auto}.gameover h2{font:400 52px Georgia,serif;margin:12px 0}</style></head><body><div class="g"><canvas id="c"></canvas><div class="ui"><button class="back" onclick="history.back()">←</button><div class="score"><small>SCORE</small><span id="s">000000</span><small>BEST <b id="b">000000</b></small></div><div id="start" class="center"><div class="panel"><div class="logo">Annabey Run</div><div class="sub">just keep running ✦</div><button class="start" onclick="reset()">Tap to Run</button><div class="hint">TAP / SPACE — JUMP · DOUBLE TAP — DASH</div></div></div><div id="over" class="center hide"><div class="panel gameover"><div class="sub">RUN ENDED</div><h2 id="final">0</h2><button class="start" onclick="reset()">Run Again</button></div></div></div></div><script>
-const c=document.getElementById('c'),x=c.getContext('2d');let W,H,D,G,last=0,on=false,score=0,best=+localStorage.abBest||0,obs=[],stars=[],dust=[],spawn=0,ss=0,spd=7,lastTap=0,world=0;const p={x:82,y:0,w:34,h:46,vy:0,ground:true,dash:0};document.getElementById('b').textContent=String(best).padStart(6,'0');function size(){D=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;c.width=W*D;c.height=H*D;x.setTransform(D,0,0,D,0,0);G=H*.78;p.y=G-p.h}addEventListener('resize',size);size();function reset(){score=0;spd=7;obs=[];stars=[];dust=[];spawn=.5;ss=.7;world=0;p.y=G-p.h;p.vy=0;p.ground=true;p.dash=0;on=true;document.getElementById('start').classList.add('hide');document.getElementById('over').classList.add('hide');last=performance.now();requestAnimationFrame(loop)}function jump(){if(!on)return;if(p.ground){p.vy=-15;p.ground=false;burst(p.x+16,p.y+p.h,7)}else if(performance.now()-lastTap<260){p.dash=18;burst(p.x,p.y+23,14)}lastTap=performance.now()}function burst(a,b,n){for(let i=0;i<n;i++)dust.push({x:a,y:b,vx:(Math.random()-.5)*5,vy:(Math.random()-.5)*5,a:1})}function loop(t){if(!on)return;let dt=Math.min(.032,(t-last)/1000);last=t;update(dt);draw();requestAnimationFrame(loop)}function update(dt){score+=dt*spd*8;spd=Math.min(15,spd+dt*.18);world+=dt;spawn-=dt;ss-=dt;if(spawn<=0){let h=28+Math.random()*34,w=18+Math.random()*22;obs.push({x:W+20,y:G-h,w,h});spawn=.65+Math.random()*.8}if(ss<=0){stars.push({x:W+15,y:G-70-Math.random()*140});ss=.45+Math.random()*.7}p.vy+=34*dt;p.y+=p.vy*dt;if(p.y+p.h>=G){p.y=G-p.h;p.vy=0;p.ground=true}let m=p.dash>0?1.8:1;if(p.dash>0)p.dash-=dt*60;obs.forEach(o=>o.x-=spd*60*dt*m);stars.forEach(a=>a.x-=spd*60*dt*m);obs=obs.filter(o=>o.x+o.w>-40);stars=stars.filter(a=>a.x>-30);for(const o of obs)if(p.x+5<o.x+o.w&&p.x+p.w-5>o.x&&p.y+7<o.y+o.h&&p.y+p.h-4>o.y){end();return}for(let i=stars.length-1;i>=0;i--){let a=stars[i],dx=p.x+17-a.x,dy=p.y+23-a.y;if(dx*dx+dy*dy<900){score+=100;burst(a.x,a.y,10);stars.splice(i,1)}}dust.forEach(q=>{q.x+=q.vx;q.y+=q.vy;q.vy+=8*dt;q.a-=dt*2});dust=dust.filter(q=>q.a>0);document.getElementById('s').textContent=String(Math.floor(score)).padStart(6,'0')}function draw(){let q=Math.min(1,score/9000),g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,`rgb(${12+18*q},${18+12*q},${40+35*q})`);g.addColorStop(1,`rgb(${6+8*q},${7+9*q},${13+20*q})`);x.fillStyle=g;x.fillRect(0,0,W,H);for(let i=0;i<45;i++){let a=(i*113+score*.018)%W,b=(i*59)%(G*.72);x.fillStyle='#ffffff99';x.fillRect(a,b,1.4,1.4)}x.fillStyle='#ffffff18';x.fillRect(0,G,W,2);for(const a of stars){x.fillStyle='#f4e8ba';x.shadowBlur=14;x.shadowColor='#fff';x.beginPath();x.arc(a.x,a.y,5,0,7);x.fill();x.shadowBlur=0}for(const o of obs){x.fillStyle='#282c3a';x.beginPath();x.roundRect(o.x,o.y,o.w,o.h,7);x.fill();x.strokeStyle='#fff2';x.stroke()}x.save();x.translate(p.x,p.y);x.fillStyle='#eee9df';x.beginPath();x.roundRect(0,0,p.w,p.h,13);x.fill();x.fillStyle='#151720';x.beginPath();x.arc(23,15,3,0,7);x.fill();x.fillStyle='#bfb6a7';x.fillRect(7,43,7,7);x.fillRect(23,43,7,7);x.restore();for(const q of dust){x.globalAlpha=q.a;x.fillStyle='#f2e7c9';x.beginPath();x.arc(q.x,q.y,2.5,0,7);x.fill()}x.globalAlpha=1}function end(){on=false;best=Math.max(best,Math.floor(score));localStorage.abBest=best;document.getElementById('b').textContent=String(best).padStart(6,'0');document.getElementById('final').textContent=Math.floor(score);document.getElementById('over').classList.remove('hide')}addEventListener('pointerdown',e=>{if(e.target.closest('button'))return;jump()});addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();jump()}});draw();
-</script></body></html>
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1,
+             maximum-scale=1,
+             user-scalable=no,
+             viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#05060a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>Annabey Run</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+
+      background: #05060a;
+      color: white;
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      touch-action: none;
+      overscroll-behavior: none;
+
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* ===============================
+       GAME ROOT
+    =============================== */
+
+    .game {
+      position: fixed;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 80% 15%,
+          rgba(92, 102, 145, .16),
+          transparent 35%
+        ),
+        linear-gradient(
+          180deg,
+          #11162a 0%,
+          #151522 52%,
+          #06070b 100%
+        );
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      display: block;
+    }
+
+    /* ===============================
+       AMBIENT
+    =============================== */
+
+    .ambient {
+      position: absolute;
+      inset: 0;
+
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          circle at 50% 110%,
+          rgba(255,255,255,.035),
+          transparent 40%
+        );
+
+      mix-blend-mode: screen;
+    }
+
+    .grain {
+      position: absolute;
+      inset: -50%;
+
+      pointer-events: none;
+
+      opacity: .035;
+
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+
+      animation: grain .22s steps(2) infinite;
+    }
+
+    /* ===============================
+       TOP UI
+    =============================== */
+
+    .top-ui {
+      position: absolute;
+
+      top: max(
+        16px,
+        env(safe-area-inset-top)
+      );
+
+      left: 0;
+      right: 0;
+
+      padding:
+        14px
+        max(18px, env(safe-area-inset-right))
+        0
+        max(18px, env(safe-area-inset-left));
+
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      pointer-events: none;
+
+      z-index: 10;
+    }
+
+    .back {
+      width: 44px;
+      height: 44px;
+
+      border-radius: 50%;
+
+      border: 1px solid rgba(255,255,255,.13);
+
+      background:
+        rgba(0,0,0,.32);
+
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+
+      color: rgba(255,255,255,.8);
+
+      font-size: 21px;
+
+      display: grid;
+      place-items: center;
+
+      cursor: pointer;
+
+      pointer-events: auto;
+
+      transition:
+        transform .25s ease,
+        background .25s ease;
+    }
+
+    .back:active {
+      transform: scale(.9);
+      background: rgba(255,255,255,.1);
+    }
+
+    .score {
+      text-align: right;
+      pointer-events: none;
+    }
+
+    .score-label {
+      display: block;
+
+      color: rgba(255,255,255,.38);
+
+      font-size: 8px;
+      letter-spacing: .28em;
+
+      margin-bottom: 4px;
+    }
+
+    .score-value {
+      display: block;
+
+      font-family: monospace;
+
+      font-size: 17px;
+      font-weight: 600;
+
+      letter-spacing: .12em;
+
+      text-shadow:
+        0 0 20px rgba(255,255,255,.2);
+    }
+
+    .best {
+      margin-top: 5px;
+
+      color: rgba(255,255,255,.3);
+
+      font-family: monospace;
+
+      font-size: 8px;
+
+      letter-spacing: .12em;
+    }
+
+    /* ===============================
+       CENTER SCREENS
+    =============================== */
+
+    .screen {
+      position: absolute;
+      inset: 0;
+
+      display: grid;
+      place-items: center;
+
+      padding:
+        90px
+        24px
+        max(90px, env(safe-area-inset-bottom));
+
+      text-align: center;
+
+      z-index: 5;
+
+      pointer-events: none;
+
+      opacity: 1;
+
+      transition:
+        opacity .45s ease,
+        transform .45s ease;
+    }
+
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.04);
+    }
+
+    .panel {
+      width: min(420px, 100%);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ===============================
+       TITLE
+    =============================== */
+
+    .logo {
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size:
+        clamp(
+          48px,
+          15vw,
+          86px
+        );
+
+      line-height: .85;
+
+      font-weight: 400;
+
+      letter-spacing: -.055em;
+
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #dedbd3 55%,
+          #85838a 100%
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      color: transparent;
+
+      text-shadow:
+        0 15px 50px rgba(255,255,255,.08);
+    }
+
+    .subtitle {
+      margin-top: 20px;
+
+      color: rgba(255,255,255,.48);
+
+      font-size: 9px;
+
+      letter-spacing: .34em;
+
+      text-transform: uppercase;
+    }
+
+    /* ===============================
+       MAIN BUTTON
+    =============================== */
+
+    .start-button {
+      margin-top: 34px;
+
+      min-width: 160px;
+      min-height: 52px;
+
+      padding: 0 28px;
+
+      border-radius: 999px;
+
+      border:
+        1px solid rgba(255,255,255,.18);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,255,255,.12),
+          rgba(255,255,255,.035)
+        );
+
+      color: rgba(255,255,255,.9);
+
+      font-size: 10px;
+
+      letter-spacing: .25em;
+
+      text-transform: uppercase;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 15px 50px rgba(0,0,0,.3),
+        inset 0 1px rgba(255,255,255,.08);
+
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+
+      pointer-events: auto;
+
+      transition:
+        transform .25s ease,
+        background .25s ease,
+        box-shadow .25s ease;
+    }
+
+    .start-button:active {
+      transform: scale(.94);
+      background: rgba(255,255,255,.14);
+    }
+
+    .hint {
+      margin-top: 17px;
+
+      color: rgba(255,255,255,.25);
+
+      font-size: 8px;
+
+      letter-spacing: .12em;
+
+      line-height: 1.7;
+    }
+
+    /* ===============================
+       GAME OVER
+    =============================== */
+
+    .over-label {
+      color: rgba(255,255,255,.38);
+
+      font-size: 9px;
+
+      letter-spacing: .35em;
+    }
+
+    .final-score {
+      margin: 15px 0 0;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          54px,
+          17vw,
+          88px
+        );
+
+      line-height: .9;
+
+      font-weight: 400;
+
+      letter-spacing: -.05em;
+    }
+
+    .new-best {
+      margin-top: 10px;
+
+      color: #e8d9b7;
+
+      font-size: 8px;
+
+      letter-spacing: .3em;
+
+      text-transform: uppercase;
+    }
+
+    /* ===============================
+       MOBILE CONTROL HINT
+    =============================== */
+
+    .touch-hint {
+      position: absolute;
+
+      left: 50%;
+
+      bottom:
+        max(
+          22px,
+          env(safe-area-inset-bottom)
+        );
+
+      transform: translateX(-50%);
+
+      color: rgba(255,255,255,.2);
+
+      font-size: 8px;
+
+      letter-spacing: .2em;
+
+      white-space: nowrap;
+
+      pointer-events: none;
+
+      z-index: 4;
+
+      transition: opacity .5s ease;
+    }
+
+    .touch-hint.hidden {
+      opacity: 0;
+    }
+
+    /* ===============================
+       LANDSCAPE
+    =============================== */
+
+    @media (orientation: landscape) and (max-height: 520px) {
+
+      .screen {
+        padding-top: 60px;
+        padding-bottom: 50px;
+      }
+
+      .logo {
+        font-size: clamp(42px, 10vh, 68px);
+      }
+
+      .subtitle {
+        margin-top: 12px;
+      }
+
+      .start-button {
+        margin-top: 20px;
+        min-height: 46px;
+      }
+
+      .hint {
+        display: none;
+      }
+
+    }
+
+    /* ===============================
+       SMALL PHONES
+    =============================== */
+
+    @media (max-width: 360px) {
+
+      .logo {
+        font-size: 45px;
+      }
+
+      .subtitle {
+        font-size: 8px;
+      }
+
+      .start-button {
+        min-width: 145px;
+        min-height: 48px;
+      }
+
+    }
+
+    /* ===============================
+       REDUCED MOTION
+    =============================== */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .grain {
+        animation: none;
+      }
+
+      .screen,
+      .start-button,
+      .back {
+        transition: none;
+      }
+
+    }
+
+    @keyframes grain {
+
+      0% {
+        transform: translate(0,0);
+      }
+
+      25% {
+        transform: translate(2%,-1%);
+      }
+
+      50% {
+        transform: translate(-1%,2%);
+      }
+
+      75% {
+        transform: translate(1%,1%);
+      }
+
+      100% {
+        transform: translate(-2%,-1%);
+      }
+
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="game">
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="ambient"></div>
+  <div class="grain"></div>
+
+  <!-- ===============================
+       TOP UI
+  =============================== -->
+
+  <div class="top-ui">
+
+    <button
+      id="backButton"
+      class="back"
+      aria-label="Kembali"
+    >
+      ←
+    </button>
+
+    <div class="score">
+
+      <span class="score-label">
+        SCORE
+      </span>
+
+      <span
+        id="score"
+        class="score-value"
+      >
+        000000
+      </span>
+
+      <div class="best">
+        BEST
+        <span id="best">000000</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===============================
+       START SCREEN
+  =============================== -->
+
+  <div
+    id="startScreen"
+    class="screen"
+  >
+
+    <div class="panel">
+
+      <div class="logo">
+        Annabey Run
+      </div>
+
+      <div class="subtitle">
+        just keep running ✦
+      </div>
+
+      <button
+        id="startButton"
+        class="start-button"
+      >
+        Tap to Run
+      </button>
+
+      <div class="hint">
+        TAP = JUMP&nbsp;&nbsp; · &nbsp;&nbsp;
+        DOUBLE TAP = DASH
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===============================
+       GAME OVER
+  =============================== -->
+
+  <div
+    id="gameOver"
+    class="screen hidden"
+  >
+
+    <div class="panel">
+
+      <div class="over-label">
+        RUN ENDED
+      </div>
+
+      <div
+        id="finalScore"
+        class="final-score"
+      >
+        0
+      </div>
+
+      <div
+        id="newBest"
+        class="new-best"
+        style="display:none"
+      >
+        New Best ✦
+      </div>
+
+      <button
+        id="againButton"
+        class="start-button"
+      >
+        Run Again
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="touchHint"
+    class="touch-hint"
+  >
+    TAP TO JUMP
+  </div>
+
+</div>
+
+
+<script>
+
+const canvas =
+  document.getElementById("gameCanvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+
+/* =========================================
+   DOM
+========================================= */
+
+const startScreen =
+  document.getElementById("startScreen");
+
+const gameOver =
+  document.getElementById("gameOver");
+
+const startButton =
+  document.getElementById("startButton");
+
+const againButton =
+  document.getElementById("againButton");
+
+const backButton =
+  document.getElementById("backButton");
+
+const scoreElement =
+  document.getElementById("score");
+
+const bestElement =
+  document.getElementById("best");
+
+const finalScoreElement =
+  document.getElementById("finalScore");
+
+const newBestElement =
+  document.getElementById("newBest");
+
+const touchHint =
+  document.getElementById("touchHint");
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let W = 0;
+let H = 0;
+let DPR = 1;
+let ground = 0;
+
+let running = false;
+
+let score = 0;
+let best =
+  Number(localStorage.getItem("annabeyRunBest")) || 0;
+
+let speed = 7;
+
+let lastTime = 0;
+
+let spawnTimer = 0;
+let starTimer = 0;
+
+let worldTime = 0;
+
+let obstacles = [];
+let stars = [];
+let particles = [];
+
+
+/* =========================================
+   PLAYER
+========================================= */
+
+const player = {
+
+  x: 80,
+
+  y: 0,
+
+  width: 34,
+
+  height: 46,
+
+  velocityY: 0,
+
+  grounded: true,
+
+  dash: 0
+
+};
+
+
+/* =========================================
+   RESIZE
+========================================= */
+
+function resize() {
+
+  DPR =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
+
+  W = window.innerWidth;
+  H = window.innerHeight;
+
+  canvas.width =
+    Math.floor(W * DPR);
+
+  canvas.height =
+    Math.floor(H * DPR);
+
+  canvas.style.width = W + "px";
+  canvas.style.height = H + "px";
+
+  ctx.setTransform(
+    DPR,
+    0,
+    0,
+    DPR,
+    0,
+    0
+  );
+
+  /*
+   * Ground mengikuti layar.
+   * Di HP portrait player sedikit lebih tinggi
+   * supaya area bermain tidak terasa sempit.
+   */
+
+  ground =
+    H *
+    (
+      H > W
+        ? .80
+        : .78
+    );
+
+  player.x =
+    Math.max(
+      42,
+      Math.min(
+        100,
+        W * .16
+      )
+    );
+
+  if (!running) {
+
+    player.y =
+      ground - player.height;
+
+  }
+
+}
+
+
+window.addEventListener(
+  "resize",
+  resize
+);
+
+window.addEventListener(
+  "orientationchange",
+  () => {
+
+    setTimeout(
+      resize,
+      100
+    );
+
+  }
+);
+
+resize();
+
+
+/* =========================================
+   FORMAT SCORE
+========================================= */
+
+function formatScore(value) {
+
+  return String(
+    Math.floor(value)
+  ).padStart(6, "0");
+
+}
+
+
+bestElement.textContent =
+  formatScore(best);
+
+
+/* =========================================
+   START
+========================================= */
+
+function startGame() {
+
+  score = 0;
+
+  speed = 7;
+
+  spawnTimer = .5;
+
+  starTimer = .6;
+
+  worldTime = 0;
+
+  obstacles = [];
+  stars = [];
+  particles = [];
+
+  player.y =
+    ground - player.height;
+
+  player.velocityY = 0;
+
+  player.grounded = true;
+
+  player.dash = 0;
+
+  running = true;
+
+  startScreen.classList.add("hidden");
+  gameOver.classList.add("hidden");
+
+  touchHint.classList.remove("hidden");
+
+  scoreElement.textContent =
+    formatScore(0);
+
+  lastTime =
+    performance.now();
+
+  requestAnimationFrame(loop);
+
+  vibrate(12);
+
+}
+
+
+/* =========================================
+   JUMP / DASH
+========================================= */
+
+let lastTapTime = 0;
+
+function action() {
+
+  if (!running) {
+    return;
+  }
+
+  const now =
+    performance.now();
+
+  /*
+   * Double tap = dash
+   */
+
+  if (
+    now - lastTapTime < 260 &&
+    !player.grounded
+  ) {
+
+    player.dash = 18;
+
+    burst(
+      player.x,
+      player.y + 24,
+      16
+    );
+
+    vibrate(18);
+
+    lastTapTime = 0;
+
+    return;
+
+  }
+
+
+  /*
+   * Jump
+   */
+
+  if (player.grounded) {
+
+    player.velocityY = -15;
+
+    player.grounded = false;
+
+    burst(
+      player.x + 16,
+      player.y + player.height,
+      8
+    );
+
+    vibrate(10);
+
+  }
+
+  lastTapTime = now;
+
+}
+
+
+/* =========================================
+   PARTICLES
+========================================= */
+
+function burst(
+  x,
+  y,
+  amount
+) {
+
+  for (
+    let i = 0;
+    i < amount;
+    i++
+  ) {
+
+    particles.push({
+
+      x,
+      y,
+
+      velocityX:
+        (Math.random() - .5) * 5,
+
+      velocityY:
+        (Math.random() - .5) * 5,
+
+      alpha: 1,
+
+      size:
+        1.5 +
+        Math.random() * 2.5
+
+    });
+
+  }
+
+}
+
+
+/* =========================================
+   LOOP
+========================================= */
+
+function loop(time) {
+
+  if (!running) {
+    return;
+  }
+
+  const delta =
+    Math.min(
+      .032,
+      (time - lastTime) / 1000
+    );
+
+  lastTime = time;
+
+  update(delta);
+  draw();
+
+  requestAnimationFrame(loop);
+
+}
+
+
+/* =========================================
+   UPDATE
+========================================= */
+
+function update(delta) {
+
+  score +=
+    delta *
+    speed *
+    8;
+
+  speed =
+    Math.min(
+      15,
+      speed +
+      delta * .18
+    );
+
+  worldTime += delta;
+
+
+  /* =========================
+     SPAWN OBSTACLE
+  ========================= */
+
+  spawnTimer -= delta;
+
+  if (spawnTimer <= 0) {
+
+    const height =
+      28 +
+      Math.random() * 34;
+
+    const width =
+      18 +
+      Math.random() * 22;
+
+    obstacles.push({
+
+      x: W + 30,
+
+      y:
+        ground - height,
+
+      width,
+
+      height
+
+    });
+
+    /*
+     * Sedikit makin cepat
+     */
+
+    spawnTimer =
+      Math.max(
+        .48,
+        .65 +
+        Math.random() * .8 -
+        score / 25000
+      );
+
+  }
+
+
+  /* =========================
+     STARS
+  ========================= */
+
+  starTimer -= delta;
+
+  if (starTimer <= 0) {
+
+    stars.push({
+
+      x: W + 20,
+
+      y:
+        ground -
+        70 -
+        Math.random() * 150
+
+    });
+
+    starTimer =
+      .45 +
+      Math.random() * .7;
+
+  }
+
+
+  /* =========================
+     PLAYER PHYSICS
+  ========================= */
+
+  player.velocityY +=
+    34 * delta;
+
+  player.y +=
+    player.velocityY * delta;
+
+
+  if (
+    player.y +
+    player.height >=
+    ground
+  ) {
+
+    player.y =
+      ground -
+      player.height;
+
+    player.velocityY = 0;
+
+    player.grounded = true;
+
+  }
+
+
+  /* =========================
+     DASH
+  ========================= */
+
+  let multiplier = 1;
+
+  if (player.dash > 0) {
+
+    player.dash -=
+      delta * 60;
+
+    multiplier = 1.8;
+
+  }
+
+
+  /* =========================
+     MOVE OBJECTS
+  ========================= */
+
+  const movement =
+    speed *
+    60 *
+    delta *
+    multiplier;
+
+
+  obstacles.forEach(
+    obstacle => {
+      obstacle.x -= movement;
+    }
+  );
+
+
+  stars.forEach(
+    star => {
+      star.x -= movement;
+    }
+  );
+
+
+  /* =========================
+     REMOVE OBJECTS
+  ========================= */
+
+  obstacles =
+    obstacles.filter(
+      obstacle =>
+        obstacle.x +
+        obstacle.width >
+        -40
+    );
+
+
+  stars =
+    stars.filter(
+      star =>
+        star.x > -30
+    );
+
+
+  /* =========================
+     COLLISION
+  ========================= */
+
+  for (
+    const obstacle
+    of obstacles
+  ) {
+
+    if (
+
+      player.x + 6 <
+      obstacle.x +
+      obstacle.width &&
+
+      player.x +
+      player.width - 6 >
+      obstacle.x &&
+
+      player.y + 7 <
+      obstacle.y +
+      obstacle.height &&
+
+      player.y +
+      player.height - 4 >
+      obstacle.y
+
+    ) {
+
+      endGame();
+
+      return;
+
+    }
+
+  }
+
+
+  /* =========================
+     COLLECT STARS
+  ========================= */
+
+  for (
+    let i = stars.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const star =
+      stars[i];
+
+    const dx =
+      player.x +
+      17 -
+      star.x;
+
+    const dy =
+      player.y +
+      23 -
+      star.y;
+
+    if (
+      dx * dx +
+      dy * dy <
+      900
+    ) {
+
+      score += 100;
+
+      burst(
+        star.x,
+        star.y,
+        12
+      );
+
+      stars.splice(
+        i,
+        1
+      );
+
+      vibrate(8);
+
+    }
+
+  }
+
+
+  /* =========================
+     PARTICLES
+  ========================= */
+
+  particles.forEach(
+    particle => {
+
+      particle.x +=
+        particle.velocityX;
+
+      particle.y +=
+        particle.velocityY;
+
+      particle.velocityY +=
+        8 * delta;
+
+      particle.alpha -=
+        delta * 2;
+
+    }
+  );
+
+
+  particles =
+    particles.filter(
+      particle =>
+        particle.alpha > 0
+    );
+
+
+  scoreElement.textContent =
+    formatScore(score);
+
+
+  /*
+   * Setelah beberapa detik,
+   * hint menghilang.
+   */
+
+  if (score > 120) {
+
+    touchHint.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   DRAW
+========================================= */
+
+function draw() {
+
+  /* =========================
+     SKY
+  ========================= */
+
+  const progression =
+    Math.min(
+      1,
+      score / 9000
+    );
+
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      H
+    );
+
+
+  gradient.addColorStop(
+    0,
+    `rgb(
+      ${12 + 18 * progression},
+      ${18 + 12 * progression},
+      ${40 + 35 * progression}
+    )`
+  );
+
+
+  gradient.addColorStop(
+    1,
+    `rgb(
+      ${6 + 8 * progression},
+      ${7 + 9 * progression},
+      ${13 + 20 * progression}
+    )`
+  );
+
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+
+  /* =========================
+     PARALLAX STARS
+  ========================= */
+
+  for (
+    let i = 0;
+    i < 50;
+    i++
+  ) {
+
+    const x =
+      (
+        i * 113 +
+        score * .018
+      ) % W;
+
+    const y =
+      (
+        i * 59
+      ) %
+      (ground * .72);
+
+
+    const alpha =
+      .18 +
+      (
+        Math.sin(
+          worldTime * 2 +
+          i
+        ) + 1
+      ) * .12;
+
+
+    ctx.fillStyle =
+      `rgba(255,255,255,${alpha})`;
+
+
+    ctx.fillRect(
+      x,
+      y,
+      1.4,
+      1.4
+    );
+
+  }
+
+
+  /* =========================
+     GROUND
+  ========================= */
+
+  ctx.fillStyle =
+    "rgba(255,255,255,.07)";
+
+  ctx.fillRect(
+    0,
+    ground,
+    W,
+    2
+  );
+
+
+  /* =========================
+     STARS / COINS
+  ========================= */
+
+  for (
+    const star
+    of stars
+  ) {
+
+    ctx.save();
+
+    ctx.fillStyle =
+      "#f4e8ba";
+
+    ctx.shadowBlur = 18;
+
+    ctx.shadowColor =
+      "#fff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      star.x,
+      star.y,
+      5,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+
+  }
+
+
+  /* =========================
+     OBSTACLES
+  ========================= */
+
+  for (
+    const obstacle
+    of obstacles
+  ) {
+
+    ctx.fillStyle =
+      "#282c3a";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+      obstacle.x,
+      obstacle.y,
+      obstacle.width,
+      obstacle.height,
+      7
+    );
+
+    ctx.fill();
+
+
+    ctx.strokeStyle =
+      "rgba(255,255,255,.12)";
+
+    ctx.stroke();
+
+  }
+
+
+  /* =========================
+     PLAYER
+  ========================= */
+
+  ctx.save();
+
+  ctx.translate(
+    player.x,
+    player.y
+  );
+
+
+  /*
+   * Dash glow
+   */
+
+  if (player.dash > 0) {
+
+    ctx.shadowBlur = 25;
+
+    ctx.shadowColor =
+      "rgba(255,235,190,.8)";
+
+  }
+
+
+  ctx.fillStyle =
+    "#eee9df";
+
+
+  ctx.beginPath();
+
+  ctx.roundRect(
+    0,
+    0,
+    player.width,
+    player.height,
+    13
+  );
+
+  ctx.fill();
+
+
+  /*
+   * Face
+   */
+
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle =
+    "#151720";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    23,
+    15,
+    3,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  /*
+   * Feet
+   */
+
+  ctx.fillStyle =
+    "#bfb6a7";
+
+  ctx.fillRect(
+    7,
+    43,
+    7,
+    7
+  );
+
+  ctx.fillRect(
+    23,
+    43,
+    7,
+    7
+  );
+
+
+  ctx.restore();
+
+
+  /* =========================
+     PARTICLES
+  ========================= */
+
+  for (
+    const particle
+    of particles
+  ) {
+
+    ctx.globalAlpha =
+      particle.alpha;
+
+    ctx.fillStyle =
+      "#f2e7c9";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      particle.x,
+      particle.y,
+      particle.size,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.globalAlpha = 1;
+
+}
+
+
+/* =========================================
+   GAME OVER
+========================================= */
+
+function endGame() {
+
+  running = false;
+
+  const final =
+    Math.floor(score);
+
+  const previousBest =
+    best;
+
+  if (final > best) {
+
+    best = final;
+
+    localStorage.setItem(
+      "annabeyRunBest",
+      best
+    );
+
+  }
+
+  finalScoreElement.textContent =
+    formatScore(final);
+
+  bestElement.textContent =
+    formatScore(best);
+
+
+  if (
+    final > previousBest
+  ) {
+
+    newBestElement.style.display =
+      "block";
+
+  } else {
+
+    newBestElement.style.display =
+      "none";
+
+  }
+
+
+  gameOver.classList.remove(
+    "hidden"
+  );
+
+  touchHint.classList.add(
+    "hidden"
+  );
+
+  vibrate([
+    40,
+    50,
+    80
+  ]);
+
+}
+
+
+/* =========================================
+   VIBRATION
+========================================= */
+
+function vibrate(pattern) {
+
+  if (
+    "vibrate" in navigator
+  ) {
+
+    try {
+      navigator.vibrate(pattern);
+    } catch (_) {}
+
+  }
+
+}
+
+
+/* =========================================
+   TOUCH
+========================================= */
+
+let pointerStartTime = 0;
+
+window.addEventListener(
+  "pointerdown",
+  event => {
+
+    if (
+      event.target.closest("button")
+    ) {
+      return;
+    }
+
+    if (!running) {
+      return;
+    }
+
+    pointerStartTime =
+      performance.now();
+
+  },
+  {
+    passive: true
+  }
+);
+
+
+window.addEventListener(
+  "pointerup",
+  event => {
+
+    if (
+      event.target.closest("button")
+    ) {
+      return;
+    }
+
+    if (!running) {
+      return;
+    }
+
+    action();
+
+  },
+  {
+    passive: true
+  }
+);
+
+
+/* =========================================
+   KEYBOARD
+========================================= */
+
+window.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.code === "Space" ||
+      event.code === "ArrowUp"
+    ) {
+
+      event.preventDefault();
+
+      if (!running) {
+
+        startGame();
+
+      } else {
+
+        action();
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+startButton.addEventListener(
+  "click",
+  startGame
+);
+
+
+againButton.addEventListener(
+  "click",
+  startGame
+);
+
+
+backButton.addEventListener(
+  "click",
+  () => {
+
+    /*
+     * Kalau game dibuka melalui iframe,
+     * kirim pesan ke React parent.
+     */
+
+    window.parent.postMessage(
+      {
+        type: "ANNABEY_RUN_BACK"
+      },
+      "*"
+    );
+
+    /*
+     * Fallback kalau dibuka langsung.
+     */
+
+    if (
+      window.parent === window
+    ) {
+
+      history.back();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   PREVENT MOBILE GESTURES
+========================================= */
+
+document.addEventListener(
+  "gesturestart",
+  event => {
+    event.preventDefault();
+  }
+);
+
+document.addEventListener(
+  "touchmove",
+  event => {
+
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
+  },
+  {
+    passive: false
+  }
+);
+
+
+/* =========================================
+   INITIAL DRAW
+========================================= */
+
+draw();
+
+</script>
+
+</body>
+</html>
