@@ -1,44 +1,1970 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
-<title>Annabey Run</title>
-<style>
-:root{--bg:#050711;--fg:#f4f1ea;--muted:#9ca1b3;--glass:rgba(255,255,255,.07);--line:rgba(255,255,255,.14)}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#050711;color:var(--fg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}body{touch-action:none}#app{position:fixed;inset:0;background:#050711;overflow:hidden}canvas{position:absolute;inset:0;width:100%;height:100%;display:block}.hud{position:absolute;inset:0;pointer-events:none;padding:max(20px,env(safe-area-inset-top)) 20px 20px}.top{display:flex;justify-content:space-between;align-items:flex-start}.brand{font-size:10px;letter-spacing:.28em;text-transform:uppercase;color:#aeb3c4}.score{text-align:right}.score strong{display:block;font:500 25px/1 Georgia,serif;letter-spacing:.04em}.score small{color:#74798b;font-size:8px;letter-spacing:.2em}.meter{position:absolute;left:20px;right:20px;top:70px;height:2px;background:rgba(255,255,255,.08);overflow:hidden}.meter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#fff,#9bb5ff,#d7b9ff);box-shadow:0 0 14px rgba(180,190,255,.6);transition:width .12s linear}.screen{position:absolute;inset:0;display:grid;place-items:center;padding:28px;text-align:center;background:radial-gradient(circle at 50% 40%,rgba(50,66,110,.2),transparent 45%),rgba(3,5,12,.35);transition:opacity .45s,transform .45s}.screen.hidden{opacity:0;pointer-events:none;transform:scale(1.04);}.panel{max-width:420px}.eyebrow{font-size:9px;letter-spacing:.4em;color:#7f879d;text-transform:uppercase;margin-bottom:20px}.title{margin:0;font:400 clamp(48px,15vw,86px)/.85 Georgia,serif;letter-spacing:-.06em}.subtitle{margin:20px 0 28px;color:#a7acbc;font-size:14px;line-height:1.8}.cta{pointer-events:auto;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#f5f3ed;border-radius:999px;padding:14px 25px;font-size:10px;letter-spacing:.28em;text-transform:uppercase;cursor:pointer;backdrop-filter:blur(15px);transition:.25s}.cta:active{transform:scale(.96);background:rgba(255,255,255,.12)}.hint{margin-top:16px;color:#656b7e;font-size:9px;letter-spacing:.18em}.gameover h2{margin:0;font:400 48px/1 Georgia,serif}.result{margin:18px 0 26px;color:#aeb3c2;line-height:1.8}.new{color:#d8c8ff}.pause{position:absolute;right:20px;bottom:24px;pointer-events:auto;width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(0,0,0,.22);color:#ddd;display:none}.playing .pause{display:block}.flash{position:absolute;inset:0;background:white;opacity:0;pointer-events:none}.flash.hit{animation:flash .28s ease-out}@keyframes flash{0%{opacity:.22}100%{opacity:0}}@media(min-width:700px){.hud{padding-left:32px;padding-right:32px}.meter{left:32px;right:32px}}
-</style>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width,
+             initial-scale=1,
+             maximum-scale=1,
+             user-scalable=no,
+             viewport-fit=cover"
+  >
+
+  <meta name="theme-color" content="#05060a">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <title>Annabey Run</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+
+      background: #05060a;
+      color: white;
+
+      font-family:
+        Inter,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      touch-action: none;
+      overscroll-behavior: none;
+
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      position: fixed;
+      inset: 0;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    /* ===============================
+       GAME ROOT
+    =============================== */
+
+    .game {
+      position: fixed;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      overflow: hidden;
+
+      background:
+        radial-gradient(
+          circle at 80% 15%,
+          rgba(92, 102, 145, .16),
+          transparent 35%
+        ),
+        linear-gradient(
+          180deg,
+          #11162a 0%,
+          #151522 52%,
+          #06070b 100%
+        );
+    }
+
+    canvas {
+      position: absolute;
+      inset: 0;
+
+      width: 100%;
+      height: 100%;
+
+      display: block;
+    }
+
+    /* ===============================
+       AMBIENT
+    =============================== */
+
+    .ambient {
+      position: absolute;
+      inset: 0;
+
+      pointer-events: none;
+
+      background:
+        radial-gradient(
+          circle at 50% 110%,
+          rgba(255,255,255,.035),
+          transparent 40%
+        );
+
+      mix-blend-mode: screen;
+    }
+
+    .grain {
+      position: absolute;
+      inset: -50%;
+
+      pointer-events: none;
+
+      opacity: .035;
+
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+
+      animation: grain .22s steps(2) infinite;
+    }
+
+    /* ===============================
+       TOP UI
+    =============================== */
+
+    .top-ui {
+      position: absolute;
+
+      top: max(
+        16px,
+        env(safe-area-inset-top)
+      );
+
+      left: 0;
+      right: 0;
+
+      padding:
+        14px
+        max(18px, env(safe-area-inset-right))
+        0
+        max(18px, env(safe-area-inset-left));
+
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+
+      pointer-events: none;
+
+      z-index: 10;
+    }
+
+    .back {
+      width: 44px;
+      height: 44px;
+
+      border-radius: 50%;
+
+      border: 1px solid rgba(255,255,255,.13);
+
+      background:
+        rgba(0,0,0,.32);
+
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+
+      color: rgba(255,255,255,.8);
+
+      font-size: 21px;
+
+      display: grid;
+      place-items: center;
+
+      cursor: pointer;
+
+      pointer-events: auto;
+
+      transition:
+        transform .25s ease,
+        background .25s ease;
+    }
+
+    .back:active {
+      transform: scale(.9);
+      background: rgba(255,255,255,.1);
+    }
+
+    .score {
+      text-align: right;
+      pointer-events: none;
+    }
+
+    .score-label {
+      display: block;
+
+      color: rgba(255,255,255,.38);
+
+      font-size: 8px;
+      letter-spacing: .28em;
+
+      margin-bottom: 4px;
+    }
+
+    .score-value {
+      display: block;
+
+      font-family: monospace;
+
+      font-size: 17px;
+      font-weight: 600;
+
+      letter-spacing: .12em;
+
+      text-shadow:
+        0 0 20px rgba(255,255,255,.2);
+    }
+
+    .best {
+      margin-top: 5px;
+
+      color: rgba(255,255,255,.3);
+
+      font-family: monospace;
+
+      font-size: 8px;
+
+      letter-spacing: .12em;
+    }
+
+    /* ===============================
+       CENTER SCREENS
+    =============================== */
+
+    .screen {
+      position: absolute;
+      inset: 0;
+
+      display: grid;
+      place-items: center;
+
+      padding:
+        90px
+        24px
+        max(90px, env(safe-area-inset-bottom));
+
+      text-align: center;
+
+      z-index: 5;
+
+      pointer-events: none;
+
+      opacity: 1;
+
+      transition:
+        opacity .45s ease,
+        transform .45s ease;
+    }
+
+    .screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(1.04);
+    }
+
+    .panel {
+      width: min(420px, 100%);
+
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ===============================
+       TITLE
+    =============================== */
+
+    .logo {
+      font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+      font-size:
+        clamp(
+          48px,
+          15vw,
+          86px
+        );
+
+      line-height: .85;
+
+      font-weight: 400;
+
+      letter-spacing: -.055em;
+
+      background:
+        linear-gradient(
+          180deg,
+          #ffffff 0%,
+          #dedbd3 55%,
+          #85838a 100%
+        );
+
+      -webkit-background-clip: text;
+      background-clip: text;
+
+      color: transparent;
+
+      text-shadow:
+        0 15px 50px rgba(255,255,255,.08);
+    }
+
+    .subtitle {
+      margin-top: 20px;
+
+      color: rgba(255,255,255,.48);
+
+      font-size: 9px;
+
+      letter-spacing: .34em;
+
+      text-transform: uppercase;
+    }
+
+    /* ===============================
+       MAIN BUTTON
+    =============================== */
+
+    .start-button {
+      margin-top: 34px;
+
+      min-width: 160px;
+      min-height: 52px;
+
+      padding: 0 28px;
+
+      border-radius: 999px;
+
+      border:
+        1px solid rgba(255,255,255,.18);
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255,255,255,.12),
+          rgba(255,255,255,.035)
+        );
+
+      color: rgba(255,255,255,.9);
+
+      font-size: 10px;
+
+      letter-spacing: .25em;
+
+      text-transform: uppercase;
+
+      cursor: pointer;
+
+      box-shadow:
+        0 15px 50px rgba(0,0,0,.3),
+        inset 0 1px rgba(255,255,255,.08);
+
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+
+      pointer-events: auto;
+
+      transition:
+        transform .25s ease,
+        background .25s ease,
+        box-shadow .25s ease;
+    }
+
+    .start-button:active {
+      transform: scale(.94);
+      background: rgba(255,255,255,.14);
+    }
+
+    .hint {
+      margin-top: 17px;
+
+      color: rgba(255,255,255,.25);
+
+      font-size: 8px;
+
+      letter-spacing: .12em;
+
+      line-height: 1.7;
+    }
+
+    /* ===============================
+       GAME OVER
+    =============================== */
+
+    .over-label {
+      color: rgba(255,255,255,.38);
+
+      font-size: 9px;
+
+      letter-spacing: .35em;
+    }
+
+    .final-score {
+      margin: 15px 0 0;
+
+      font-family:
+        Georgia,
+        serif;
+
+      font-size:
+        clamp(
+          54px,
+          17vw,
+          88px
+        );
+
+      line-height: .9;
+
+      font-weight: 400;
+
+      letter-spacing: -.05em;
+    }
+
+    .new-best {
+      margin-top: 10px;
+
+      color: #e8d9b7;
+
+      font-size: 8px;
+
+      letter-spacing: .3em;
+
+      text-transform: uppercase;
+    }
+
+    /* ===============================
+       MOBILE CONTROL HINT
+    =============================== */
+
+    .touch-hint {
+      position: absolute;
+
+      left: 50%;
+
+      bottom:
+        max(
+          22px,
+          env(safe-area-inset-bottom)
+        );
+
+      transform: translateX(-50%);
+
+      color: rgba(255,255,255,.2);
+
+      font-size: 8px;
+
+      letter-spacing: .2em;
+
+      white-space: nowrap;
+
+      pointer-events: none;
+
+      z-index: 4;
+
+      transition: opacity .5s ease;
+    }
+
+    .touch-hint.hidden {
+      opacity: 0;
+    }
+
+    /* ===============================
+       LANDSCAPE
+    =============================== */
+
+    @media (orientation: landscape) and (max-height: 520px) {
+
+      .screen {
+        padding-top: 60px;
+        padding-bottom: 50px;
+      }
+
+      .logo {
+        font-size: clamp(42px, 10vh, 68px);
+      }
+
+      .subtitle {
+        margin-top: 12px;
+      }
+
+      .start-button {
+        margin-top: 20px;
+        min-height: 46px;
+      }
+
+      .hint {
+        display: none;
+      }
+
+    }
+
+    /* ===============================
+       SMALL PHONES
+    =============================== */
+
+    @media (max-width: 360px) {
+
+      .logo {
+        font-size: 45px;
+      }
+
+      .subtitle {
+        font-size: 8px;
+      }
+
+      .start-button {
+        min-width: 145px;
+        min-height: 48px;
+      }
+
+    }
+
+    /* ===============================
+       REDUCED MOTION
+    =============================== */
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .grain {
+        animation: none;
+      }
+
+      .screen,
+      .start-button,
+      .back {
+        transition: none;
+      }
+
+    }
+
+    @keyframes grain {
+
+      0% {
+        transform: translate(0,0);
+      }
+
+      25% {
+        transform: translate(2%,-1%);
+      }
+
+      50% {
+        transform: translate(-1%,2%);
+      }
+
+      75% {
+        transform: translate(1%,1%);
+      }
+
+      100% {
+        transform: translate(-2%,-1%);
+      }
+
+    }
+  </style>
 </head>
+
 <body>
-<div id="app">
-<canvas id="game"></canvas><div class="flash" id="flash"></div>
-<div class="hud"><div class="top"><div class="brand">ANNABEY RUN</div><div class="score"><strong id="score">000000</strong><small>BEST <span id="best">000000</span></small></div></div><div class="meter"><i id="meter"></i></div><button class="pause" id="pause">Ⅱ</button></div>
-<section class="screen" id="start"><div class="panel"><div class="eyebrow">A tiny world to get lost in</div><h1 class="title">Run.</h1><p class="subtitle">A little endless journey through clouds, stars and strange things.</p><button class="cta" id="startBtn">Start running</button><div class="hint">TAP / SPACE TO JUMP · DOUBLE TAP TO DASH</div></div></section>
-<section class="screen hidden" id="gameover"><div class="panel"><div class="eyebrow">The journey pauses here</div><h2>One more run?</h2><div class="result">SCORE <b id="final">0</b><br><span class="new" id="newbest"></span></div><button class="cta" id="again">Run again</button></div></section>
+
+<div class="game">
+
+  <canvas id="gameCanvas"></canvas>
+
+  <div class="ambient"></div>
+  <div class="grain"></div>
+
+  <!-- ===============================
+       TOP UI
+  =============================== -->
+
+  <div class="top-ui">
+
+    <button
+      id="backButton"
+      class="back"
+      aria-label="Kembali"
+    >
+      ←
+    </button>
+
+    <div class="score">
+
+      <span class="score-label">
+        SCORE
+      </span>
+
+      <span
+        id="score"
+        class="score-value"
+      >
+        000000
+      </span>
+
+      <div class="best">
+        BEST
+        <span id="best">000000</span>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===============================
+       START SCREEN
+  =============================== -->
+
+  <div
+    id="startScreen"
+    class="screen"
+  >
+
+    <div class="panel">
+
+      <div class="logo">
+        Annabey Run
+      </div>
+
+      <div class="subtitle">
+        just keep running ✦
+      </div>
+
+      <button
+        id="startButton"
+        class="start-button"
+      >
+        Tap to Run
+      </button>
+
+      <div class="hint">
+        TAP = JUMP&nbsp;&nbsp; · &nbsp;&nbsp;
+        DOUBLE TAP = DASH
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- ===============================
+       GAME OVER
+  =============================== -->
+
+  <div
+    id="gameOver"
+    class="screen hidden"
+  >
+
+    <div class="panel">
+
+      <div class="over-label">
+        RUN ENDED
+      </div>
+
+      <div
+        id="finalScore"
+        class="final-score"
+      >
+        0
+      </div>
+
+      <div
+        id="newBest"
+        class="new-best"
+        style="display:none"
+      >
+        New Best ✦
+      </div>
+
+      <button
+        id="againButton"
+        class="start-button"
+      >
+        Run Again
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <div
+    id="touchHint"
+    class="touch-hint"
+  >
+    TAP TO JUMP
+  </div>
+
 </div>
+
+
 <script>
-const canvas=document.getElementById('game'),ctx=canvas.getContext('2d');let W,H,DPR;function resize(){DPR=Math.min(devicePixelRatio||1,2);W=innerWidth;H=innerHeight;canvas.width=W*DPR;canvas.height=H*DPR;canvas.style.width=W+'px';canvas.style.height=H+'px';ctx.setTransform(DPR,0,0,DPR,0,0)}addEventListener('resize',resize);resize();
-const $=id=>document.getElementById(id);let state='menu',last=0,time=0,score=0,best=+localStorage.getItem('annabeyBest')||0,speed=360,world=0,spawn=0,starSpawn=0,ground=0,shake=0,jumpHeld=false,lastTap=0;
-$('best').textContent=String(best).padStart(6,'0');
-const player={x:0,y:0,vy:0,w:42,h:52,onGround:true,dash:0};let obstacles=[],stars=[],particles=[],clouds=[];
-function reset(){score=0;speed=360;world=0;spawn=.5;starSpawn=.8;shake=0;obstacles=[];stars=[];particles=[];player.y=0;player.vy=0;player.onGround=true;player.dash=0;for(let i=0;i<12;i++)clouds.push({x:Math.random()*W,y:40+Math.random()*H*.42,s:.5+Math.random()*1.3});}
-function start(){reset();state='play';$('start').classList.add('hidden');$('gameover').classList.add('hidden');$('app').classList.add('playing');last=performance.now();requestAnimationFrame(loop)}
-function end(){state='over';$('app').classList.remove('playing');$('final').textContent=Math.floor(score);let nb=score>best;if(nb){best=Math.floor(score);localStorage.setItem('annabeyBest',best);$('best').textContent=String(best).padStart(6,'0');$('newbest').textContent='✦ NEW BEST ✦'}else $('newbest').textContent='';$('gameover').classList.remove('hidden');}
-function jump(){if(state!=='play')return;const now=performance.now();if(now-lastTap<260&&player.dash<=0){player.dash=.38;for(let i=0;i<15;i++)burst(player.x+20,ground-player.y-25,'dash');}else if(player.onGround){player.vy=-720;player.onGround=false;for(let i=0;i<7;i++)burst(player.x+20,ground-player.y,'jump')}lastTap=now}
-function burst(x,y,type){particles.push({x,y,vx:(Math.random()-.5)*(type==='dash'?360:100),vy:(Math.random()-.5)*150-30,life:.45+Math.random()*.35,max:.8,size:1+Math.random()*3,type})}
-function spawnObstacle(){const type=Math.random()<.28?'rock':Math.random()<.52?'spike':'crystal';const h=type==='spike'?34:28+Math.random()*35;obstacles.push({x:W+50,w:type==='rock'?36:26+Math.random()*18,h,type})}
-function spawnStar(){stars.push({x:W+40,y:ground-75-Math.random()*150,r:5+Math.random()*2,spin:Math.random()*6.28})}
-function hit(a,b){return a.x<a.x+a.w&&a.x+a.w>b.x&&a.y-a.h<b.y&&a.y>b.y-b.h}
-function update(dt){time+=dt;score+=dt*(speed/55);world=score/700;speed=Math.min(760,360+score*.028);ground=H*.78;player.vy+=1900*dt;player.y+=player.vy*dt;if(player.y>=0){player.y=0;player.vy=0;player.onGround=true}if(player.dash>0)player.dash-=dt;spawn-=dt;if(spawn<=0){spawnObstacle();spawn=.85+Math.random()*.8-(speed-360)/1300}starSpawn-=dt;if(starSpawn<=0){spawnStar();starSpawn=.55+Math.random()*.8}for(const o of obstacles)o.x-=(speed+(player.dash>0?320:0))*dt;for(const s of stars){s.x-=(speed+(player.dash>0?320:0))*dt;s.spin+=dt*5}obstacles=obstacles.filter(o=>o.x>-100);stars=stars.filter(s=>s.x>-50);for(let i=obstacles.length-1;i>=0;i--){const o=obstacles[i];const py=ground-player.y;const p={x:player.x+7,y:py,w:player.w-14,h:player.h-4};const b={x:o.x,y:ground,w:o.w,h:o.h};if(hit(p,b)){if(player.dash>0){for(let k=0;k<22;k++)burst(o.x+o.w/2,ground-o.h/2,'dash');obstacles.splice(i,1);score+=80}else{shake=14;$('flash').classList.remove('hit');void $('flash').offsetWidth;$('flash').classList.add('hit');end();return}}}for(let i=stars.length-1;i>=0;i--){const s=stars[i],dx=s.x-(player.x+20),dy=s.y-(ground-player.y-26);if(dx*dx+dy*dy<700){score+=35;for(let k=0;k<12;k++)burst(s.x,s.y,'star');stars.splice(i,1)}}for(let i=particles.length-1;i>=0;i--){const p=particles[i];p.life-=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=260*dt;if(p.life<=0)particles.splice(i,1)}$('score').textContent=String(Math.floor(score)).padStart(6,'0');$('meter').style.width=(Math.min(1,(score%700)/700)*100)+'%';}
-function draw(){const phase=world%4;const palettes=[['#07101d','#101c32'],['#15101c','#3a2639'],['#04050d','#121735'],['#08051a','#28134d']];const a=palettes[Math.floor(phase)],g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,a[0]);g.addColorStop(1,a[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);drawStars();drawClouds();const gy=ground;ctx.strokeStyle='rgba(255,255,255,.09)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(0,gy+1);ctx.lineTo(W,gy+1);ctx.stroke();drawGround();for(const s of stars)drawStar(s);for(const o of obstacles)drawObstacle(o);drawPlayer();for(const p of particles){ctx.globalAlpha=Math.max(0,p.life/p.max);ctx.fillStyle=p.type==='dash'?'#b9c8ff':p.type==='star'?'#fff2b5':'#d9e0ff';ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
-function drawStars(){const n=Math.floor(55+world*18);for(let i=0;i<n;i++){const x=(i*137.3+(time*(8+world*3)))%W,y=(i*83.7)% (ground*.75)+20;const tw=.25+.25*Math.sin(time*2+i);ctx.globalAlpha=tw;ctx.fillStyle='#dfe7ff';ctx.fillRect(x,y,1.2,1.2)}ctx.globalAlpha=1}
-function drawClouds(){for(const c of clouds){c.x-=18*(1+c.s*.2)*(1+world*.12)*.016;if(c.x<-160)c.x=W+100;ctx.globalAlpha=.07+c.s*.03;ctx.fillStyle='#fff';ctx.beginPath();ctx.ellipse(c.x,c.y,70*c.s,22*c.s,0,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.ellipse(c.x+45*c.s,c.y-8*c.s,42*c.s,25*c.s,0,0,Math.PI*2);ctx.fill()}ctx.globalAlpha=1}
-function drawGround(){ctx.strokeStyle='rgba(180,190,255,.09)';for(let x=-(time*speed*.25%70);x<W;x+=70){ctx.beginPath();ctx.moveTo(x,ground+20);ctx.lineTo(x+28,ground+20);ctx.stroke()}}
-function drawStar(s){ctx.save();ctx.translate(s.x,s.y);ctx.rotate(s.spin);ctx.shadowBlur=18;ctx.shadowColor='#fff0a8';ctx.fillStyle='#fff2b5';ctx.beginPath();for(let i=0;i<8;i++){const r=i%2?2.3:7;const a=i*Math.PI/4;ctx.lineTo(Math.cos(a)*r,Math.sin(a)*r)}ctx.closePath();ctx.fill();ctx.restore()}
-function drawObstacle(o){ctx.save();ctx.translate(o.x,ground);ctx.shadowBlur=14;ctx.shadowColor='rgba(170,190,255,.12)';ctx.fillStyle=o.type==='crystal'?'#b9b7ff':o.type==='rock'?'#7e879e':'#d6c7ff';ctx.beginPath();if(o.type==='spike'){ctx.moveTo(0,0);ctx.lineTo(o.w/2,-o.h);ctx.lineTo(o.w,0)}else if(o.type==='crystal'){ctx.moveTo(2,0);ctx.lineTo(o.w*.25,-o.h);ctx.lineTo(o.w*.65,-o.h*.72);ctx.lineTo(o.w,0)}else{ctx.roundRect(0,-o.h,o.w,o.h,8)}ctx.fill();ctx.restore()}
-function drawPlayer(){const x=player.x,y=ground-player.y-26;ctx.save();ctx.translate(x+21,y);if(player.dash>0){for(let i=1;i<5;i++){ctx.globalAlpha=.08*(5-i);ctx.fillStyle='#b8c7ff';ctx.beginPath();ctx.ellipse(-i*15,5,20,7,0,0,Math.PI*2);ctx.fill()}}ctx.shadowBlur=20;ctx.shadowColor='rgba(190,205,255,.35)';ctx.fillStyle='#f0eee7';ctx.beginPath();ctx.arc(0,-9,15,0,Math.PI*2);ctx.fill();ctx.fillStyle='#141827';ctx.beginPath();ctx.arc(-5,-11,2,0,Math.PI*2);ctx.arc(5,-11,2,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#f0eee7';ctx.lineWidth=7;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(-8,7);ctx.lineTo(-14,20+Math.sin(time*14)*3);ctx.moveTo(8,7);ctx.lineTo(14,20-Math.sin(time*14)*3);ctx.stroke();ctx.restore()}
-function loop(now){if(state!=='play')return;const dt=Math.min(.032,(now-last)/1000);last=now;update(dt);draw();requestAnimationFrame(loop)}
-function togglePause(){if(state==='play'){state='pause';}else if(state==='pause'){state='play';last=performance.now();requestAnimationFrame(loop)}}
-$('startBtn').onclick=start;$('again').onclick=start;$('pause').onclick=togglePause;addEventListener('pointerdown',e=>{if(state==='play'&&e.target.tagName!=='BUTTON')jump()});addEventListener('keydown',e=>{if(e.code==='Space'||e.code==='ArrowUp'){e.preventDefault();if(state==='menu'||state==='over')start();else jump()}if(e.code==='KeyP')togglePause()});
-function idle(){if(state==='menu'){time+=.016;draw()}requestAnimationFrame(idle)}idle();
-</script></body></html>
+
+const canvas =
+  document.getElementById("gameCanvas");
+
+const ctx =
+  canvas.getContext("2d");
+
+
+/* =========================================
+   DOM
+========================================= */
+
+const startScreen =
+  document.getElementById("startScreen");
+
+const gameOver =
+  document.getElementById("gameOver");
+
+const startButton =
+  document.getElementById("startButton");
+
+const againButton =
+  document.getElementById("againButton");
+
+const backButton =
+  document.getElementById("backButton");
+
+const scoreElement =
+  document.getElementById("score");
+
+const bestElement =
+  document.getElementById("best");
+
+const finalScoreElement =
+  document.getElementById("finalScore");
+
+const newBestElement =
+  document.getElementById("newBest");
+
+const touchHint =
+  document.getElementById("touchHint");
+
+
+/* =========================================
+   STATE
+========================================= */
+
+let W = 0;
+let H = 0;
+let DPR = 1;
+let ground = 0;
+
+let running = false;
+
+let score = 0;
+let best =
+  Number(localStorage.getItem("annabeyRunBest")) || 0;
+
+let speed = 7;
+
+let lastTime = 0;
+
+let spawnTimer = 0;
+let starTimer = 0;
+
+let worldTime = 0;
+
+let obstacles = [];
+let stars = [];
+let particles = [];
+
+
+/* =========================================
+   PLAYER
+========================================= */
+
+const player = {
+
+  x: 80,
+
+  y: 0,
+
+  width: 34,
+
+  height: 46,
+
+  velocityY: 0,
+
+  grounded: true,
+
+  dash: 0
+
+};
+
+
+/* =========================================
+   RESIZE
+========================================= */
+
+function resize() {
+
+  DPR =
+    Math.min(
+      window.devicePixelRatio || 1,
+      2
+    );
+
+  W = window.innerWidth;
+  H = window.innerHeight;
+
+  canvas.width =
+    Math.floor(W * DPR);
+
+  canvas.height =
+    Math.floor(H * DPR);
+
+  canvas.style.width = W + "px";
+  canvas.style.height = H + "px";
+
+  ctx.setTransform(
+    DPR,
+    0,
+    0,
+    DPR,
+    0,
+    0
+  );
+
+  /*
+   * Ground mengikuti layar.
+   * Di HP portrait player sedikit lebih tinggi
+   * supaya area bermain tidak terasa sempit.
+   */
+
+  ground =
+    H *
+    (
+      H > W
+        ? .80
+        : .78
+    );
+
+  player.x =
+    Math.max(
+      42,
+      Math.min(
+        100,
+        W * .16
+      )
+    );
+
+  if (!running) {
+
+    player.y =
+      ground - player.height;
+
+  }
+
+}
+
+
+window.addEventListener(
+  "resize",
+  resize
+);
+
+window.addEventListener(
+  "orientationchange",
+  () => {
+
+    setTimeout(
+      resize,
+      100
+    );
+
+  }
+);
+
+resize();
+
+
+/* =========================================
+   FORMAT SCORE
+========================================= */
+
+function formatScore(value) {
+
+  return String(
+    Math.floor(value)
+  ).padStart(6, "0");
+
+}
+
+
+bestElement.textContent =
+  formatScore(best);
+
+
+/* =========================================
+   START
+========================================= */
+
+function startGame() {
+
+  score = 0;
+
+  speed = 7;
+
+  spawnTimer = .5;
+
+  starTimer = .6;
+
+  worldTime = 0;
+
+  obstacles = [];
+  stars = [];
+  particles = [];
+
+  player.y =
+    ground - player.height;
+
+  player.velocityY = 0;
+
+  player.grounded = true;
+
+  player.dash = 0;
+
+  running = true;
+
+  startScreen.classList.add("hidden");
+  gameOver.classList.add("hidden");
+
+  touchHint.classList.remove("hidden");
+
+  scoreElement.textContent =
+    formatScore(0);
+
+  lastTime =
+    performance.now();
+
+  requestAnimationFrame(loop);
+
+  vibrate(12);
+
+}
+
+
+/* =========================================
+   JUMP / DASH
+========================================= */
+
+let lastTapTime = 0;
+
+function action() {
+
+  if (!running) {
+    return;
+  }
+
+  const now =
+    performance.now();
+
+  /*
+   * Double tap = dash
+   */
+
+  if (
+    now - lastTapTime < 260 &&
+    !player.grounded
+  ) {
+
+    player.dash = 18;
+
+    burst(
+      player.x,
+      player.y + 24,
+      16
+    );
+
+    vibrate(18);
+
+    lastTapTime = 0;
+
+    return;
+
+  }
+
+
+  /*
+   * Jump
+   */
+
+  if (player.grounded) {
+
+    player.velocityY = -15;
+
+    player.grounded = false;
+
+    burst(
+      player.x + 16,
+      player.y + player.height,
+      8
+    );
+
+    vibrate(10);
+
+  }
+
+  lastTapTime = now;
+
+}
+
+
+/* =========================================
+   PARTICLES
+========================================= */
+
+function burst(
+  x,
+  y,
+  amount
+) {
+
+  for (
+    let i = 0;
+    i < amount;
+    i++
+  ) {
+
+    particles.push({
+
+      x,
+      y,
+
+      velocityX:
+        (Math.random() - .5) * 5,
+
+      velocityY:
+        (Math.random() - .5) * 5,
+
+      alpha: 1,
+
+      size:
+        1.5 +
+        Math.random() * 2.5
+
+    });
+
+  }
+
+}
+
+
+/* =========================================
+   LOOP
+========================================= */
+
+function loop(time) {
+
+  if (!running) {
+    return;
+  }
+
+  const delta =
+    Math.min(
+      .032,
+      (time - lastTime) / 1000
+    );
+
+  lastTime = time;
+
+  update(delta);
+  draw();
+
+  requestAnimationFrame(loop);
+
+}
+
+
+/* =========================================
+   UPDATE
+========================================= */
+
+function update(delta) {
+
+  score +=
+    delta *
+    speed *
+    8;
+
+  speed =
+    Math.min(
+      15,
+      speed +
+      delta * .18
+    );
+
+  worldTime += delta;
+
+
+  /* =========================
+     SPAWN OBSTACLE
+  ========================= */
+
+  spawnTimer -= delta;
+
+  if (spawnTimer <= 0) {
+
+    const height =
+      28 +
+      Math.random() * 34;
+
+    const width =
+      18 +
+      Math.random() * 22;
+
+    obstacles.push({
+
+      x: W + 30,
+
+      y:
+        ground - height,
+
+      width,
+
+      height
+
+    });
+
+    /*
+     * Sedikit makin cepat
+     */
+
+    spawnTimer =
+      Math.max(
+        .48,
+        .65 +
+        Math.random() * .8 -
+        score / 25000
+      );
+
+  }
+
+
+  /* =========================
+     STARS
+  ========================= */
+
+  starTimer -= delta;
+
+  if (starTimer <= 0) {
+
+    stars.push({
+
+      x: W + 20,
+
+      y:
+        ground -
+        70 -
+        Math.random() * 150
+
+    });
+
+    starTimer =
+      .45 +
+      Math.random() * .7;
+
+  }
+
+
+  /* =========================
+     PLAYER PHYSICS
+  ========================= */
+
+  player.velocityY +=
+    34 * delta;
+
+  player.y +=
+    player.velocityY * delta;
+
+
+  if (
+    player.y +
+    player.height >=
+    ground
+  ) {
+
+    player.y =
+      ground -
+      player.height;
+
+    player.velocityY = 0;
+
+    player.grounded = true;
+
+  }
+
+
+  /* =========================
+     DASH
+  ========================= */
+
+  let multiplier = 1;
+
+  if (player.dash > 0) {
+
+    player.dash -=
+      delta * 60;
+
+    multiplier = 1.8;
+
+  }
+
+
+  /* =========================
+     MOVE OBJECTS
+  ========================= */
+
+  const movement =
+    speed *
+    60 *
+    delta *
+    multiplier;
+
+
+  obstacles.forEach(
+    obstacle => {
+      obstacle.x -= movement;
+    }
+  );
+
+
+  stars.forEach(
+    star => {
+      star.x -= movement;
+    }
+  );
+
+
+  /* =========================
+     REMOVE OBJECTS
+  ========================= */
+
+  obstacles =
+    obstacles.filter(
+      obstacle =>
+        obstacle.x +
+        obstacle.width >
+        -40
+    );
+
+
+  stars =
+    stars.filter(
+      star =>
+        star.x > -30
+    );
+
+
+  /* =========================
+     COLLISION
+  ========================= */
+
+  for (
+    const obstacle
+    of obstacles
+  ) {
+
+    if (
+
+      player.x + 6 <
+      obstacle.x +
+      obstacle.width &&
+
+      player.x +
+      player.width - 6 >
+      obstacle.x &&
+
+      player.y + 7 <
+      obstacle.y +
+      obstacle.height &&
+
+      player.y +
+      player.height - 4 >
+      obstacle.y
+
+    ) {
+
+      endGame();
+
+      return;
+
+    }
+
+  }
+
+
+  /* =========================
+     COLLECT STARS
+  ========================= */
+
+  for (
+    let i = stars.length - 1;
+    i >= 0;
+    i--
+  ) {
+
+    const star =
+      stars[i];
+
+    const dx =
+      player.x +
+      17 -
+      star.x;
+
+    const dy =
+      player.y +
+      23 -
+      star.y;
+
+    if (
+      dx * dx +
+      dy * dy <
+      900
+    ) {
+
+      score += 100;
+
+      burst(
+        star.x,
+        star.y,
+        12
+      );
+
+      stars.splice(
+        i,
+        1
+      );
+
+      vibrate(8);
+
+    }
+
+  }
+
+
+  /* =========================
+     PARTICLES
+  ========================= */
+
+  particles.forEach(
+    particle => {
+
+      particle.x +=
+        particle.velocityX;
+
+      particle.y +=
+        particle.velocityY;
+
+      particle.velocityY +=
+        8 * delta;
+
+      particle.alpha -=
+        delta * 2;
+
+    }
+  );
+
+
+  particles =
+    particles.filter(
+      particle =>
+        particle.alpha > 0
+    );
+
+
+  scoreElement.textContent =
+    formatScore(score);
+
+
+  /*
+   * Setelah beberapa detik,
+   * hint menghilang.
+   */
+
+  if (score > 120) {
+
+    touchHint.classList.add(
+      "hidden"
+    );
+
+  }
+
+}
+
+
+/* =========================================
+   DRAW
+========================================= */
+
+function draw() {
+
+  /* =========================
+     SKY
+  ========================= */
+
+  const progression =
+    Math.min(
+      1,
+      score / 9000
+    );
+
+
+  const gradient =
+    ctx.createLinearGradient(
+      0,
+      0,
+      0,
+      H
+    );
+
+
+  gradient.addColorStop(
+    0,
+    `rgb(
+      ${12 + 18 * progression},
+      ${18 + 12 * progression},
+      ${40 + 35 * progression}
+    )`
+  );
+
+
+  gradient.addColorStop(
+    1,
+    `rgb(
+      ${6 + 8 * progression},
+      ${7 + 9 * progression},
+      ${13 + 20 * progression}
+    )`
+  );
+
+
+  ctx.fillStyle =
+    gradient;
+
+  ctx.fillRect(
+    0,
+    0,
+    W,
+    H
+  );
+
+
+  /* =========================
+     PARALLAX STARS
+  ========================= */
+
+  for (
+    let i = 0;
+    i < 50;
+    i++
+  ) {
+
+    const x =
+      (
+        i * 113 +
+        score * .018
+      ) % W;
+
+    const y =
+      (
+        i * 59
+      ) %
+      (ground * .72);
+
+
+    const alpha =
+      .18 +
+      (
+        Math.sin(
+          worldTime * 2 +
+          i
+        ) + 1
+      ) * .12;
+
+
+    ctx.fillStyle =
+      `rgba(255,255,255,${alpha})`;
+
+
+    ctx.fillRect(
+      x,
+      y,
+      1.4,
+      1.4
+    );
+
+  }
+
+
+  /* =========================
+     GROUND
+  ========================= */
+
+  ctx.fillStyle =
+    "rgba(255,255,255,.07)";
+
+  ctx.fillRect(
+    0,
+    ground,
+    W,
+    2
+  );
+
+
+  /* =========================
+     STARS / COINS
+  ========================= */
+
+  for (
+    const star
+    of stars
+  ) {
+
+    ctx.save();
+
+    ctx.fillStyle =
+      "#f4e8ba";
+
+    ctx.shadowBlur = 18;
+
+    ctx.shadowColor =
+      "#fff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      star.x,
+      star.y,
+      5,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+
+  }
+
+
+  /* =========================
+     OBSTACLES
+  ========================= */
+
+  for (
+    const obstacle
+    of obstacles
+  ) {
+
+    ctx.fillStyle =
+      "#282c3a";
+
+    ctx.beginPath();
+
+    ctx.roundRect(
+      obstacle.x,
+      obstacle.y,
+      obstacle.width,
+      obstacle.height,
+      7
+    );
+
+    ctx.fill();
+
+
+    ctx.strokeStyle =
+      "rgba(255,255,255,.12)";
+
+    ctx.stroke();
+
+  }
+
+
+  /* =========================
+     PLAYER
+  ========================= */
+
+  ctx.save();
+
+  ctx.translate(
+    player.x,
+    player.y
+  );
+
+
+  /*
+   * Dash glow
+   */
+
+  if (player.dash > 0) {
+
+    ctx.shadowBlur = 25;
+
+    ctx.shadowColor =
+      "rgba(255,235,190,.8)";
+
+  }
+
+
+  ctx.fillStyle =
+    "#eee9df";
+
+
+  ctx.beginPath();
+
+  ctx.roundRect(
+    0,
+    0,
+    player.width,
+    player.height,
+    13
+  );
+
+  ctx.fill();
+
+
+  /*
+   * Face
+   */
+
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle =
+    "#151720";
+
+  ctx.beginPath();
+
+  ctx.arc(
+    23,
+    15,
+    3,
+    0,
+    Math.PI * 2
+  );
+
+  ctx.fill();
+
+
+  /*
+   * Feet
+   */
+
+  ctx.fillStyle =
+    "#bfb6a7";
+
+  ctx.fillRect(
+    7,
+    43,
+    7,
+    7
+  );
+
+  ctx.fillRect(
+    23,
+    43,
+    7,
+    7
+  );
+
+
+  ctx.restore();
+
+
+  /* =========================
+     PARTICLES
+  ========================= */
+
+  for (
+    const particle
+    of particles
+  ) {
+
+    ctx.globalAlpha =
+      particle.alpha;
+
+    ctx.fillStyle =
+      "#f2e7c9";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      particle.x,
+      particle.y,
+      particle.size,
+      0,
+      Math.PI * 2
+    );
+
+    ctx.fill();
+
+  }
+
+  ctx.globalAlpha = 1;
+
+}
+
+
+/* =========================================
+   GAME OVER
+========================================= */
+
+function endGame() {
+
+  running = false;
+
+  const final =
+    Math.floor(score);
+
+  const previousBest =
+    best;
+
+  if (final > best) {
+
+    best = final;
+
+    localStorage.setItem(
+      "annabeyRunBest",
+      best
+    );
+
+  }
+
+  finalScoreElement.textContent =
+    formatScore(final);
+
+  bestElement.textContent =
+    formatScore(best);
+
+
+  if (
+    final > previousBest
+  ) {
+
+    newBestElement.style.display =
+      "block";
+
+  } else {
+
+    newBestElement.style.display =
+      "none";
+
+  }
+
+
+  gameOver.classList.remove(
+    "hidden"
+  );
+
+  touchHint.classList.add(
+    "hidden"
+  );
+
+  vibrate([
+    40,
+    50,
+    80
+  ]);
+
+}
+
+
+/* =========================================
+   VIBRATION
+========================================= */
+
+function vibrate(pattern) {
+
+  if (
+    "vibrate" in navigator
+  ) {
+
+    try {
+      navigator.vibrate(pattern);
+    } catch (_) {}
+
+  }
+
+}
+
+
+/* =========================================
+   TOUCH
+========================================= */
+
+let pointerStartTime = 0;
+
+window.addEventListener(
+  "pointerdown",
+  event => {
+
+    if (
+      event.target.closest("button")
+    ) {
+      return;
+    }
+
+    if (!running) {
+      return;
+    }
+
+    pointerStartTime =
+      performance.now();
+
+  },
+  {
+    passive: true
+  }
+);
+
+
+window.addEventListener(
+  "pointerup",
+  event => {
+
+    if (
+      event.target.closest("button")
+    ) {
+      return;
+    }
+
+    if (!running) {
+      return;
+    }
+
+    action();
+
+  },
+  {
+    passive: true
+  }
+);
+
+
+/* =========================================
+   KEYBOARD
+========================================= */
+
+window.addEventListener(
+  "keydown",
+  event => {
+
+    if (
+      event.code === "Space" ||
+      event.code === "ArrowUp"
+    ) {
+
+      event.preventDefault();
+
+      if (!running) {
+
+        startGame();
+
+      } else {
+
+        action();
+
+      }
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   BUTTONS
+========================================= */
+
+startButton.addEventListener(
+  "click",
+  startGame
+);
+
+
+againButton.addEventListener(
+  "click",
+  startGame
+);
+
+
+backButton.addEventListener(
+  "click",
+  () => {
+
+    /*
+     * Kalau game dibuka melalui iframe,
+     * kirim pesan ke React parent.
+     */
+
+    window.parent.postMessage(
+      {
+        type: "ANNABEY_RUN_BACK"
+      },
+      "*"
+    );
+
+    /*
+     * Fallback kalau dibuka langsung.
+     */
+
+    if (
+      window.parent === window
+    ) {
+
+      history.back();
+
+    }
+
+  }
+);
+
+
+/* =========================================
+   PREVENT MOBILE GESTURES
+========================================= */
+
+document.addEventListener(
+  "gesturestart",
+  event => {
+    event.preventDefault();
+  }
+);
+
+document.addEventListener(
+  "touchmove",
+  event => {
+
+    if (event.cancelable) {
+      event.preventDefault();
+    }
+
+  },
+  {
+    passive: false
+  }
+);
+
+
+/* =========================================
+   INITIAL DRAW
+========================================= */
+
+draw();
+
+</script>
+
+</body>
+</html>
