@@ -1886,16 +1886,13 @@ function update(dt){
 
   /*
    * GRAVITY
-   *
-   * velocity = pixels / second
-   * y += velocity * dt
    */
 
   player.velocityY +=
     31 * dt;
 
   player.y +=
-    player.velocityY * dt;
+    player.velocityY; // <--- SUDAH DIPERBAIKI (tanpa * dt)
 
 
   /* =====================================================
