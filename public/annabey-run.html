@@ -1,725 +1,651 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width,
-             initial-scale=1,
-             maximum-scale=1,
-             user-scalable=no,
-             viewport-fit=cover"
-  >
-
-  <meta name="theme-color" content="#05060a">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-
-  <title>Annabey Run</title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      overflow: hidden;
-
-      background: #05060a;
-      color: white;
-
-      font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-
-      touch-action: none;
-      overscroll-behavior: none;
-
-      user-select: none;
-      -webkit-user-select: none;
-    }
-
-    body {
-      position: fixed;
-      inset: 0;
-    }
-
-    button {
-      font: inherit;
-    }
-
-    /* ===============================
-       GAME ROOT
-    =============================== */
-
-    .game {
-      position: fixed;
-      inset: 0;
-
-      width: 100%;
-      height: 100%;
-
-      overflow: hidden;
-
-      background:
-        radial-gradient(
-          circle at 80% 15%,
-          rgba(92, 102, 145, .16),
-          transparent 35%
-        ),
-        linear-gradient(
-          180deg,
-          #11162a 0%,
-          #151522 52%,
-          #06070b 100%
-        );
-    }
+<meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+>
+
+<meta name="theme-color" content="#05060a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<title>Annabey Run</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+
+  background: #05060a;
+  color: white;
+
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  touch-action: none;
+  overscroll-behavior: none;
+
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+body {
+  position: fixed;
+  inset: 0;
+}
+
+/* ================================
+   GAME
+================================ */
+
+.game {
+  position: fixed;
+  inset: 0;
 
-    canvas {
-      position: absolute;
-      inset: 0;
+  width: 100%;
+  height: 100%;
 
-      width: 100%;
-      height: 100%;
+  overflow: hidden;
 
-      display: block;
-    }
+  background:
+    radial-gradient(
+      circle at 80% 15%,
+      rgba(92,102,145,.16),
+      transparent 35%
+    ),
+    linear-gradient(
+      180deg,
+      #11162a 0%,
+      #151522 52%,
+      #06070b 100%
+    );
+}
 
-    /* ===============================
-       AMBIENT
-    =============================== */
+canvas {
+  position: absolute;
+  inset: 0;
 
-    .ambient {
-      position: absolute;
-      inset: 0;
+  width: 100%;
+  height: 100%;
 
-      pointer-events: none;
+  display: block;
+}
 
-      background:
-        radial-gradient(
-          circle at 50% 110%,
-          rgba(255,255,255,.035),
-          transparent 40%
-        );
+/* ================================
+   AMBIENT
+================================ */
 
-      mix-blend-mode: screen;
-    }
+.ambient {
+  position: absolute;
+  inset: 0;
 
-    .grain {
-      position: absolute;
-      inset: -50%;
+  pointer-events: none;
 
-      pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 50% 110%,
+      rgba(255,255,255,.035),
+      transparent 40%
+    );
 
-      opacity: .035;
+  mix-blend-mode: screen;
+}
 
-      background-image:
-        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+.grain {
+  position: absolute;
+  inset: -50%;
 
-      animation: grain .22s steps(2) infinite;
-    }
+  pointer-events: none;
 
-    /* ===============================
-       TOP UI
-    =============================== */
+  opacity: .035;
 
-    .top-ui {
-      position: absolute;
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
 
-      top: max(
-        16px,
-        env(safe-area-inset-top)
-      );
+  animation: grain .22s steps(2) infinite;
+}
 
-      left: 0;
-      right: 0;
+/* ================================
+   TOP
+================================ */
 
-      padding:
-        14px
-        max(18px, env(safe-area-inset-right))
-        0
-        max(18px, env(safe-area-inset-left));
+.top-ui {
+  position: absolute;
 
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
+  top: env(safe-area-inset-top);
 
-      pointer-events: none;
+  left: 0;
+  right: 0;
 
-      z-index: 10;
-    }
+  padding:
+    14px
+    max(18px, env(safe-area-inset-right))
+    0
+    max(18px, env(safe-area-inset-left));
 
-    .back {
-      width: 44px;
-      height: 44px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
 
-      border-radius: 50%;
+  z-index: 10;
 
-      border: 1px solid rgba(255,255,255,.13);
+  pointer-events: none;
+}
 
-      background:
-        rgba(0,0,0,.32);
+.back {
+  width: 44px;
+  height: 44px;
 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+  border-radius: 50%;
 
-      color: rgba(255,255,255,.8);
+  border: 1px solid rgba(255,255,255,.13);
 
-      font-size: 21px;
+  background: rgba(0,0,0,.32);
 
-      display: grid;
-      place-items: center;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-      cursor: pointer;
+  color: rgba(255,255,255,.8);
 
-      pointer-events: auto;
+  font-size: 21px;
 
-      transition:
-        transform .25s ease,
-        background .25s ease;
-    }
+  display: grid;
+  place-items: center;
 
-    .back:active {
-      transform: scale(.9);
-      background: rgba(255,255,255,.1);
-    }
+  pointer-events: auto;
 
-    .score {
-      text-align: right;
-      pointer-events: none;
-    }
+  touch-action: manipulation;
+}
 
-    .score-label {
-      display: block;
+.back:active {
+  transform: scale(.9);
+  background: rgba(255,255,255,.1);
+}
 
-      color: rgba(255,255,255,.38);
+.score {
+  text-align: right;
+}
 
-      font-size: 8px;
-      letter-spacing: .28em;
+.score-label {
+  display: block;
 
-      margin-bottom: 4px;
-    }
+  color: rgba(255,255,255,.38);
 
-    .score-value {
-      display: block;
+  font-size: 8px;
+  letter-spacing: .28em;
 
-      font-family: monospace;
+  margin-bottom: 4px;
+}
 
-      font-size: 17px;
-      font-weight: 600;
+.score-value {
+  display: block;
 
-      letter-spacing: .12em;
+  font-family: monospace;
 
-      text-shadow:
-        0 0 20px rgba(255,255,255,.2);
-    }
+  font-size: 17px;
+  font-weight: 600;
 
-    .best {
-      margin-top: 5px;
+  letter-spacing: .12em;
+}
 
-      color: rgba(255,255,255,.3);
+.best {
+  margin-top: 5px;
 
-      font-family: monospace;
+  color: rgba(255,255,255,.3);
 
-      font-size: 8px;
+  font-family: monospace;
 
-      letter-spacing: .12em;
-    }
+  font-size: 8px;
 
-    /* ===============================
-       CENTER SCREENS
-    =============================== */
+  letter-spacing: .12em;
+}
 
-    .screen {
-      position: absolute;
-      inset: 0;
+/* ================================
+   SCREENS
+================================ */
 
-      display: grid;
-      place-items: center;
+.screen {
+  position: absolute;
+  inset: 0;
 
-      padding:
-        90px
-        24px
-        max(90px, env(safe-area-inset-bottom));
+  display: grid;
+  place-items: center;
 
-      text-align: center;
+  padding:
+    100px
+    24px
+    calc(100px + env(safe-area-inset-bottom));
 
-      z-index: 5;
+  text-align: center;
 
-      pointer-events: none;
+  z-index: 5;
 
-      opacity: 1;
+  pointer-events: none;
 
-      transition:
-        opacity .45s ease,
-        transform .45s ease;
-    }
+  transition:
+    opacity .45s ease,
+    transform .45s ease;
+}
 
-    .screen.hidden {
-      opacity: 0;
-      pointer-events: none;
-      transform: scale(1.04);
-    }
+.screen.hidden {
+  opacity: 0;
+  transform: scale(1.04);
+}
 
-    .panel {
-      width: min(420px, 100%);
+.panel {
+  width: 100%;
+  max-width: 380px;
 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
-    /* ===============================
-       TITLE
-    =============================== */
+/* ================================
+   TITLE
+================================ */
 
-    .logo {
-      font-family:
-        Georgia,
-        "Times New Roman",
-        serif;
+.logo {
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
 
-      font-size:
-        clamp(
-          48px,
-          15vw,
-          86px
-        );
+  font-size: clamp(48px, 15vw, 78px);
 
-      line-height: .85;
+  line-height: .86;
 
-      font-weight: 400;
+  letter-spacing: -.055em;
 
-      letter-spacing: -.055em;
+  font-weight: 400;
 
-      background:
-        linear-gradient(
-          180deg,
-          #ffffff 0%,
-          #dedbd3 55%,
-          #85838a 100%
-        );
+  background:
+    linear-gradient(
+      180deg,
+      #ffffff 0%,
+      #dedbd3 55%,
+      #85838a 100%
+    );
 
-      -webkit-background-clip: text;
-      background-clip: text;
+  -webkit-background-clip: text;
+  background-clip: text;
 
-      color: transparent;
+  color: transparent;
+}
 
-      text-shadow:
-        0 15px 50px rgba(255,255,255,.08);
-    }
+.subtitle {
+  margin-top: 20px;
 
-    .subtitle {
-      margin-top: 20px;
+  color: rgba(255,255,255,.48);
 
-      color: rgba(255,255,255,.48);
+  font-size: 9px;
 
-      font-size: 9px;
+  letter-spacing: .34em;
 
-      letter-spacing: .34em;
+  text-transform: uppercase;
+}
 
-      text-transform: uppercase;
-    }
+/* ================================
+   BUTTON
+================================ */
 
-    /* ===============================
-       MAIN BUTTON
-    =============================== */
+.start-button {
+  margin-top: 34px;
 
-    .start-button {
-      margin-top: 34px;
+  min-width: 170px;
+  min-height: 54px;
 
-      min-width: 160px;
-      min-height: 52px;
+  padding: 0 28px;
 
-      padding: 0 28px;
+  border-radius: 999px;
 
-      border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.18);
 
-      border:
-        1px solid rgba(255,255,255,.18);
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,.12),
+      rgba(255,255,255,.035)
+    );
 
-      background:
-        linear-gradient(
-          135deg,
-          rgba(255,255,255,.12),
-          rgba(255,255,255,.035)
-        );
+  color: rgba(255,255,255,.9);
 
-      color: rgba(255,255,255,.9);
+  font-size: 10px;
 
-      font-size: 10px;
+  letter-spacing: .25em;
 
-      letter-spacing: .25em;
+  text-transform: uppercase;
 
-      text-transform: uppercase;
+  box-shadow:
+    0 15px 50px rgba(0,0,0,.3),
+    inset 0 1px rgba(255,255,255,.08);
 
-      cursor: pointer;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 
-      box-shadow:
-        0 15px 50px rgba(0,0,0,.3),
-        inset 0 1px rgba(255,255,255,.08);
+  pointer-events: auto;
 
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+  touch-action: manipulation;
+}
 
-      pointer-events: auto;
+.start-button:active {
+  transform: scale(.94);
+  background: rgba(255,255,255,.14);
+}
 
-      transition:
-        transform .25s ease,
-        background .25s ease,
-        box-shadow .25s ease;
-    }
+.hint {
+  margin-top: 17px;
 
-    .start-button:active {
-      transform: scale(.94);
-      background: rgba(255,255,255,.14);
-    }
+  color: rgba(255,255,255,.25);
 
-    .hint {
-      margin-top: 17px;
+  font-size: 8px;
 
-      color: rgba(255,255,255,.25);
+  letter-spacing: .12em;
 
-      font-size: 8px;
+  line-height: 1.7;
+}
 
-      letter-spacing: .12em;
+/* ================================
+   GAME OVER
+================================ */
 
-      line-height: 1.7;
-    }
+.over-label {
+  color: rgba(255,255,255,.38);
 
-    /* ===============================
-       GAME OVER
-    =============================== */
+  font-size: 9px;
 
-    .over-label {
-      color: rgba(255,255,255,.38);
+  letter-spacing: .35em;
+}
 
-      font-size: 9px;
+.final-score {
+  margin-top: 15px;
 
-      letter-spacing: .35em;
-    }
+  font-family: Georgia, serif;
 
-    .final-score {
-      margin: 15px 0 0;
+  font-size: clamp(54px, 17vw, 88px);
 
-      font-family:
-        Georgia,
-        serif;
+  line-height: .9;
 
-      font-size:
-        clamp(
-          54px,
-          17vw,
-          88px
-        );
+  font-weight: 400;
 
-      line-height: .9;
+  letter-spacing: -.05em;
+}
 
-      font-weight: 400;
+.new-best {
+  margin-top: 10px;
 
-      letter-spacing: -.05em;
-    }
+  color: #e8d9b7;
 
-    .new-best {
-      margin-top: 10px;
+  font-size: 8px;
 
-      color: #e8d9b7;
+  letter-spacing: .3em;
 
-      font-size: 8px;
+  text-transform: uppercase;
+}
 
-      letter-spacing: .3em;
+/* ================================
+   TOUCH HINT
+================================ */
 
-      text-transform: uppercase;
-    }
+.touch-hint {
+  position: absolute;
 
-    /* ===============================
-       MOBILE CONTROL HINT
-    =============================== */
+  left: 50%;
 
-    .touch-hint {
-      position: absolute;
+  bottom:
+    max(
+      22px,
+      env(safe-area-inset-bottom)
+    );
 
-      left: 50%;
+  transform: translateX(-50%);
 
-      bottom:
-        max(
-          22px,
-          env(safe-area-inset-bottom)
-        );
+  color: rgba(255,255,255,.2);
 
-      transform: translateX(-50%);
+  font-size: 8px;
 
-      color: rgba(255,255,255,.2);
+  letter-spacing: .2em;
 
-      font-size: 8px;
+  white-space: nowrap;
 
-      letter-spacing: .2em;
+  z-index: 4;
 
-      white-space: nowrap;
+  pointer-events: none;
 
-      pointer-events: none;
+  transition: opacity .5s ease;
+}
 
-      z-index: 4;
+.touch-hint.hidden {
+  opacity: 0;
+}
 
-      transition: opacity .5s ease;
-    }
+/* ================================
+   VERY SMALL PHONE
+================================ */
 
-    .touch-hint.hidden {
-      opacity: 0;
-    }
+@media (max-width:360px) {
 
-    /* ===============================
-       LANDSCAPE
-    =============================== */
+  .logo {
+    font-size: 45px;
+  }
 
-    @media (orientation: landscape) and (max-height: 520px) {
+  .start-button {
+    min-width: 145px;
+    min-height: 50px;
+  }
 
-      .screen {
-        padding-top: 60px;
-        padding-bottom: 50px;
-      }
+}
 
-      .logo {
-        font-size: clamp(42px, 10vh, 68px);
-      }
+/* ================================
+   LANDSCAPE MOBILE
+================================ */
 
-      .subtitle {
-        margin-top: 12px;
-      }
+@media (orientation: landscape) {
 
-      .start-button {
-        margin-top: 20px;
-        min-height: 46px;
-      }
+  .screen {
+    padding-top: 60px;
+    padding-bottom: 50px;
+  }
 
-      .hint {
-        display: none;
-      }
+  .logo {
+    font-size: 52px;
+  }
 
-    }
+  .hint {
+    display: none;
+  }
 
-    /* ===============================
-       SMALL PHONES
-    =============================== */
+  .start-button {
+    margin-top: 22px;
+  }
 
-    @media (max-width: 360px) {
+}
 
-      .logo {
-        font-size: 45px;
-      }
+@keyframes grain {
 
-      .subtitle {
-        font-size: 8px;
-      }
+  0% {
+    transform: translate(0,0);
+  }
 
-      .start-button {
-        min-width: 145px;
-        min-height: 48px;
-      }
+  25% {
+    transform: translate(2%,-1%);
+  }
 
-    }
+  50% {
+    transform: translate(-1%,2%);
+  }
 
-    /* ===============================
-       REDUCED MOTION
-    =============================== */
+  75% {
+    transform: translate(1%,1%);
+  }
 
-    @media (prefers-reduced-motion: reduce) {
+  100% {
+    transform: translate(-2%,-1%);
+  }
 
-      .grain {
-        animation: none;
-      }
-
-      .screen,
-      .start-button,
-      .back {
-        transition: none;
-      }
-
-    }
-
-    @keyframes grain {
-
-      0% {
-        transform: translate(0,0);
-      }
-
-      25% {
-        transform: translate(2%,-1%);
-      }
-
-      50% {
-        transform: translate(-1%,2%);
-      }
-
-      75% {
-        transform: translate(1%,1%);
-      }
-
-      100% {
-        transform: translate(-2%,-1%);
-      }
-
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
 <div class="game">
 
-  <canvas id="gameCanvas"></canvas>
+<canvas id="gameCanvas"></canvas>
 
-  <div class="ambient"></div>
-  <div class="grain"></div>
+<div class="ambient"></div>
+<div class="grain"></div>
 
-  <!-- ===============================
-       TOP UI
-  =============================== -->
 
-  <div class="top-ui">
+<!-- TOP UI -->
+
+<div class="top-ui">
+
+  <button
+    id="backButton"
+    class="back"
+    type="button"
+  >
+    ←
+  </button>
+
+  <div class="score">
+
+    <span class="score-label">
+      SCORE
+    </span>
+
+    <span
+      id="score"
+      class="score-value"
+    >
+      000000
+    </span>
+
+    <div class="best">
+      BEST
+      <span id="best">000000</span>
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- START -->
+
+<div
+  id="startScreen"
+  class="screen"
+>
+
+  <div class="panel">
+
+    <div class="logo">
+      Annabey Run
+    </div>
+
+    <div class="subtitle">
+      just keep running ✦
+    </div>
 
     <button
-      id="backButton"
-      class="back"
-      aria-label="Kembali"
+      id="startButton"
+      class="start-button"
+      type="button"
     >
-      ←
+      Tap to Run
     </button>
 
-    <div class="score">
-
-      <span class="score-label">
-        SCORE
-      </span>
-
-      <span
-        id="score"
-        class="score-value"
-      >
-        000000
-      </span>
-
-      <div class="best">
-        BEST
-        <span id="best">000000</span>
-      </div>
-
+    <div class="hint">
+      TAP TO JUMP&nbsp;&nbsp; · &nbsp;&nbsp;
+      DOUBLE TAP TO DASH
     </div>
 
   </div>
 
+</div>
 
-  <!-- ===============================
-       START SCREEN
-  =============================== -->
 
-  <div
-    id="startScreen"
-    class="screen"
-  >
+<!-- GAME OVER -->
 
-    <div class="panel">
+<div
+  id="gameOver"
+  class="screen hidden"
+>
 
-      <div class="logo">
-        Annabey Run
-      </div>
+  <div class="panel">
 
-      <div class="subtitle">
-        just keep running ✦
-      </div>
-
-      <button
-        id="startButton"
-        class="start-button"
-      >
-        Tap to Run
-      </button>
-
-      <div class="hint">
-        TAP = JUMP&nbsp;&nbsp; · &nbsp;&nbsp;
-        DOUBLE TAP = DASH
-      </div>
-
+    <div class="over-label">
+      RUN ENDED
     </div>
 
-  </div>
-
-
-  <!-- ===============================
-       GAME OVER
-  =============================== -->
-
-  <div
-    id="gameOver"
-    class="screen hidden"
-  >
-
-    <div class="panel">
-
-      <div class="over-label">
-        RUN ENDED
-      </div>
-
-      <div
-        id="finalScore"
-        class="final-score"
-      >
-        0
-      </div>
-
-      <div
-        id="newBest"
-        class="new-best"
-        style="display:none"
-      >
-        New Best ✦
-      </div>
-
-      <button
-        id="againButton"
-        class="start-button"
-      >
-        Run Again
-      </button>
-
+    <div
+      id="finalScore"
+      class="final-score"
+    >
+      000000
     </div>
 
+    <div
+      id="newBest"
+      class="new-best"
+      style="display:none"
+    >
+      NEW BEST ✦
+    </div>
+
+    <button
+      id="againButton"
+      class="start-button"
+      type="button"
+    >
+      Run Again
+    </button>
+
   </div>
 
+</div>
 
-  <div
-    id="touchHint"
-    class="touch-hint"
-  >
-    TAP TO JUMP
-  </div>
+
+<div
+  id="touchHint"
+  class="touch-hint"
+>
+  TAP TO JUMP
+</div>
 
 </div>
 
 
 <script>
 
+/* =========================================
+   DOM
+========================================= */
+
 const canvas =
   document.getElementById("gameCanvas");
 
 const ctx =
   canvas.getContext("2d");
-
-
-/* =========================================
-   DOM
-========================================= */
 
 const startScreen =
   document.getElementById("startScreen");
@@ -753,7 +679,7 @@ const touchHint =
 
 
 /* =========================================
-   STATE
+   GAME STATE
 ========================================= */
 
 let W = 0;
@@ -764,8 +690,13 @@ let ground = 0;
 let running = false;
 
 let score = 0;
+
 let best =
-  Number(localStorage.getItem("annabeyRunBest")) || 0;
+  Number(
+    localStorage.getItem(
+      "annabeyRunBest"
+    )
+  ) || 0;
 
 let speed = 7;
 
@@ -825,9 +756,6 @@ function resize() {
   canvas.height =
     Math.floor(H * DPR);
 
-  canvas.style.width = W + "px";
-  canvas.style.height = H + "px";
-
   ctx.setTransform(
     DPR,
     0,
@@ -837,38 +765,26 @@ function resize() {
     0
   );
 
-  /*
-   * Ground mengikuti layar.
-   * Di HP portrait player sedikit lebih tinggi
-   * supaya area bermain tidak terasa sempit.
-   */
-
   ground =
-    H *
-    (
-      H > W
-        ? .80
-        : .78
-    );
+    H > W
+      ? H * .80
+      : H * .78;
 
   player.x =
     Math.max(
-      42,
-      Math.min(
-        100,
-        W * .16
-      )
+      38,
+      W * .16
     );
 
   if (!running) {
 
     player.y =
-      ground - player.height;
+      ground -
+      player.height;
 
   }
 
 }
-
 
 window.addEventListener(
   "resize",
@@ -891,7 +807,7 @@ resize();
 
 
 /* =========================================
-   FORMAT SCORE
+   SCORE
 ========================================= */
 
 function formatScore(value) {
@@ -902,9 +818,29 @@ function formatScore(value) {
 
 }
 
-
 bestElement.textContent =
   formatScore(best);
+
+
+/* =========================================
+   VIBRATION
+========================================= */
+
+function vibrate(pattern) {
+
+  if (
+    "vibrate" in navigator
+  ) {
+
+    try {
+
+      navigator.vibrate(pattern);
+
+    } catch (_) {}
+
+  }
+
+}
 
 
 /* =========================================
@@ -917,9 +853,9 @@ function startGame() {
 
   speed = 7;
 
-  spawnTimer = .5;
+  spawnTimer = .7;
 
-  starTimer = .6;
+  starTimer = .7;
 
   worldTime = 0;
 
@@ -928,7 +864,8 @@ function startGame() {
   particles = [];
 
   player.y =
-    ground - player.height;
+    ground -
+    player.height;
 
   player.velocityY = 0;
 
@@ -938,10 +875,17 @@ function startGame() {
 
   running = true;
 
-  startScreen.classList.add("hidden");
-  gameOver.classList.add("hidden");
+  startScreen.classList.add(
+    "hidden"
+  );
 
-  touchHint.classList.remove("hidden");
+  gameOver.classList.add(
+    "hidden"
+  );
+
+  touchHint.classList.remove(
+    "hidden"
+  );
 
   scoreElement.textContent =
     formatScore(0);
@@ -957,7 +901,7 @@ function startGame() {
 
 
 /* =========================================
-   JUMP / DASH
+   MOBILE ACTION
 ========================================= */
 
 let lastTapTime = 0;
@@ -971,12 +915,13 @@ function action() {
   const now =
     performance.now();
 
-  /*
-   * Double tap = dash
-   */
+
+  /* ==============================
+     DOUBLE TAP = DASH
+  ============================== */
 
   if (
-    now - lastTapTime < 260 &&
+    now - lastTapTime < 280 &&
     !player.grounded
   ) {
 
@@ -985,7 +930,7 @@ function action() {
     burst(
       player.x,
       player.y + 24,
-      16
+      18
     );
 
     vibrate(18);
@@ -997,20 +942,20 @@ function action() {
   }
 
 
-  /*
-   * Jump
-   */
+  /* ==============================
+     JUMP
+  ============================== */
 
   if (player.grounded) {
 
-    player.velocityY = -15;
+    player.velocityY = -16;
 
     player.grounded = false;
 
     burst(
-      player.x + 16,
+      player.x + 17,
       player.y + player.height,
-      8
+      10
     );
 
     vibrate(10);
@@ -1027,8 +972,8 @@ function action() {
 ========================================= */
 
 function burst(
-  x,
-  y,
+  px,
+  py,
   amount
 ) {
 
@@ -1040,8 +985,9 @@ function burst(
 
     particles.push({
 
-      x,
-      y,
+      x: px,
+
+      y: py,
 
       velocityX:
         (Math.random() - .5) * 5,
@@ -1081,6 +1027,7 @@ function loop(time) {
   lastTime = time;
 
   update(delta);
+
   draw();
 
   requestAnimationFrame(loop);
@@ -1109,9 +1056,9 @@ function update(delta) {
   worldTime += delta;
 
 
-  /* =========================
-     SPAWN OBSTACLE
-  ========================= */
+  /* ==============================
+     OBSTACLES
+  ============================== */
 
   spawnTimer -= delta;
 
@@ -1130,7 +1077,8 @@ function update(delta) {
       x: W + 30,
 
       y:
-        ground - height,
+        ground -
+        height,
 
       width,
 
@@ -1138,24 +1086,20 @@ function update(delta) {
 
     });
 
-    /*
-     * Sedikit makin cepat
-     */
-
     spawnTimer =
       Math.max(
         .48,
-        .65 +
-        Math.random() * .8 -
+        .7 +
+        Math.random() * .7 -
         score / 25000
       );
 
   }
 
 
-  /* =========================
+  /* ==============================
      STARS
-  ========================= */
+  ============================== */
 
   starTimer -= delta;
 
@@ -1179,15 +1123,16 @@ function update(delta) {
   }
 
 
-  /* =========================
-     PLAYER PHYSICS
-  ========================= */
+  /* ==============================
+     PHYSICS
+  ============================== */
 
   player.velocityY +=
-    34 * delta;
+    36 * delta;
 
   player.y +=
-    player.velocityY * delta;
+    player.velocityY *
+    delta;
 
 
   if (
@@ -1207,9 +1152,9 @@ function update(delta) {
   }
 
 
-  /* =========================
+  /* ==============================
      DASH
-  ========================= */
+  ============================== */
 
   let multiplier = 1;
 
@@ -1223,10 +1168,6 @@ function update(delta) {
   }
 
 
-  /* =========================
-     MOVE OBJECTS
-  ========================= */
-
   const movement =
     speed *
     60 *
@@ -1236,21 +1177,23 @@ function update(delta) {
 
   obstacles.forEach(
     obstacle => {
-      obstacle.x -= movement;
+
+      obstacle.x -=
+        movement;
+
     }
   );
 
 
   stars.forEach(
     star => {
-      star.x -= movement;
+
+      star.x -=
+        movement;
+
     }
   );
 
-
-  /* =========================
-     REMOVE OBJECTS
-  ========================= */
 
   obstacles =
     obstacles.filter(
@@ -1268,9 +1211,9 @@ function update(delta) {
     );
 
 
-  /* =========================
+  /* ==============================
      COLLISION
-  ========================= */
+  ============================== */
 
   for (
     const obstacle
@@ -1306,9 +1249,9 @@ function update(delta) {
   }
 
 
-  /* =========================
+  /* ==============================
      COLLECT STARS
-  ========================= */
+  ============================== */
 
   for (
     let i = stars.length - 1;
@@ -1355,9 +1298,9 @@ function update(delta) {
   }
 
 
-  /* =========================
+  /* ==============================
      PARTICLES
-  ========================= */
+  ============================== */
 
   particles.forEach(
     particle => {
@@ -1389,11 +1332,6 @@ function update(delta) {
     formatScore(score);
 
 
-  /*
-   * Setelah beberapa detik,
-   * hint menghilang.
-   */
-
   if (score > 120) {
 
     touchHint.classList.add(
@@ -1411,16 +1349,14 @@ function update(delta) {
 
 function draw() {
 
-  /* =========================
-     SKY
-  ========================= */
-
   const progression =
     Math.min(
       1,
       score / 9000
     );
 
+
+  /* SKY */
 
   const gradient =
     ctx.createLinearGradient(
@@ -1462,9 +1398,7 @@ function draw() {
   );
 
 
-  /* =========================
-     PARALLAX STARS
-  ========================= */
+  /* STARS */
 
   for (
     let i = 0;
@@ -1472,13 +1406,13 @@ function draw() {
     i++
   ) {
 
-    const x =
+    const sx =
       (
         i * 113 +
         score * .018
       ) % W;
 
-    const y =
+    const sy =
       (
         i * 59
       ) %
@@ -1500,8 +1434,8 @@ function draw() {
 
 
     ctx.fillRect(
-      x,
-      y,
+      sx,
+      sy,
       1.4,
       1.4
     );
@@ -1509,9 +1443,7 @@ function draw() {
   }
 
 
-  /* =========================
-     GROUND
-  ========================= */
+  /* GROUND */
 
   ctx.fillStyle =
     "rgba(255,255,255,.07)";
@@ -1524,9 +1456,7 @@ function draw() {
   );
 
 
-  /* =========================
-     STARS / COINS
-  ========================= */
+  /* STARS / COINS */
 
   for (
     const star
@@ -1538,7 +1468,8 @@ function draw() {
     ctx.fillStyle =
       "#f4e8ba";
 
-    ctx.shadowBlur = 18;
+    ctx.shadowBlur =
+      18;
 
     ctx.shadowColor =
       "#fff";
@@ -1560,9 +1491,7 @@ function draw() {
   }
 
 
-  /* =========================
-     OBSTACLES
-  ========================= */
+  /* OBSTACLES */
 
   for (
     const obstacle
@@ -1584,7 +1513,6 @@ function draw() {
 
     ctx.fill();
 
-
     ctx.strokeStyle =
       "rgba(255,255,255,.12)";
 
@@ -1593,9 +1521,7 @@ function draw() {
   }
 
 
-  /* =========================
-     PLAYER
-  ========================= */
+  /* PLAYER */
 
   ctx.save();
 
@@ -1605,13 +1531,12 @@ function draw() {
   );
 
 
-  /*
-   * Dash glow
-   */
+  if (
+    player.dash > 0
+  ) {
 
-  if (player.dash > 0) {
-
-    ctx.shadowBlur = 25;
+    ctx.shadowBlur =
+      25;
 
     ctx.shadowColor =
       "rgba(255,235,190,.8)";
@@ -1621,7 +1546,6 @@ function draw() {
 
   ctx.fillStyle =
     "#eee9df";
-
 
   ctx.beginPath();
 
@@ -1636,9 +1560,7 @@ function draw() {
   ctx.fill();
 
 
-  /*
-   * Face
-   */
+  /* FACE */
 
   ctx.shadowBlur = 0;
 
@@ -1658,9 +1580,7 @@ function draw() {
   ctx.fill();
 
 
-  /*
-   * Feet
-   */
+  /* FEET */
 
   ctx.fillStyle =
     "#bfb6a7";
@@ -1683,9 +1603,7 @@ function draw() {
   ctx.restore();
 
 
-  /* =========================
-     PARTICLES
-  ========================= */
+  /* PARTICLES */
 
   for (
     const particle
@@ -1731,7 +1649,10 @@ function endGame() {
   const previousBest =
     best;
 
-  if (final > best) {
+
+  if (
+    final > best
+  ) {
 
     best = final;
 
@@ -1742,6 +1663,7 @@ function endGame() {
 
   }
 
+
   finalScoreElement.textContent =
     formatScore(final);
 
@@ -1749,19 +1671,10 @@ function endGame() {
     formatScore(best);
 
 
-  if (
+  newBestElement.style.display =
     final > previousBest
-  ) {
-
-    newBestElement.style.display =
-      "block";
-
-  } else {
-
-    newBestElement.style.display =
-      "none";
-
-  }
+      ? "block"
+      : "none";
 
 
   gameOver.classList.remove(
@@ -1782,63 +1695,23 @@ function endGame() {
 
 
 /* =========================================
-   VIBRATION
+   MOBILE TOUCH
 ========================================= */
 
-function vibrate(pattern) {
+/*
+ * Hanya canvas yang menerima kontrol game.
+ *
+ * Tidak menggunakan pointerup.
+ * Tidak menggunakan window pointerdown.
+ *
+ * Jadi satu TAP = satu aksi.
+ */
 
-  if (
-    "vibrate" in navigator
-  ) {
-
-    try {
-      navigator.vibrate(pattern);
-    } catch (_) {}
-
-  }
-
-}
-
-
-/* =========================================
-   TOUCH
-========================================= */
-
-let pointerStartTime = 0;
-
-window.addEventListener(
+canvas.addEventListener(
   "pointerdown",
   event => {
 
-    if (
-      event.target.closest("button")
-    ) {
-      return;
-    }
-
-    if (!running) {
-      return;
-    }
-
-    pointerStartTime =
-      performance.now();
-
-  },
-  {
-    passive: true
-  }
-);
-
-
-window.addEventListener(
-  "pointerup",
-  event => {
-
-    if (
-      event.target.closest("button")
-    ) {
-      return;
-    }
+    event.preventDefault();
 
     if (!running) {
       return;
@@ -1848,38 +1721,7 @@ window.addEventListener(
 
   },
   {
-    passive: true
-  }
-);
-
-
-/* =========================================
-   KEYBOARD
-========================================= */
-
-window.addEventListener(
-  "keydown",
-  event => {
-
-    if (
-      event.code === "Space" ||
-      event.code === "ArrowUp"
-    ) {
-
-      event.preventDefault();
-
-      if (!running) {
-
-        startGame();
-
-      } else {
-
-        action();
-
-      }
-
-    }
-
+    passive: false
   }
 );
 
@@ -1889,66 +1731,130 @@ window.addEventListener(
 ========================================= */
 
 startButton.addEventListener(
+  "pointerdown",
+  event => {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+  },
+  {
+    passive: false
+  }
+);
+
+startButton.addEventListener(
   "click",
-  startGame
+  event => {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    startGame();
+
+  }
 );
 
 
 againButton.addEventListener(
+  "pointerdown",
+  event => {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+  },
+  {
+    passive: false
+  }
+);
+
+againButton.addEventListener(
   "click",
-  startGame
+  event => {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+    startGame();
+
+  }
+);
+
+
+backButton.addEventListener(
+  "pointerdown",
+  event => {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
+  },
+  {
+    passive: false
+  }
 );
 
 
 backButton.addEventListener(
   "click",
-  () => {
+  event => {
+
+    event.preventDefault();
+
+    event.stopPropagation();
+
 
     /*
-     * Kalau game dibuka melalui iframe,
-     * kirim pesan ke React parent.
-     */
-
-    window.parent.postMessage(
-      {
-        type: "ANNABEY_RUN_BACK"
-      },
-      "*"
-    );
-
-    /*
-     * Fallback kalau dibuka langsung.
+     * Untuk iframe React.
      */
 
     if (
-      window.parent === window
+      window.parent !== window
     ) {
 
-      history.back();
+      window.parent.postMessage(
+        {
+          type:
+            "ANNABEY_RUN_BACK"
+        },
+        "*"
+      );
+
+      return;
 
     }
+
+
+    /*
+     * Kalau dibuka langsung.
+     */
+
+    history.back();
 
   }
 );
 
 
 /* =========================================
-   PREVENT MOBILE GESTURES
+   MOBILE ONLY
 ========================================= */
-
-document.addEventListener(
-  "gesturestart",
-  event => {
-    event.preventDefault();
-  }
-);
 
 document.addEventListener(
   "touchmove",
   event => {
 
-    if (event.cancelable) {
+    if (
+      event.cancelable
+    ) {
+
       event.preventDefault();
+
     }
 
   },
@@ -1958,8 +1864,21 @@ document.addEventListener(
 );
 
 
+document.addEventListener(
+  "gesturestart",
+  event => {
+
+    event.preventDefault();
+
+  },
+  {
+    passive: false
+  }
+);
+
+
 /* =========================================
-   INITIAL DRAW
+   INITIAL
 ========================================= */
 
 draw();
